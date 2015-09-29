@@ -25,11 +25,12 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
 
   var section = Math.floor(width / 8);
 
-  var gap = (section % 2 === 0) ? section : section - 1;
+//  var gap = (section % 2 === 0) ? section : section - 1;
+  var gap = section;
   this.documentElement = documentElement;
   this.spreadWidth = (width + gap);
 
-  documentElement.style.overflow = "hidden";
+//  documentElement.style.overflow = "hidden";
   documentElement.style.width = width + "px";
   documentElement.style.height = _height + "px";
 
@@ -55,10 +56,12 @@ EPUBJS.Layout.Reflowable.prototype.calculatePages = function () {
   var totalWidth, displayedPages;
   this.documentElement.style.width = "auto";
   totalWidth = this.documentElement.scrollWidth;
+  this.documentElement.style.width = totalWidth + "px";
   displayedPages = Math.ceil(totalWidth / this.spreadWidth);
 
-  return {
+  /*return {
     displayedPages : displayedPages,
     pageCount : displayedPages
-  }
+  }*/
+  return totalWidth;
 };

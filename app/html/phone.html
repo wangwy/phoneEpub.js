@@ -2,37 +2,46 @@
 <html>
 <head lang="en">
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">-->
     <title>Basic ePubJS Example</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>phone</title>
     <style>
         body {
+            margin: 0;
+            background: #000000;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #333;
 
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            -webkit-align-items: center;
+            -webkit-justify-content: center;
         }
 
-        #main {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
+        #area {
+            width: 80%;
+            height: 90%;
+
+            background: white;
+            box-shadow: 0 0 4px #ccc;
+            padding: 10px 10px 0px 10px;
+            margin: 5px auto;
         }
 
         /*#area {
-            width: 80%;
-            height: 90%;
-            margin: 5% auto;
-        }*/
-        #area {
 
-            width: 480px;
-            height: 650px;
+            width: 300px;
+            height: 400px;
             margin: 5px auto;
             border: 1px solid;
             padding: 40px 40px;
-        }
+        }*/
 
         #area iframe {
             border: none;
@@ -69,25 +78,23 @@
         }
     </style>
     <script src="../libs/rsvp/rsvp.js"></script>
-    <!--<script src="../js/book.js"></script>
+    <script src="../js/book.js"></script>
     <script src="../js/renderer.js"></script>
     <script src="../js/core.js"></script>
     <script src="../js/layout.js"></script>
-    <script src="../js/render_iframe.js"></script>-->
-    <script src="../build/phoneEpub.js"></script>
+    <script src="../js/render_iframe.js"></script>
+    <!--<script src="../build/phoneEpub.js"></script>-->
     <script>
         var book = new EPUBJS.Book();
     </script>
 </head>
 <body>
-<div id="main">
-    <div id="prev" onclick="book.prevPage()" class="arrow">‹</div>
-    <div id="area"></div>
-    <div id="next" onclick="book.nextPage()" class="arrow">›</div>
-</div>
+<div id="area"></div>
+<div id="next" onclick="book.nextPage()" class="arrow">›</div>
+<div id="prev" onclick="book.prevPage()" class="arrow">‹</div>
 </body>
 <script>
     book.renderTo("area");
-    book.display("ds00588401.xhtml");
+    book.display("article_100824.html");
 </script>
 </html>

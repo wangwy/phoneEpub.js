@@ -22,8 +22,8 @@ EPUBJS.Render.Iframe.prototype.create = function () {
   this.iframe.scrolling = "no";
   this.iframe.seamless = "seamless";
   this.iframe.style.border = "none";
-  this.iframe.height = "100%";
-  this.iframe.width = "100%";
+  this.iframe.style.height = "100%";
+  this.iframe.style.width = "100%";
   return this.iframe;
 };
 
@@ -106,4 +106,9 @@ EPUBJS.Render.Iframe.prototype.setLeft = function (leftPos) {
   }else{
     this.document.defaultView.scrollTo(leftPos, 0);
   }
+};
+
+EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
+  this.iframe.style.width = width + "px";
+  this.iframe.style.height = height + "px";
 };
