@@ -28,13 +28,13 @@ EPUBJS.Renderer.prototype.initialize = function (element) {
  * @returns {CSSStyleDeclaration.visibility|*}
  */
 EPUBJS.Renderer.prototype.visible = function (bool) {
-  if(typeof (bool) === "undefined"){
+  if (typeof (bool) === "undefined") {
     return this.element.style.visibility;
   }
 
-  if(bool === true && !this.hidden){
+  if (bool === true && !this.hidden) {
     this.element.style.visibility = "visible";
-  }else if(bool === false){
+  } else if (bool === false) {
     this.element.style.visibility = "hidden";
   }
 };
@@ -49,7 +49,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
   this.layout = new EPUBJS.Layout["Reflowable"]();
   this.visible(false);
   var render = this.render.load(url);
-  render.then(function(contents){
+  render.then(function (contents) {
     this.contents = contents;
     this.doc = this.render.document;
     this.formated = this.layout.format(contents, this.render.width, this.render.height);
@@ -93,18 +93,18 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     var elPos;
     var elRange;
     var children = Array.prototype.slice.call(node.childNodes);
-    if(node.nodeType == Node.ELEMENT_NODE){
+    if (node.nodeType == Node.ELEMENT_NODE) {
       elRange = document.createRange();
       elRange.selectNodeContents(node);
       elPos = elRange.getBoundingClientRect();
-      if(!elPos || (elPos.width === 0 && elPos.height === 0)){
+      if (!elPos || (elPos.width === 0 && elPos.height === 0)) {
         return;
       }
 
-      if(elPos.left >= elLimit){
+      if (elPos.left >= elLimit) {
         children.forEach(function (node) {
-          if(node.nodeType == Node.TEXT_NODE &&
-              node.textContent.trim().length){
+          if (node.nodeType == Node.TEXT_NODE &&
+              node.textContent.trim().length) {
             checkText(node);
             count += node.textContent.trim().length;
           }
@@ -118,19 +118,19 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     ranges.forEach(function (range) {
       var pos = range.getBoundingClientRect();
 
-      if(!pos || (pos.width === 0 && pos.height === 0)){
+      if (!pos || (pos.width === 0 && pos.height === 0)) {
         return;
       }
-      if(pos.left + pos.width < limit){
-        if(!map[page - 1]){
+      if (pos.left + pos.width < limit) {
+        if (!map[page - 1]) {
           range.collapse(true);
           map.push({start: range, startCount: count, end: null, endCount: null});
         }
-      }else{
-        if(prevRange){
+      } else {
+        if (prevRange) {
           prevRange.collapse(true);
-          map[map.length-1].end = prevRange;
-          map[map.length-1].endCount = count-1;
+          map[map.length - 1].end = prevRange;
+          map[map.length - 1].endCount = count - 1;
         }
         range.collapse(true);
         map.push({
@@ -150,149 +150,23 @@ EPUBJS.Renderer.prototype.mapPage = function () {
 
   this.sprint(root, check);
 
-  if(prevRange){
+  if (prevRange) {
     prevRange.collapse(true);
     map[map.length - 1].end = prevRange;
     map[map.length - 1].end = count;
   }
 
-  if(!map.length){
+  if (!map.length) {
     var range = this.doc.createRange();
     range.selectNodeContents(root);
     range.collapse(true);
-    map.push({start: range,startCount: 0, end: range, endCount: root.textContent.trim().length-1});
+    map.push({start: range, startCount: 0, end: range, endCount: root.textContent.trim().length - 1});
   }
   prevRange = null;
   root = null;
   return map;
 };
-/*EPUBJS.Renderer.prototype.mapPage = function(){
-  var renderer = this;
-  var map = [];
-  var root = this.render.getBaseElement();
-  var page = 1;
-  var width = this.layout.colWidth + this.layout.gap;
-  var offset = 0;
-  var limit = (width * page) - offset;// (width * page) - offset;
-  var elLimit = 0;
-  var prevRange;
-  var cfi;
-  var check = function(node) {
-    var elPos;
-    var elRange;
-    var children = Array.prototype.slice.call(node.childNodes);
-    if (node.nodeType == Node.ELEMENT_NODE) {
-      // elPos = node.getBoundingClientRect();
-      elRange = document.createRange();
-      elRange.selectNodeContents(node);
-      elPos = elRange.getBoundingClientRect();
 
-      if(!elPos || (elPos.width === 0 && elPos.height === 0)) {
-        return;
-      }
-
-      //-- Element starts new Col
-      if(elPos.left > elLimit) {
-        children.forEach(function(node){
-          if(node.nodeType == Node.TEXT_NODE &&
-              node.textContent.trim().length) {
-            checkText(node);
-          }
-        });
-      }
-
-      //-- Element Spans new Col
-      if(elPos.right > elLimit) {
-        children.forEach(function(node){
-          if(node.nodeType == Node.TEXT_NODE &&
-              node.textContent.trim().length) {
-            checkText(node);
-          }
-        });
-      }
-    }
-
-  };
-  var checkText = function(node){
-    var ranges = renderer.splitTextNodeIntoWordsRanges(node);
-    ranges.forEach(function(range){
-      var pos = range.getBoundingClientRect();
-
-      if(!pos || (pos.width === 0 && pos.height === 0)) {
-        return;
-      }
-      if(pos.left + pos.width < limit) {
-        if(!map[page-1]){
-          range.collapse(true);
-          // map[page-1].start = cfi;
-          map.push({ start: range, end: null });
-        }
-      } else {
-        if(prevRange){
-          prevRange.collapse(true);
-          map[map.length-1].end = prevRange;
-        }
-
-        range.collapse(true);
-        map.push({
-          start: range,
-          end: null
-        });
-
-        page += 1;
-        limit = (width * page) - offset;
-        elLimit = limit;
-      }
-
-      prevRange = range;
-    });
-
-
-  };
-  var docEl = this.render.getDocumentElement();
-  var dir = docEl.dir;
-
-  // Set back to ltr before sprinting to get correct order
-  if(dir == "rtl") {
-    docEl.dir = "ltr";
-    docEl.style.position = "static";
-  }
-
-  this.sprint(root, check);
-
-  // Reset back to previous RTL settings
-  if(dir == "rtl") {
-    docEl.dir = dir;
-    docEl.style.left = "auto";
-    docEl.style.right = "0";
-  }
-
-  // this.textSprint(root, checkText);
-
-  if(prevRange){
-    prevRange.collapse(true);
-
-    map[map.length-1].end = prevRange;
-  }
-
-  // Handle empty map
-  if(!map.length) {
-    range = this.doc.createRange();
-    range.selectNodeContents(root);
-    range.collapse(true);
-
-    map.push({ start: cfi, end: range });
-
-  }
-
-  // clean up
-  prevRange = null;
-  ranges = null;
-  range = null;
-  root = null;
-
-  return map;
-};*/
 /**
  * 将字符转换成range
  * @param node
@@ -305,7 +179,7 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node) {
 
   var pos = this.indexOfBreakableChar(text);
 
-  if(pos === -1){
+  if (pos === -1) {
     range = this.doc.createRange();
     range.selectNodeContents(node);
     return [range];
@@ -317,12 +191,12 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node) {
   ranges.push(range);
 
   range = this.doc.createRange();
-  range.setStart(node, pos+1);
+  range.setStart(node, pos + 1);
 
   while (pos != -1) {
-    pos = this.indexOfBreakableChar(text, pos+1);
-    if(pos > 0){
-      if(range){
+    pos = this.indexOfBreakableChar(text, pos + 1);
+    if (pos > 0) {
+      if (range) {
         range.setEnd(node, pos);
         ranges.push(range);
       }
@@ -332,7 +206,7 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node) {
     }
   }
 
-  if(range){
+  if (range) {
     range.setEnd(node, text.length);
     ranges.push(range);
   }
@@ -349,12 +223,12 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node) {
 EPUBJS.Renderer.prototype.indexOfBreakableChar = function (text, startPosition) {
   var whiteCharacters = "\x2D\x20\t\r\n\b\f";
 
-  if(!startPosition){
+  if (!startPosition) {
     startPosition = 0;
   }
 
-  for(var i = startPosition; i < text.length; i++){
-    if(whiteCharacters.indexOf(text.charAt(i)) != -1){
+  for (var i = startPosition; i < text.length; i++) {
+    if (whiteCharacters.indexOf(text.charAt(i)) != -1) {
       return i;
     }
   }
@@ -370,7 +244,7 @@ EPUBJS.Renderer.prototype.indexOfBreakableChar = function (text, startPosition) 
 EPUBJS.Renderer.prototype.sprint = function (root, func) {
   var treeWalker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null, false);
   var node;
-  while((node = treeWalker.nextNode())){
+  while ((node = treeWalker.nextNode())) {
     func(node);
   }
 };
@@ -380,8 +254,8 @@ EPUBJS.Renderer.prototype.sprint = function (root, func) {
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.nextPage = function () {
-  return this.container.scrollLeft += this.formated.pageWidth;
-//  return this.page(this.chapterPos + 1);
+  this.pageOffset(this.chapterPos + 1);
+  this.nextPageAnimation();
 };
 
 /**
@@ -389,8 +263,8 @@ EPUBJS.Renderer.prototype.nextPage = function () {
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.prevPage = function () {
-  return this.container.scrollLeft += -this.formated.pageWidth;
-//  return this.page(this.chapterPos - 1);
+  this.pageOffset(this.chapterPos - 1);
+  this.prevPageAnimation();
 };
 
 /**
@@ -398,13 +272,57 @@ EPUBJS.Renderer.prototype.prevPage = function () {
  * @param pg
  * @returns {boolean}
  */
-EPUBJS.Renderer.prototype.page = function (pg) {
-  if(pg >= 1 && pg <= this.displayedPages){
+EPUBJS.Renderer.prototype.pageOffset = function (pg) {
+  if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
-
-    this.render.page(pg);
-
-    return true;
+    this.pageLeftOffset = this.render.pageLeft(pg);
   }
-  return false;
+};
+
+/**
+ * 下一页动画
+ */
+EPUBJS.Renderer.prototype.nextPageAnimation = function () {
+  var currentOffset = window.scrollX;
+  if (this.pageLeftOffset - currentOffset > 20) {
+    currentOffset += 20;
+    window.scrollTo(currentOffset, 0);
+    this.nextAnimationFrameHandler = requestAnimationFrame(this.nextPageAnimation.bind(this));
+  } else if (this.pageLeftOffset - currentOffset <= 20 && this.pageLeftOffset > currentOffset) {
+    window.scrollTo(this.pageLeftOffset, 0);
+    this.nextAnimationFrameHandler = requestAnimationFrame(this.nextPageAnimation.bind(this));
+  } else {
+    cancelAnimationFrame(this.nextAnimationFrameHandler);
+  }
+};
+
+/**
+ * 上一页动画
+ */
+EPUBJS.Renderer.prototype.prevPageAnimation = function () {
+  var currentOffset = window.scrollX;
+  if (currentOffset - this.pageLeftOffset > 20) {
+    currentOffset -= 20;
+    window.scrollTo(currentOffset, 0);
+    this.prevAnimationFrameHandler = requestAnimationFrame(this.prevPageAnimation.bind(this));
+  } else if (currentOffset - this.pageLeftOffset <= 20 && currentOffset > this.pageLeftOffset) {
+    window.scrollTo(this.pageLeftOffset, 0);
+    this.prevAnimationFrameHandler = requestAnimationFrame(this.prevPageAnimation.bind(this));
+  } else {
+    cancelAnimationFrame(this.prevAnimationFrameHandler);
+  }
+};
+
+/**
+ * 为文档添加监听
+ */
+EPUBJS.Renderer.prototype.addEventListeners = function () {
+  this.doc.addEventListener("touchstart", function (event) {
+    var x = event.touches[0].screenX;
+    if(x > window.scrollX + window.innerWidth/2){
+      this.nextPage();
+    }else if(x < window.scrollX + window.innerWidth/2){
+      this.prevPage();
+    }
+  }.bind(this));
 };

@@ -79,35 +79,20 @@ EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
 };
 
 /**
- * 返回document
- * @returns {null|*}
- */
-EPUBJS.Render.Iframe.prototype.getDocumentElement = function () {
-  return this.docEl;
-};
-
-/**
  * 根据页码计算出偏移量
  * @param pg
  */
-EPUBJS.Render.Iframe.prototype.page = function (pg) {
-  this.leftPos = this.pageWidth * (pg - 1);
+EPUBJS.Render.Iframe.prototype.pageLeft = function (pg) {
 
-  this.setLeft(this.leftPos);
+   this.leftPos = this.pageWidth * (pg - 1);
+   return this.leftPos;
 };
 
 /**
- * 根据偏移量跳转到相应的显示区域
- * @param leftPos
+ * 设置iframe的宽与高
+ * @param width
+ * @param height
  */
-EPUBJS.Render.Iframe.prototype.setLeft = function (leftPos) {
-  if(navigator.userAgent.match(/(iPad|iPhone|iPod|Mobile|Android)/g)){
-    this.docEl.style["-webkit-transform"] = 'translate('+(-leftPos)+'px,0)';
-  }else{
-    this.document.defaultView.scrollTo(leftPos, 0);
-  }
-};
-
 EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
   this.iframe.style.width = width + "px";
   this.iframe.style.height = height + "px";

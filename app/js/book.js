@@ -24,26 +24,11 @@ EPUBJS.Book.prototype.display = function(url){
 };
 
 /**
- * 下一页
- */
-EPUBJS.Book.prototype.nextPage = function () {
-//  this.container.scrollLeft += 100;
-  return this.renderer.nextPage();
-};
-
-/**
- * 上一页
- */
-EPUBJS.Book.prototype.prevPage = function () {
-  return this.renderer.prevPage();
-};
-
-/**
  * 添加container
  * @param eleId
  */
 EPUBJS.Book.prototype.attachTo = function (eleId) {
-  this.element = document.getElementById(eleId);
+  this.element = document.getElementById(eleId) || eleId;
   this.container = this.initialize();
   this.element.appendChild(this.container);
   this.stageSize();
@@ -64,7 +49,6 @@ EPUBJS.Book.prototype.initialize = function(){
   container.style.verticalAlign = "top";
   container.style.width = "100%";
   container.style.height = "100%";
-  container.style.overflow = "hidden";
 
   return container;
 };
@@ -95,4 +79,12 @@ EPUBJS.Book.prototype.stageSize = function () {
   };
 
   return this.stage;
+};
+
+/**
+ * 添加监听
+ * @returns {*}
+ */
+EPUBJS.Book.prototype.addEventListeners = function () {
+  return this.renderer.addEventListeners();
 };
