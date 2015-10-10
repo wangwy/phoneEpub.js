@@ -153,7 +153,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   if (prevRange) {
     prevRange.collapse(true);
     map[map.length - 1].end = prevRange;
-    map[map.length - 1].end = count;
+    map[map.length - 1].endCount = count;
   }
 
   if (!map.length) {
