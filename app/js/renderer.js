@@ -39,6 +39,12 @@ EPUBJS.Renderer.prototype.visible = function (bool) {
   }
 };
 
+EPUBJS.Renderer.prototype.displayChapter = function (chapter) {
+  this.currentChapter = chapter;
+  this.chapterPos = 1;
+  return this.load(chapter.absolute);
+};
+
 /**
  * 根据路径加载页面
  * @param url
@@ -52,6 +58,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
   render.then(function (contents) {
     this.contents = contents;
     this.doc = this.render.document;
+    this.render.resetWidthAndHeight();
     this.formated = this.layout.format(contents, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
     this.pages = this.layout.calculatePages();
@@ -254,8 +261,11 @@ EPUBJS.Renderer.prototype.sprint = function (root, func) {
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.nextPage = function () {
-  this.pageOffset(this.chapterPos + 1);
-  this.nextPageAnimation();
+  var next = this.pageOffset(this.chapterPos + 1);
+  if(next){
+    this.nextPageAnimation();
+  }
+  return next;
 };
 
 /**
@@ -263,8 +273,20 @@ EPUBJS.Renderer.prototype.nextPage = function () {
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.prevPage = function () {
-  this.pageOffset(this.chapterPos - 1);
-  this.prevPageAnimation();
+  var prev = this.pageOffset(this.chapterPos - 1);
+  if(prev){
+    this.prevPageAnimation();
+  }
+  return prev;
+};
+
+/**
+ * 跳转到最后一页
+ */
+EPUBJS.Renderer.prototype.lastPage = function () {
+  this.chapterPos = this.displayedPages;
+  var leftOffset = this.render.pageLeft(this.displayedPages);
+  window.scrollTo(leftOffset, 0);
 };
 
 /**
@@ -276,7 +298,9 @@ EPUBJS.Renderer.prototype.pageOffset = function (pg) {
   if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
     this.pageLeftOffset = this.render.pageLeft(pg);
+    return true;
   }
+  return false;
 };
 
 /**
@@ -311,18 +335,4 @@ EPUBJS.Renderer.prototype.prevPageAnimation = function () {
   } else {
     cancelAnimationFrame(this.prevAnimationFrameHandler);
   }
-};
-
-/**
- * 为文档添加监听
- */
-EPUBJS.Renderer.prototype.addEventListeners = function () {
-  this.doc.addEventListener("touchstart", function (event) {
-    var x = event.touches[0].screenX;
-    if(x > window.scrollX + window.innerWidth/2){
-      this.nextPage();
-    }else if(x < window.scrollX + window.innerWidth/2){
-      this.prevPage();
-    }
-  }.bind(this));
 };

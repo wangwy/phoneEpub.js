@@ -83,7 +83,6 @@ EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
  * @param pg
  */
 EPUBJS.Render.Iframe.prototype.pageLeft = function (pg) {
-
    this.leftPos = this.pageWidth * (pg - 1);
    return this.leftPos;
 };
@@ -96,4 +95,12 @@ EPUBJS.Render.Iframe.prototype.pageLeft = function (pg) {
 EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
   this.iframe.style.width = width + "px";
   this.iframe.style.height = height + "px";
+};
+
+/**
+ * 页面加载之前设置iframe的高度与宽度
+ */
+EPUBJS.Render.Iframe.prototype.resetWidthAndHeight = function () {
+  this.iframe.style.width = "100%";
+  this.iframe.style.height = "100%";
 };
