@@ -4,56 +4,7 @@
 var EPUBJS = EPUBJS || {};
 EPUBJS.Book = function (spine) {
   this.renderer = new EPUBJS.Renderer();
-  this.spine = spine ||[
-    {
-      href: "titlepage.xhtml",
-      id: "titlepage",
-      index: 0,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/titlepage.xhtml"
-    },
-    {
-      href: "page.xhtml",
-      id: "page",
-      index: 1,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/page.xhtml"
-    },
-    {
-      href: "catalog.html",
-      id: "catalog",
-      index: 2,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/catalog.html"
-    },
-    {
-      href: "article_100822.html",
-      id: "id100822",
-      index: 3,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100822.html"
-    },
-    {
-      href: "article_100823.html",
-      id: "id100823",
-      index: 4,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100823.html"
-    },
-    {
-      href: "article_100824.html",
-      id: "id100824",
-      index: 5,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100824.html"
-    },
-    {
-      href: "article_100825.html",
-      id: "id100825",
-      index: 6,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100825.html"
-    },
-    {
-      href: "article_100826.html",
-      id: "id100826",
-      index: 7,
-      url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
-    }
-  ];
+  this.spine = spine;
   this.spinePos = 0;
 };
 
@@ -121,8 +72,6 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
   render = book.renderer.displayChapter(chapter);
 
   render.then(function () {
-    window.scrollTo(0,0);
-
     if(end){ //上一章的最后一页
       book.renderer.lastPage();
     }
@@ -142,8 +91,8 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
  * 下一页
  * @returns {*}
  */
-EPUBJS.Book.prototype.nextPage = function () {
-  var next = this.renderer.nextPage();
+EPUBJS.Book.prototype.nextPage = function (durTime) {
+  var next = this.renderer.nextPage(durTime);
   if(!next){
     return this.nextChapter();
   }
@@ -153,8 +102,8 @@ EPUBJS.Book.prototype.nextPage = function () {
  * 上一页
  * @returns {*}
  */
-EPUBJS.Book.prototype.prevPage = function () {
-  var prev = this.renderer.prevPage();
+EPUBJS.Book.prototype.prevPage = function (durTime) {
+  var prev = this.renderer.prevPage(durTime);
 
   if(!prev){
     return this.prevChapter();
@@ -198,24 +147,43 @@ EPUBJS.Book.prototype.preloadNextChapter = function () {
   }
 };
 
-
 /**
  * 为文档添加监听
  */
 EPUBJS.Book.prototype.addEventListeners = function () {
-  var startX, endX;
-
+  var startX, endX, startTime, endTime, durTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
-    var touch = event.touches[0];
-    startX = touch.clientX;
-  });
+    event.preventDefault();
+    startX = event.touches[0].clientX;
+    startTime = new Date();
+  },false);
+
+  this.renderer.doc.addEventListener("touchmove", function (event) {
+    event.preventDefault();
+    endX = event.touches[0].clientX;
+    var deltaX = endX - startX;
+    var pageOffsetX = this.renderer.getLeft() - deltaX;
+    this.renderer.setLeft(pageOffsetX);
+  }.bind(this), false);
+
   this.renderer.doc.addEventListener("touchend", function (event) {
-    var touch = event.changedTouches[0];
-    endX = touch.clientX;
-    if(endX - startX > 0){
-      this.prevPage();
-    }else if(endX - startX < 0){
-      this.nextPage();
+    endX = event.changedTouches[0].clientX;
+    endTime = new Date();
+    var deltaTime = endTime - startTime;
+    var deltaX = endX - startX;
+    var pageWidth = this.renderer.pageWidth;
+    if(deltaX < 0){
+      durTime = (pageWidth + deltaX) * (deltaTime/(-deltaX));
+      this.nextPage(durTime);
+    }else if(deltaX > 0){
+      durTime = (pageWidth - deltaX) * (deltaTime/deltaX);
+      this.prevPage(durTime);
+    }else if(deltaX === 0){
+      if(endX > window.innerWidth/2){
+       this.nextPage(500);
+       }else if(endX < window.innerWidth/2){
+       this.prevPage(500);
+       }
     }
-  }.bind(this))
+  }.bind(this));
 };

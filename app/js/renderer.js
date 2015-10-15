@@ -61,6 +61,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.render.resetWidthAndHeight();
     this.formated = this.layout.format(contents, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
+    //页面宽度
+    this.pageWidth = this.formated.pageWidth;
     this.pages = this.layout.calculatePages();
     this.render.setWidthAndHeight(this.pages, this.formated.pageHeight);
     this.updatePages();
@@ -260,79 +262,54 @@ EPUBJS.Renderer.prototype.sprint = function (root, func) {
  * 下一页
  * @returns {*}
  */
-EPUBJS.Renderer.prototype.nextPage = function () {
-  var next = this.pageOffset(this.chapterPos + 1);
-  if(next){
-    this.nextPageAnimation();
-  }
-  return next;
+EPUBJS.Renderer.prototype.nextPage = function (durTime) {
+  return this.page(this.chapterPos + 1, durTime);
 };
 
 /**
  * 上一页
  * @returns {*}
  */
-EPUBJS.Renderer.prototype.prevPage = function () {
-  var prev = this.pageOffset(this.chapterPos - 1);
-  if(prev){
-    this.prevPageAnimation();
-  }
-  return prev;
+EPUBJS.Renderer.prototype.prevPage = function (durTime) {
+  return this.page(this.chapterPos - 1, durTime)
 };
 
 /**
  * 跳转到最后一页
  */
 EPUBJS.Renderer.prototype.lastPage = function () {
-  this.chapterPos = this.displayedPages;
-  var leftOffset = this.render.pageLeft(this.displayedPages);
-  window.scrollTo(leftOffset, 0);
+  this.page(this.displayedPages, 0);
 };
 
 /**
- * 跳转到某一页
+ * 获取页面向左的偏移量
+ * @returns {*}
+ */
+EPUBJS.Renderer.prototype.getLeft = function () {
+  return this.pageLeftOffset = this.render.getLeft(this.chapterPos);
+};
+
+/**
+ * 根据偏移量跳转到相应的位置，移动页面时调用此方法
+ * @param leftPos
+ * @returns {*}
+ */
+EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
+  return this.render.setLeft(leftPos, 0);
+};
+
+/**
+ * 根据页码与持续事件跳转到相应的页面
  * @param pg
+ * @param durTime
  * @returns {boolean}
  */
-EPUBJS.Renderer.prototype.pageOffset = function (pg) {
-  if (pg >= 1 && pg <= this.displayedPages) {
+EPUBJS.Renderer.prototype.page = function (pg, durTime) {
+  var time = durTime || 0;
+  if(pg >= 1 && pg <= this.displayedPages){
     this.chapterPos = pg;
-    this.pageLeftOffset = this.render.pageLeft(pg);
+    this.render.page(pg, time);
     return true;
   }
   return false;
-};
-
-/**
- * 下一页动画
- */
-EPUBJS.Renderer.prototype.nextPageAnimation = function () {
-  var currentOffset = window.scrollX;
-  if (this.pageLeftOffset - currentOffset > 20) {
-    currentOffset += 20;
-    window.scrollTo(currentOffset, 0);
-    this.nextAnimationFrameHandler = requestAnimationFrame(this.nextPageAnimation.bind(this));
-  } else if (this.pageLeftOffset - currentOffset <= 20 && this.pageLeftOffset > currentOffset) {
-    window.scrollTo(this.pageLeftOffset, 0);
-    this.nextAnimationFrameHandler = requestAnimationFrame(this.nextPageAnimation.bind(this));
-  } else {
-    cancelAnimationFrame(this.nextAnimationFrameHandler);
-  }
-};
-
-/**
- * 上一页动画
- */
-EPUBJS.Renderer.prototype.prevPageAnimation = function () {
-  var currentOffset = window.scrollX;
-  if (currentOffset - this.pageLeftOffset > 20) {
-    currentOffset -= 20;
-    window.scrollTo(currentOffset, 0);
-    this.prevAnimationFrameHandler = requestAnimationFrame(this.prevPageAnimation.bind(this));
-  } else if (currentOffset - this.pageLeftOffset <= 20 && currentOffset > this.pageLeftOffset) {
-    window.scrollTo(this.pageLeftOffset, 0);
-    this.prevAnimationFrameHandler = requestAnimationFrame(this.prevPageAnimation.bind(this));
-  } else {
-    cancelAnimationFrame(this.prevAnimationFrameHandler);
-  }
 };

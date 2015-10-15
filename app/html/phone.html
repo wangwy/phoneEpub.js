@@ -52,13 +52,62 @@
     <script src="../js/render_iframe.js"></script>
     <!--<script src="../build/phoneEpub.js"></script>-->
     <script>
-        var spine = "";
+        var spine = [
+            {
+                href: "titlepage.xhtml",
+                id: "titlepage",
+                index: 0,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/titlepage.xhtml"
+            },
+            {
+                href: "page.xhtml",
+                id: "page",
+                index: 1,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/page.xhtml"
+            },
+            {
+                href: "catalog.html",
+                id: "catalog",
+                index: 2,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/catalog.html"
+            },
+            {
+                href: "article_100822.html",
+                id: "id100822",
+                index: 3,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100822.html"
+            },
+            {
+                href: "article_100823.html",
+                id: "id100823",
+                index: 4,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100823.html"
+            },
+            {
+                href: "article_100824.html",
+                id: "id100824",
+                index: 5,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100824.html"
+            },
+            {
+                href: "article_100825.html",
+                id: "id100825",
+                index: 6,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100825.html"
+            },
+            {
+                href: "article_100826.html",
+                id: "id100826",
+                index: 7,
+                url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
+            }
+        ];
         var book = new EPUBJS.Book(spine);
     </script>
 </head>
-<body><!--
-<div id="prev" class="arrow" onclick="book.prevPage()">‹</div>
-<div id="next" class="arrow" onclick="book.nextPage()">›</div>-->
+<body>
+<!--<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
+<div id="next" class="arrow" onclick="book.nextPage(500)">›</div>-->
 </body>
 <script>
     book.renderTo(document.body);

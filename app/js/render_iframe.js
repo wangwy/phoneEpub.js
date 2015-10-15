@@ -79,12 +79,32 @@ EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
 };
 
 /**
+ * 根据页码获取向左的偏移量
+ * @param pg
+ * @param time
+ */
+EPUBJS.Render.Iframe.prototype.page = function (pg, time) {
+  this.leftPos = this.pageWidth * (pg - 1);
+  this.setLeft(this.leftPos, time);
+};
+
+/**
  * 根据页码计算出偏移量
  * @param pg
  */
-EPUBJS.Render.Iframe.prototype.pageLeft = function (pg) {
+EPUBJS.Render.Iframe.prototype.getLeft = function (pg) {
    this.leftPos = this.pageWidth * (pg - 1);
    return this.leftPos;
+};
+
+/**
+ * 设置页面向左的偏移量与持续时间
+ * @param lefPos
+ * @param time
+ */
+EPUBJS.Render.Iframe.prototype.setLeft = function (lefPos, time) {
+  this.docEl.style.webkitTransition = '-webkit-transform ' + time +'ms';
+  this.docEl.style.webkitTransform = 'translate3d('+(-lefPos)+'px, 0, 0)';
 };
 
 /**
