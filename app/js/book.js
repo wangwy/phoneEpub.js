@@ -151,11 +151,11 @@ EPUBJS.Book.prototype.preloadNextChapter = function () {
  * 为文档添加监听
  */
 EPUBJS.Book.prototype.addEventListeners = function () {
-  var startX, endX, startTime, endTime, durTime;
+  var time = 500; //翻一页所持续的时间为500ms;
+  var startX, endX, durTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
     event.preventDefault();
     startX = event.touches[0].clientX;
-    startTime = new Date();
   },false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
@@ -168,21 +168,19 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 
   this.renderer.doc.addEventListener("touchend", function (event) {
     endX = event.changedTouches[0].clientX;
-    endTime = new Date();
-    var deltaTime = endTime - startTime;
     var deltaX = endX - startX;
     var pageWidth = this.renderer.pageWidth;
     if(deltaX < 0){
-      durTime = (pageWidth + deltaX) * (deltaTime/(-deltaX));
+      durTime = (pageWidth + deltaX) * (time/pageWidth);
       this.nextPage(durTime);
     }else if(deltaX > 0){
-      durTime = (pageWidth - deltaX) * (deltaTime/deltaX);
+      durTime = (pageWidth - deltaX) * (time/pageWidth);
       this.prevPage(durTime);
     }else if(deltaX === 0){
       if(endX > window.innerWidth/2){
-       this.nextPage(500);
+       this.nextPage(time);
        }else if(endX < window.innerWidth/2){
-       this.prevPage(500);
+       this.prevPage(time);
        }
     }
   }.bind(this));
