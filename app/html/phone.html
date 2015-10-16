@@ -44,6 +44,7 @@
         }
     </style>
     <script src="../libs/rsvp/rsvp.js"></script>
+    <script src="../js/base.js"></script>
     <script src="../js/book.js"></script>
     <script src="../js/chapter.js"></script>
     <script src="../js/renderer.js"></script>
@@ -102,14 +103,13 @@
                 url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
             }
         ];
-        var book = new EPUBJS.Book(spine);
     </script>
 </head>
-<body>
-<!--<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
+<body><!--
+<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
 <div id="next" class="arrow" onclick="book.nextPage(500)">›</div>-->
 </body>
 <script>
-    book.renderTo(document.body);
+  var book =  initReader({spine: spine, padding: {top: 0, right: 0, bottom: 0, left: 0}});
 </script>
 </html>

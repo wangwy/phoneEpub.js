@@ -1,10 +1,9 @@
 /**
  * Created by wangwy on 15-9-24.
  */
-var EPUBJS = EPUBJS || {};
-EPUBJS.Book = function (spine) {
+EPUBJS.Book = function (options) {
   this.renderer = new EPUBJS.Renderer();
-  this.spine = spine;
+  this.spine = options.spine;
   this.spinePos = 0;
 };
 
