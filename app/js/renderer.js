@@ -11,12 +11,9 @@ EPUBJS.Renderer = function () {
  * 获取显示区域的宽、高，并将iframe添加到显示区域内
  * @param element
  */
-EPUBJS.Renderer.prototype.initialize = function (element) {
+EPUBJS.Renderer.prototype.initialize = function (element, padding) {
   this.container = element;
-  this.element = this.render.create();
-
-  this.width = this.container.clientWidth;
-  this.height = this.container.clientHeight;
+  this.element = this.render.create(padding);
 
   this.container.appendChild(this.element);
   this.render.resized();
@@ -306,7 +303,7 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
  */
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   var time = durTime || 0;
-  if(pg >= 1 && pg <= this.displayedPages){
+  if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
     this.render.page(pg, time);
     return true;

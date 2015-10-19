@@ -4,6 +4,7 @@
 EPUBJS.Book = function (options) {
   this.renderer = new EPUBJS.Renderer();
   this.spine = options.spine;
+  this.padding = options.padding;
   this.spinePos = 0;
 };
 
@@ -13,8 +14,26 @@ EPUBJS.Book = function (options) {
  */
 EPUBJS.Book.prototype.attachTo = function (eleId) {
   this.element = document.getElementById(eleId) || eleId;
+  this.element.style.paddingTop = this.padding.top + "px";
+  this.element.style.paddingBottom = this.padding.bottom + "px";
+  var height = this.elementHeight();
+  this.element.style.height = height + "px";
   this.container = this.initialize();
   this.element.appendChild(this.container);
+};
+
+/**
+ * 计算container的height
+ * @returns {number|*|EPUBJS.Renderer.height}
+ */
+EPUBJS.Book.prototype.elementHeight = function () {
+  var height = document.documentElement.clientHeight;
+  this.elementStyles = window.getComputedStyle(this.element);
+  this.elementPadding = {
+    top: parseFloat(this.elementStyles["padding-top"].slice(0,-2)) || 0,
+    bottom: parseFloat(this.elementStyles["padding-bottom"].slice(0,-2)) || 0
+  };
+  return height - this.elementPadding.top - this.elementPadding.bottom;
 };
 
 /**
@@ -42,7 +61,7 @@ EPUBJS.Book.prototype.initialize = function(){
  */
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
-  this.renderer.initialize(this.container);
+  this.renderer.initialize(this.container, this.padding);
   return this.displayChapter();
 };
 

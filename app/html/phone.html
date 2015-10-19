@@ -2,7 +2,6 @@
 <html>
 <head lang="en">
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Basic ePubJS Example</title>
     <meta name="description" content="">
     <meta name="viewport"
@@ -51,7 +50,6 @@
     <script src="../js/core.js"></script>
     <script src="../js/layout.js"></script>
     <script src="../js/render_iframe.js"></script>
-    <!--<script src="../build/phoneEpub.js"></script>-->
     <script>
         var spine = [
             {
@@ -105,11 +103,11 @@
         ];
     </script>
 </head>
-<body><!--
-<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
+<body>
+<!--<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
 <div id="next" class="arrow" onclick="book.nextPage(500)">›</div>-->
 </body>
 <script>
-  var book =  initReader({spine: spine, padding: {top: 0, right: 0, bottom: 0, left: 0}});
+  var book =  initReader({spine: spine, padding: {top: 100, right: 50, bottom: 20, left: 50}});
 </script>
 </html>

@@ -17,7 +17,8 @@ EPUBJS.Render.Iframe = function() {
  * 创建iframe
  * @returns {null|*}
  */
-EPUBJS.Render.Iframe.prototype.create = function () {
+EPUBJS.Render.Iframe.prototype.create = function (padding) {
+  this.padding = padding;
   this.iframe = document.createElement('iframe');
   this.iframe.scrolling = "no";
   this.iframe.seamless = "seamless";
@@ -43,6 +44,8 @@ EPUBJS.Render.Iframe.prototype.load = function (url) {
 
     if(render.bodyEl){
       render.bodyEl.style.margin = "0";
+      render.bodyEl.style.paddingLeft = render.padding.left + "px";
+      render.bodyEl.style.paddingRight = render.padding.right + "px";
     }
 
     deferred.resolve(render.docEl);
