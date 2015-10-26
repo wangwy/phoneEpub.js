@@ -87,7 +87,7 @@ EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
  */
 EPUBJS.Render.Iframe.prototype.page = function (pg, time) {
   this.leftPos = this.pageWidth * (pg - 1);
-  this.setLeft(this.leftPos, time);
+  return this.setLeft(this.leftPos, time);
 };
 
 /**

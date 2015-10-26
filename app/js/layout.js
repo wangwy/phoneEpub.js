@@ -5,7 +5,7 @@ EPUBJS.Layout = {};
 
 EPUBJS.Layout.Reflowable = function () {
   this.documentElement = null;
-  this.spreadWidth = null;
+  this.pageWidth = null;
 };
 
 /**
@@ -24,7 +24,7 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
   var width = Math.floor(_width);
 
   this.documentElement = documentElement;
-  this.spreadWidth = (width);
+  this.pageWidth = width;
 
   documentElement.style.width = width + "px";
   documentElement.style.height = _height + "px";
@@ -39,7 +39,7 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
   this.colWidth = width;
 
   return {
-    pageWidth : this.spreadWidth,
+    pageWidth : this.pageWidth,
     pageHeight: _height
   }
 };
@@ -53,7 +53,7 @@ EPUBJS.Layout.Reflowable.prototype.calculatePages = function () {
   this.documentElement.style.width = "auto";
   totalWidth = this.documentElement.scrollWidth;
   this.documentElement.style.width = totalWidth + "px";
-  displayedPages = Math.ceil(totalWidth / this.spreadWidth);
+  displayedPages = Math.ceil(totalWidth / this.pageWidth);
 
   return totalWidth;
 };

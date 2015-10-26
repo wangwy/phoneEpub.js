@@ -39,6 +39,11 @@ EPUBJS.Renderer.prototype.visible = function (bool) {
   }
 };
 
+/**
+ * 显示章节
+ * @param chapter
+ * @returns {deferred.promise|*|*}
+ */
 EPUBJS.Renderer.prototype.displayChapter = function (chapter) {
   this.currentChapter = chapter;
   this.chapterPos = 1;
@@ -56,8 +61,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
   this.visible(false);
   var render = this.render.load(url);
   render.then(function (contents) {
-    this.contents = contents;
     this.doc = this.render.document;
+    this.docEl = this.render.docEl;
     this.render.resetWidthAndHeight();
     this.formated = this.layout.format(contents, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
@@ -282,6 +287,13 @@ EPUBJS.Renderer.prototype.lastPage = function () {
 };
 
 /**
+ * 跳转到第一页
+ */
+EPUBJS.Renderer.prototype.firstPage = function(){
+  this.page(1, 0);
+};
+
+/**
  * 获取页面向左的偏移量
  * @returns {*}
  */
@@ -306,10 +318,24 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
  */
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   var time = durTime || 0;
+  var defer =  new RSVP.defer();
+  var translationEnd = function () {
+    this.docEl.removeEventListener('transitionend', translationEnd,false);
+    var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
+    defer.resolve(result);
+  }.bind(this);
   if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
+    this.render.docEl.addEventListener('webkitTransitionEnd', translationEnd, false);
     this.render.page(pg, time);
-    return true;
+    return defer.promise;
+  }else if(pg == (this.displayedPages + 1)){
+    this.render.page(pg, time);
+    this.docEl.addEventListener('transitionend',translationEnd,false);
+    return defer.promise;
+  }else if(pg == 0){
+    this.render.page(0,time);
+    this.docEl.addEventListener('transitionend',translationEnd,false);
+    return defer.promise;
   }
-  return false;
 };
