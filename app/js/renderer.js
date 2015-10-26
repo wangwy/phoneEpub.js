@@ -13,6 +13,9 @@ EPUBJS.Renderer = function () {
  */
 EPUBJS.Renderer.prototype.initialize = function (element, padding) {
   this.container = element;
+  if(this.element){
+    this.container.removeChild(this.element);
+  }
   this.element = this.render.create(padding);
 
   this.container.appendChild(this.element);
@@ -87,7 +90,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   var map = [];
   var root = this.render.getBaseElement();
   var page = 1;
-  var width = this.layout.colWidth + this.layout.gap;
+  var width = this.layout.colWidth;
   var offset = 0;
   var count = 0;
   var limit = width * page;

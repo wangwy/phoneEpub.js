@@ -23,22 +23,20 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
 
   var width = Math.floor(_width);
 
-  var section = Math.floor(width / 8);
-
-  var gap = section;
   this.documentElement = documentElement;
-  this.spreadWidth = (width + gap);
+  this.spreadWidth = (width);
 
   documentElement.style.width = width + "px";
   documentElement.style.height = _height + "px";
 
+  //添加translate3d样式目的是让它成为一个独立的层
+  documentElement.style.webkitTransform = "translate3d(0, 0, 0)";
   documentElement.style[columnAxis] = "horizontal";
   documentElement.style[columnFill] = "auto";
   documentElement.style[columnWidth] = width + "px";
-  documentElement.style[columnGap] = gap + "px";
+  documentElement.style[columnGap] = 0 + "px";
 
   this.colWidth = width;
-  this.gap = gap;
 
   return {
     pageWidth : this.spreadWidth,

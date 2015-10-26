@@ -11,35 +11,8 @@
     <style>
         body {
             margin: 0;
-            position: absolute;
             height: 100%;
             width: 100%;
-        }
-        #prev {
-            left: 40px;
-        }
-
-        #next {
-            right: 40px;
-        }
-
-        .arrow {
-            position: fixed;
-            top: 50%;
-            margin-top: -32px;
-            font-size: 64px;
-            color: #E2E2E2;
-            font-family: arial, sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .arrow:hover {
-            color: #777;
-        }
-
-        .arrow:active {
-            color: #000;
         }
     </style>
     <script src="../libs/rsvp/rsvp.js"></script>
@@ -101,13 +74,142 @@
                 url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
             }
         ];
+        var spine2 = [
+            {
+                href: "Text/Cover.xhtml",
+                id: "Cover.xhtml",
+                index: 0,
+                url: "/app/books/epub0/OEBPS/Text/Cover.xhtml"
+            },
+            {
+                href: "Text/Copyright.xhtml",
+                id: "Copyright.xhtml",
+                index: 1,
+                url: "/app/books/epub0/OEBPS/Text/Copyright.xhtml"
+            },
+            {
+                href: "Text/ds00588403.xhtml",
+                id: "ds00588403",
+                index: 4,
+                url: "/app/books/epub0/OEBPS/Text/ds00588403.xhtml"
+            },
+            {
+                href: "Text/ds00588401.xhtml",
+                id: "ds00588401",
+                index: 2,
+                url: "/app/books/epub0/OEBPS/Text/ds00588401.xhtml"
+            },
+            {
+                href: "Text/ds00588402.xhtml",
+                id: "ds00588402",
+                index: 3,
+                url: "/app/books/epub0/OEBPS/Text/ds00588402.xhtml"
+            },
+            {
+                href: "Text/ds00588404.xhtml",
+                id: "ds00588404",
+                index: 5,
+                url: "/app/books/epub0/OEBPS/Text/ds00588404.xhtml"
+            },
+            {
+                href: "Text/ds00588405.xhtml",
+                id: "ds00588405",
+                index: 6,
+                url: "/app/books/epub0/OEBPS/Text/ds00588405.xhtml"
+            },
+            {
+                href: "Text/ds00588406.xhtml",
+                id: "ds00588406",
+                index: 7,
+                url: "/app/books/epub0/OEBPS/Text/ds00588406.xhtml"
+            }
+        ];
+
+        var spine3 = [
+            {
+                href: "Text/InnerCover.xhtml",
+                id: "1203c7e4-b56c-4b23-b184-f9e4e50eaeda",
+                index: 0,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/InnerCover.xhtml"
+            },
+            {
+                href: "Text/Copyright.xhtml",
+                id: "3fe1a361-e8ac-4947-a95c-b3c94c1e8acd",
+                index: 1,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Copyright.xhtml"
+            },
+            {
+                href: "Text/Preface.xhtml",
+                id: "679ef929-df0f-4db5-8d55-708805bcb6cd",
+                index: 2,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Preface.xhtml"
+            },
+            {
+                href: "Text/Preface1.xhtml",
+                id: "ead210f7-ee05-4ff0-800d-19822f9bbb92",
+                index: 3,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Preface1.xhtml"
+            },
+            {
+                href: "Text/Preface2.xhtml",
+                id: "c524112f-d5c1-4510-a5ed-9652b3e47084",
+                index: 4,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Preface2.xhtml"
+            },
+            {
+                href: "Text/Preface3.xhtml",
+                id: "cc447838-143a-4353-add0-dfdaf32d3b9a",
+                index: 5,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Preface3.xhtml"
+            },
+            {
+                href: "Text/Chapter1.xhtml",
+                id: "34e60620-8f5c-4641-b2d6-e200cc857981",
+                index: 6,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter1.xhtml"
+            },
+            {
+                href: "Text/Chapter1-0.xhtml",
+                id: "85d8af86-b8c2-44c5-9331-c2df847f1dd9",
+                index: 7,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter1-0.xhtml"
+            },
+            {
+                href: "Text/Chapter2.xhtml",
+                id: "afab4bcd-bdae-40be-a2ac-3de42f9ac62a",
+                index: 8,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter2.xhtml"
+            },
+            {
+                href: "Text/Chapter2-0.xhtml",
+                id: "9e88c27c-ac44-4c40-abc5-5669e3f260f6",
+                index: 9,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter2-0.xhtml"
+            },
+            {
+                href: "Text/Chapter3.xhtml",
+                id: "6ac64c1f-c441-4abf-9fb1-9cb60c2f5343",
+                index: 10,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter3.xhtml"
+            },
+            {
+                href: "Text/Chapter3-0.xhtml",
+                id: "c3822df8-3182-4b22-90a6-8854efa7a65b",
+                index: 11,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Chapter3-0.xhtml"
+            },
+            {
+                href: "Text/Appendix1.xhtml",
+                id: "634a5441-4908-42d6-bb34-8e4ad5f333db",
+                index: 12,
+                url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Appendix1.xhtml"
+            }
+        ];
     </script>
 </head>
 <body>
-<!--<div id="prev" class="arrow" onclick="book.prevPage(500)">‹</div>
-<div id="next" class="arrow" onclick="book.nextPage(500)">›</div>-->
 </body>
 <script>
-  var book =  initReader({spine: spine, padding: {top: 100, right: 50, bottom: 20, left: 50}});
+  var book =  initReader({spine: spine3, padding: {top: 0, right: 10, bottom: 0, left:10}});
 </script>
 </html>

@@ -30,8 +30,8 @@ EPUBJS.Book.prototype.elementHeight = function () {
   var height = document.documentElement.clientHeight;
   this.elementStyles = window.getComputedStyle(this.element);
   this.elementPadding = {
-    top: parseFloat(this.elementStyles["padding-top"].slice(0,-2)) || 0,
-    bottom: parseFloat(this.elementStyles["padding-bottom"].slice(0,-2)) || 0
+    top: parseFloat(this.elementStyles["padding-top"].slice(0, -2)) || 0,
+    bottom: parseFloat(this.elementStyles["padding-bottom"].slice(0, -2)) || 0
   };
   return height - this.elementPadding.top - this.elementPadding.bottom;
 };
@@ -40,7 +40,7 @@ EPUBJS.Book.prototype.elementHeight = function () {
  * 初始化容器
  * @returns {HTMLElement}
  */
-EPUBJS.Book.prototype.initialize = function(){
+EPUBJS.Book.prototype.initialize = function () {
   var container;
 
   container = document.createElement("div");
@@ -51,7 +51,7 @@ EPUBJS.Book.prototype.initialize = function(){
   container.style.verticalAlign = "top";
   container.style.width = "100%";
   container.style.height = "100%";
-
+  container.style.position = "absolute";
   return container;
 };
 
@@ -61,7 +61,6 @@ EPUBJS.Book.prototype.initialize = function(){
  */
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
-  this.renderer.initialize(this.container, this.padding);
   return this.displayChapter();
 };
 
@@ -73,6 +72,7 @@ EPUBJS.Book.prototype.renderTo = function (eleId) {
  * @returns {deferred.promise|*}
  */
 EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
+  this.renderer.initialize(this.container, this.padding);
   var book = this,
       render,
       pos,
@@ -80,7 +80,7 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
 
   var chapter;
   pos = chap || 0;
-  if(pos < 0 || pos >= this.spine.length){
+  if (pos < 0 || pos >= this.spine.length) {
     console.log("不是一个有效的地址");
     pos = 0;
   }
@@ -90,7 +90,7 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
   render = book.renderer.displayChapter(chapter);
 
   render.then(function () {
-    if(end){ //上一章的最后一页
+    if (end) { //上一章的最后一页
       book.renderer.lastPage();
     }
 
@@ -111,7 +111,7 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
  */
 EPUBJS.Book.prototype.nextPage = function (durTime) {
   var next = this.renderer.nextPage(durTime);
-  if(!next){
+  if (!next) {
     return this.nextChapter();
   }
 };
@@ -123,7 +123,7 @@ EPUBJS.Book.prototype.nextPage = function (durTime) {
 EPUBJS.Book.prototype.prevPage = function (durTime) {
   var prev = this.renderer.prevPage(durTime);
 
-  if(!prev){
+  if (!prev) {
     return this.prevChapter();
   }
 };
@@ -133,7 +133,7 @@ EPUBJS.Book.prototype.prevPage = function (durTime) {
  * @returns {deferred.promise|*}
  */
 EPUBJS.Book.prototype.nextChapter = function () {
-  if(this.spinePos < this.spine.length - 1){
+  if (this.spinePos < this.spine.length - 1) {
     return this.displayChapter(this.spinePos + 1);
   }
 };
@@ -143,7 +143,7 @@ EPUBJS.Book.prototype.nextChapter = function () {
  * @returns {deferred.promise|*}
  */
 EPUBJS.Book.prototype.prevChapter = function () {
-  if(this.spinePos > 0){
+  if (this.spinePos > 0) {
     return this.displayChapter(this.spinePos - 1, true);
   }
 };
@@ -156,11 +156,11 @@ EPUBJS.Book.prototype.preloadNextChapter = function () {
   var next;
   var chap = this.spinePos + 1;
 
-  if(chap >= this.spine.length){
+  if (chap >= this.spine.length) {
     return false;
   }
   next = new EPUBJS.Chapter(this.spine[chap]);
-  if(next){
+  if (next) {
     EPUBJS.core.request(next.absolute);
   }
 };
@@ -174,7 +174,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   this.renderer.doc.addEventListener("touchstart", function (event) {
     event.preventDefault();
     startX = event.touches[0].clientX;
-  },false);
+  }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
     event.preventDefault();
@@ -188,18 +188,20 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     endX = event.changedTouches[0].clientX;
     var deltaX = endX - startX;
     var pageWidth = this.renderer.pageWidth;
-    if(deltaX < 0){
-      durTime = (pageWidth + deltaX) * (time/pageWidth);
+    console.log(pageWidth, window.innerWidth);
+    if (deltaX < 0) {
+      durTime = (pageWidth + deltaX) * (time / pageWidth);
       this.nextPage(durTime);
-    }else if(deltaX > 0){
-      durTime = (pageWidth - deltaX) * (time/pageWidth);
+    } else if (deltaX > 0) {
+      durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
-    }else if(deltaX === 0){
-      if(endX > window.innerWidth/2){
-       this.nextPage(time);
-       }else if(endX < window.innerWidth/2){
-       this.prevPage(time);
-       }
+    } else if (deltaX === 0) {
+      if (endX > window.innerWidth / 2) {
+        this.nextPage(time);
+      } else if (endX < window.innerWidth / 2) {
+        this.prevPage(time);
+      }
     }
   }.bind(this));
 };
+
