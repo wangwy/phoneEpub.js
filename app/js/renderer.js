@@ -5,6 +5,9 @@ EPUBJS.Renderer = function () {
   this.hidden = false;
   this.render = new EPUBJS.Render.Iframe();
   this.chapterPos = 1;
+
+  EPUBJS.Hooks.mixin(this);
+  this.getHooks("beforeChapterDisplay");
 };
 
 /**
@@ -13,7 +16,7 @@ EPUBJS.Renderer = function () {
  */
 EPUBJS.Renderer.prototype.initialize = function (element, padding) {
   this.container = element;
-  if(this.element){
+  if (this.element) {
     this.container.removeChild(this.element);
   }
   this.element = this.render.create(padding);
@@ -68,7 +71,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
     //页面宽度
     this.pageWidth = this.formated.pageWidth;
-    this.pages = this.layout.calculatePages();
+//      this.pages = this.layout.calculatePages();
+    this.triggerHooks("beforeChapterDisplay", this);
     this.render.setWidthAndHeight(this.pages, this.formated.pageHeight);
     this.updatePages();
     this.visible(true);
@@ -289,7 +293,7 @@ EPUBJS.Renderer.prototype.lastPage = function () {
 /**
  * 跳转到第一页
  */
-EPUBJS.Renderer.prototype.firstPage = function(){
+EPUBJS.Renderer.prototype.firstPage = function () {
   this.page(1, 0);
 };
 
@@ -318,9 +322,9 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
  */
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   var time = durTime || 0;
-  var defer =  new RSVP.defer();
+  var defer = new RSVP.defer();
   var translationEnd = function () {
-    this.docEl.removeEventListener('transitionend', translationEnd,false);
+    this.docEl.removeEventListener('transitionend', translationEnd, false);
     var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
     defer.resolve(result);
   }.bind(this);
@@ -329,13 +333,13 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     this.render.docEl.addEventListener('webkitTransitionEnd', translationEnd, false);
     this.render.page(pg, time);
     return defer.promise;
-  }else if(pg == (this.displayedPages + 1)){
+  } else if (pg == (this.displayedPages + 1)) {
     this.render.page(pg, time);
-    this.docEl.addEventListener('transitionend',translationEnd,false);
+    this.docEl.addEventListener('transitionend', translationEnd, false);
     return defer.promise;
-  }else if(pg == 0){
-    this.render.page(0,time);
-    this.docEl.addEventListener('transitionend',translationEnd,false);
+  } else if (pg == 0) {
+    this.render.page(0, time);
+    this.docEl.addEventListener('transitionend', translationEnd, false);
     return defer.promise;
   }
 };
