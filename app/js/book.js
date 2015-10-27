@@ -180,12 +180,12 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   var time = 500; //翻一页所持续的时间为500ms;
   var startX, endX, durTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
-    event.preventDefault();
+    // event.preventDefault();
     startX = event.touches[0].clientX;
   }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
-    event.preventDefault();
+    // event.preventDefault();
     endX = event.touches[0].clientX;
     var deltaX = endX - startX;
     var pageOffsetX = this.renderer.getLeft() - deltaX;
@@ -196,18 +196,18 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     endX = event.changedTouches[0].clientX;
     var deltaX = endX - startX;
     var pageWidth = this.renderer.pageWidth;
-    if (deltaX < 0) {
+    if (deltaX < -100) {
       durTime = (pageWidth + deltaX) * (time / pageWidth);
       this.nextPage(durTime);
-    } else if (deltaX > 0) {
+    } else if (deltaX > 100) {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
     } else if (deltaX === 0) {
-      if (endX > window.innerWidth / 2) {
-        this.nextPage(time);
-      } else if (endX < window.innerWidth / 2) {
-        this.prevPage(time);
-      }
+      // if (endX > window.innerWidth / 2) {
+      //   this.nextPage(time);
+      // } else if (endX < window.innerWidth / 2) {
+      //   this.prevPage(time);
+      // }
     }
   }.bind(this));
 };
