@@ -133,25 +133,25 @@ EPUBJS.Book.prototype.gotoHref = function (url) {
   chapter = split[0];
   section = split[1] || false;
 
-  relativeURL = chapter.replace((this.path.bookPath+this.path.basePath), "");
+  relativeURL = chapter.replace((this.path.bookPath + this.path.basePath), "");
 
   spinePos = this.spineIndexByURL[relativeURL];
 
-  if(!chapter){
+  if (!chapter) {
     spinePos = this.spinePos;
   }
 
-  if(spinePos != this.spinePos){
+  if (spinePos != this.spinePos) {
     return this.displayChapter(spinePos).then(function () {
-      if(section){
+      if (section) {
         this.renderer.section(section);
       }
       deferred.resolve(true);
     }.bind(this));
-  }else{
-    if(section){
+  } else {
+    if (section) {
       this.renderer.section(section);
-    }else{
+    } else {
       this.renderer.firstPage();
     }
     deferred.resolve(true);
@@ -180,10 +180,10 @@ EPUBJS.Book.prototype.nextPage = function (durTime) {
 EPUBJS.Book.prototype.prevPage = function (durTime) {
   return this.renderer.prevPage(durTime)
       .then(function (result) {
-    if (!result) {
-      return this.prevChapter();
-    }
-  }.bind(this));
+        if (!result) {
+          return this.prevChapter();
+        }
+      }.bind(this));
 };
 
 /**
@@ -193,7 +193,7 @@ EPUBJS.Book.prototype.prevPage = function (durTime) {
 EPUBJS.Book.prototype.nextChapter = function () {
   if (this.spinePos < this.spine.length - 1) {
     return this.displayChapter(this.spinePos + 1);
-  }else{
+  } else {
     return this.renderer.lastPage();
   }
 };
@@ -205,7 +205,7 @@ EPUBJS.Book.prototype.nextChapter = function () {
 EPUBJS.Book.prototype.prevChapter = function () {
   if (this.spinePos > 0) {
     return this.displayChapter(this.spinePos - 1, true);
-  }else{
+  } else {
     return this.renderer.firstPage();
   }
 };
@@ -257,10 +257,15 @@ EPUBJS.Book.prototype.addEventListeners = function () {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
     } else if (deltaX === 0) {
-      if (endX > window.innerWidth / 2) {
+      if (endX > (window.innerWidth / 3 * 2)) {
         this.nextPage(time);
-      } else if (endX < window.innerWidth / 2) {
+      } else if (endX < window.innerWidth / 3) {
         this.prevPage(time);
+      } else {
+        window.webkit.messageHandlers.app.postMessage({
+          msgType: "screenClick",
+          info: {screenX: endX, screenY: event.changedTouches[0].clientY}
+        })
       }
     }
   }.bind(this), false);
