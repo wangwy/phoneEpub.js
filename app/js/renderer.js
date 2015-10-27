@@ -298,6 +298,26 @@ EPUBJS.Renderer.prototype.firstPage = function () {
 };
 
 /**
+ * 根据fragment找到所在的节点
+ * @param fragment
+ */
+EPUBJS.Renderer.prototype.section = function (fragment) {
+  var el = this.doc.getElementById(fragment);
+  if(el){
+    this.pageByElement(el);
+  }
+};
+
+/**
+ * 跳转到el所在的页面
+ * @param el
+ */
+EPUBJS.Renderer.prototype.pageByElement = function (el) {
+  var pg = this.render.getPageNumberByElement(el);
+  this.page(pg,0);
+};
+
+/**
  * 获取页面向左的偏移量
  * @returns {*}
  */
@@ -343,3 +363,33 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     return defer.promise;
   }
 };
+
+/**
+ * 轮训"query",让它执行"func"函数
+ * @param query
+ * @param func
+ * @param finished
+ * @param progress
+ */
+EPUBJS.Renderer.prototype.replace = function (query, func, progress) {
+  var items = this.docEl.querySelectorAll(query),
+      resources = Array.prototype.slice.call(items),
+      count = resources.length;
+  if(count === 0){
+    return;
+  }
+  resources.forEach(function (item) {
+    var called = false;
+    var after = function (result, full) {
+      if(called === false){
+        count--;
+        if(progress) progress(result, full, count);
+        if(count <= 0) return;
+        called = true;
+      }
+    };
+
+    func(item, after);
+  }.bind(this));
+};
+

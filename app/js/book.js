@@ -4,8 +4,24 @@
 EPUBJS.Book = function (options) {
   this.renderer = new EPUBJS.Renderer();
   this.spine = options.spine;
+  this.path = options.path;
+  this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.spinePos = 0;
+  this.registerReplacements(this.renderer);
+};
+
+/**
+ * 解析spine
+ * @param spine
+ * @returns {{}}
+ */
+EPUBJS.Book.prototype.parseSpine = function (spine) {
+  var spineIndexByURL = {};
+  spine.forEach(function (item) {
+    spineIndexByURL[item.href] = item.index;
+  });
+  return spineIndexByURL;
 };
 
 /**
@@ -103,6 +119,44 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
   });
 
   return defer.promise;
+};
+
+/**
+ * 根据链接跳转到相应的页面
+ * @param url
+ */
+EPUBJS.Book.prototype.gotoHref = function (url) {
+  var split, chapter, section, relativeURL, spinePos;
+  var deferred = new RSVP.defer();
+
+  split = url.split("#");
+  chapter = split[0];
+  section = split[1] || false;
+
+  relativeURL = chapter.replace((this.path.bookPath+this.path.basePath), "");
+
+  spinePos = this.spineIndexByURL[relativeURL];
+
+  if(!chapter){
+    spinePos = this.spinePos;
+  }
+
+  if(spinePos != this.spinePos){
+    return this.displayChapter(spinePos).then(function () {
+      if(section){
+        this.renderer.section(section);
+      }
+      deferred.resolve(true);
+    }.bind(this));
+  }else{
+    if(section){
+      this.renderer.section(section);
+    }else{
+      this.renderer.firstPage();
+    }
+    deferred.resolve(true);
+  }
+  return deferred.promise;
 };
 
 /**
@@ -209,6 +263,13 @@ EPUBJS.Book.prototype.addEventListeners = function () {
         this.prevPage(time);
       }
     }
-  }.bind(this));
+  }.bind(this), false);
 };
 
+/**
+ * 注册hooks回调函数
+ * @param renderer
+ */
+EPUBJS.Book.prototype.registerReplacements = function (renderer) {
+  renderer.registerHook("beforeChapterDisplay", EPUBJS.replace.hrefs.bind(this), true);
+};

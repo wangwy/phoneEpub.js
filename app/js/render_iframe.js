@@ -126,3 +126,15 @@ EPUBJS.Render.Iframe.prototype.resetWidthAndHeight = function () {
   this.iframe.style.width = "100%";
   this.iframe.style.height = "100%";
 };
+
+/**
+ * 计算节点在第几页
+ * @param el
+ * @returns {number}
+ */
+EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
+  var left, pg;
+  left = this.leftPos + el.getBoundingClientRect().left;
+  pg = Math.floor(left/this.pageWidth) + 1;
+  return pg;
+};

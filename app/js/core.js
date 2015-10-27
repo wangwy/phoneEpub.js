@@ -8,7 +8,7 @@ EPUBJS.core = {};
  * @param unprefixed
  * @returns {*}
  */
-EPUBJS.core.prefixed = function(unprefixed) {
+EPUBJS.core.prefixed = function (unprefixed) {
   var vendors = ["Webkit", "Moz", "O", "ms" ],
       prefixes = ['-Webkit-', '-moz-', '-o-', '-ms-'],
       upper = unprefixed[0].toUpperCase() + unprefixed.slice(1),
@@ -18,7 +18,7 @@ EPUBJS.core.prefixed = function(unprefixed) {
     return unprefixed;
   }
 
-  for ( var i=0; i < length; i++ ) {
+  for (var i = 0; i < length; i++) {
     if (typeof(document.body.style[vendors[i] + upper]) != 'undefined') {
       return vendors[i] + upper;
     }
@@ -27,6 +27,13 @@ EPUBJS.core.prefixed = function(unprefixed) {
   return unprefixed;
 };
 
+/**
+ * 与后台接口
+ * @param url
+ * @param type
+ * @param withCredentials
+ * @returns {Promise.promise|*}
+ */
 EPUBJS.core.request = function (url, type, withCredentials) {
   var supportsURL = window.URL;
   var BLOB_RESPONSE = supportsURL ? "blob" : "arraybuffer";
@@ -99,4 +106,126 @@ EPUBJS.core.request = function (url, type, withCredentials) {
   }
 
   return deferred.promise;
+};
+
+/**
+ * 解析url
+ * @param url
+ * @returns {{protocol: string, host: string, path: string, origin: string, directory: string, base: string, filename: string, extension: string, fragment: string, href: *}}
+ */
+EPUBJS.core.uri = function (url) {
+  var uri = {
+        protocol: '',
+        host: '',
+        path: '',
+        origin: '',
+        directory: '',
+        base: '',
+        filename: '',
+        extension: '',
+        fragment: '',
+        href: url
+      },
+      blob = url.indexOf('blob:'),
+      doubleSlash = url.indexOf('://'),
+      search = url.indexOf('?'),
+      fragment = url.indexOf('#'),
+      withoutProtocol,
+      dot,
+      firstSlash;
+  if(blob === 0){
+    uri.protocol = "blob";
+    uri.base = url.indexOf(0, fragment);
+    return uri;
+  }
+
+  if(fragment != -1){
+    uri.fragment = url.slice(fragment + 1);
+    url = url.slice(0, fragment);
+  }
+
+  if(search != -1){
+    uri.search = url.slice(search + 1);
+    url = url.slice(0, search);
+  }
+
+  if(doubleSlash != -1){
+    uri.protocol = url.slice(0, doubleSlash);
+    withoutProtocol = url.slice(doubleSlash+3);
+    firstSlash = withoutProtocol.indexOf('/');
+
+    if(firstSlash === -1){
+      uri.host = uri.path;
+      uri.path = "";
+    }else{
+      uri.host = withoutProtocol.slice(0, firstSlash);
+      uri.path = withoutProtocol.slice(firstSlash);
+    }
+
+    uri.origin = uri.protocol + "://" + uri.host;
+    uri.directory = EPUBJS.core.folder(uri.path);
+    uri.base = uri.origin + uri.directory;
+  }else{
+    uri.path = url;
+    uri.directory = EPUBJS.core.folder(url);
+    uri.base = uri.directory;
+  }
+
+  uri.filename = url.replace(uri.base, '');
+  dot = uri.filename.lastIndexOf('.');
+
+  if(dot != -1){
+    uri.extension = uri.filename.slice(dot+1)
+  }
+
+  return uri;
+};
+
+/**
+ * 获取文件目录
+ * @param url
+ * @returns {string}
+ */
+EPUBJS.core.folder = function(url){
+  var lastSlash = url.lastIndexOf('/');
+  var folder = '';
+  if(lastSlash != -1){
+
+    folder = url.slice(0, lastSlash + 1);
+
+  }
+
+  return folder;
+};
+
+/**
+ * 根据path获取相对路径
+ * @param base
+ * @param path
+ * @returns {*}
+ */
+EPUBJS.core.resolveUrl = function (base, path) {
+  var url,
+      segments = [],
+      uri = EPUBJS.core.uri(path),
+      folders = base.split("/"),
+      paths;
+  if(uri.host){
+    return path;
+  }
+
+  folders.pop();
+
+  paths = path.split("/");
+  paths.forEach(function (p) {
+    if(p === ".."){
+      folders.pop();
+    }else{
+      segments.push(p);
+    }
+  });
+
+  url = folders.concat(segments);
+
+  return url.join("/");
 };
