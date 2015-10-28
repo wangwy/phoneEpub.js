@@ -25,7 +25,6 @@
 <script src="../js/render_iframe.js"></script>
 <script src="../js/hooks.js"></script>
 <script src="../js/replace.js"></script>
-<script src="../hooks/smartimages.js"></script>
 <script>
     var spine = [
         {
@@ -77,7 +76,7 @@
             url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
         }
     ];
-    var paths = {
+    var path = {
         bookPath: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/",
         basePath: "OEBPS/"
     };
@@ -132,7 +131,7 @@
             url: "/app/books/epub0/OEBPS/Text/ds00588406.xhtml"
         }
     ];
-    var paths2 = {
+    var path2 = {
         bookPath: "/app/books/epub0/",
         basePath: "OEBPS/"
     };
@@ -217,7 +216,7 @@
             url: "/app/books/中文在手：交通篇去音频201504211819/OEBPS/Text/Appendix1.xhtml"
         }
     ];
-    var paths3 = {
+    var path3 = {
         bookPath: "/app/books/中文在手：交通篇去音频201504211819/",
         basePath: "OEBPS/"
     };
@@ -225,7 +224,12 @@
 </head>
 <body>
 </body>
+<!-- <script type="text/javascript" src="../hooks/smartimages.js"></script> -->
+<script type="text/javascript" src="../js/domUtil.js"></script>
+<script type="text/javascript" src="../js/eventemitter.js"></script>
+<script type="text/javascript" src="../hooks/menu.js"></script>
+<script type="text/javascript" src="../hooks/imgHook.js"></script>
 <script>
-    var book = initReader({spine: spine, padding: {top: 0, right: 10, bottom: 0, left: 10}, path: paths});
+    var book = initReader({spine: spine3, padding: {top: 0, right: 10, bottom: 0, left: 10}, path: path3});
 </script>
 </html>

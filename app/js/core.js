@@ -209,7 +209,7 @@ EPUBJS.core.resolveUrl = function (base, path) {
       uri = EPUBJS.core.uri(path),
       folders = base.split("/"),
       paths;
-  if(uri.host){
+  if (uri.host) {
     return path;
   }
 
@@ -217,9 +217,9 @@ EPUBJS.core.resolveUrl = function (base, path) {
 
   paths = path.split("/");
   paths.forEach(function (p) {
-    if(p === ".."){
+    if (p === "..") {
       folders.pop();
-    }else{
+    } else {
       segments.push(p);
     }
   });
@@ -227,4 +227,18 @@ EPUBJS.core.resolveUrl = function (base, path) {
   url = folders.concat(segments);
 
   return url.join("/");
+};
+
+/**
+ * 形成唯一标识
+ * @returns {string}
+ */
+EPUBJS.core.uuid = function() {
+  var d = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = (d + Math.random()*16)%16 | 0;
+    d = Math.floor(d/16);
+    return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+  });
+  return uuid;
 };

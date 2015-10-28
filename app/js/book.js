@@ -235,13 +235,13 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   var Threshold = pageWidth/4; //翻页移动的阈值，没超过这个阈值将停留在当前页面
   var startX, endX, durTime, startTime, endTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
-    event.preventDefault();
+    // event.preventDefault();
     startX = event.touches[0].clientX;
     startTime = new Date();
   }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
-    event.preventDefault();
+    // event.preventDefault();
     endX = event.touches[0].clientX;
     var deltaX = endX - startX;
     var pageOffsetX = this.renderer.getLeft() - deltaX;
