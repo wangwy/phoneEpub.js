@@ -101,16 +101,6 @@ EPUBJS.core.request = function (url, type, withCredentials) {
   return deferred.promise;
 };
 
-EPUBJS.core.getSelection = function(){
-  var window_ = this.element.contentWindow;
-  if(window_.getSelection){
-    selectedText=window_.getSelection();
-}else if(this.doc.selection){
-    selectedText=this.doc.selection.createRange().text;
-}
-return selectedText;
-}
-
 /**
  * 形成唯一标识
  * @returns {string}

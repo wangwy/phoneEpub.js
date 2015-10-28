@@ -1,35 +1,46 @@
-EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view, continuous){
+EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view) {
     var d = view.doc || view.document;
     var containerWidth = view._width;
     var b = d.body;
     var self_ = this;
-    
+
     var menu = new EPUBJS.pluginView.PopMenu();
     var ee = menu.eventEmitter;
-    var selectedTextCallback = function(e){
-    	var selectedRange = EPUBJS.core.getSelection.apply(view);
-    	console.log(selectedRange);
-    	var length;
-    	try{
-    		var range  = selectedRange.getRangeAt(0);
-    		var text = range.toString();
-    		length = text.length;
-    	}catch(e){
-    		console.log(e);
-    		return;
-    	}
-    	if(length === 0){
-    		menu.hide();
-    		return;
-    	}
-    
-    	menu.show({
-    		'view':view,
-    		'selection': selectedRange,
-    		x: e.pageX,
-    		y: e.pageY,
+
+    function getSelection(view) {
+        var window_ = view.element.contentWindow;
+        var selection;
+        if (window_.getSelection) {
+            selection = window_.getSelection();
+        } else if (this.doc.selection) {
+            selection = this.doc.selection.createRange().text;
+        }
+        return selection;
+    }
+    var selectedTextCallback = function(e) {
+        var selectedRange = getSelection(view)
+        console.log(selectedRange);
+        var length;
+        try {
+            var range = selectedRange.getRangeAt(0);
+            var text = range.toString();
+            length = text.length;
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        if (length === 0) {
+            menu.hide();
+            return;
+        }
+
+        menu.show({
+            'view': view,
+            'selection': selectedRange,
+            x: e.pageX,
+            y: e.pageY,
             flag: menu.NOTE
-    	});
+        });
     };
     /**
      * 返回data含义
@@ -46,45 +57,45 @@ EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view, continuous){
         //评论内容(tag为comment时才有)
     '"comment":"ddddddd"}';
      */
-    menu.eventEmitter.addListener('underlineComplete', function(data){
-    	alert(data.dataId)
+    menu.eventEmitter.addListener('underlineComplete', function(data) {
+        alert(data.dataId)
     });
-    b.onclick  = selectedTextCallback;
-    var data_str = window.localStorage.getItem('note') || '{"dataId":"9bc1b40b-eafa-44f1-8e11-86e2751b757f","index":2,'+
-    '"startContainer":[6,9],'+
-    '"endContainer":[8,1],'+
-    '"startOffset":81,"endOffset":144,'+
-    '"parent":[2],'+
-    '"time":1445755306203,'+
-     '"tag":"comment",'+
-     '"text":"篇4种，课文全部经过调整，部分课文完全重写，一些小知识也相应",'+
-     '"comment":"ddddddd"}';
-    if(data_str){
-    	try{
-    		var data = JSON.parse(data_str);
-    		if(data.index!=undefined && data.index == view.currentChapter.spinePos){
-    			menu.setDocument(view.doc || view.document);
-    			var parentEle = EPUBJS.DomUtil.findNode(d.body, data.parent);
-    	        var startContainerEle = EPUBJS.DomUtil.findNode(parentEle, data.startContainer);
-    	        var endContainerEle = EPUBJS.DomUtil.findNode(parentEle, data.endContainer);
-    	        var startOffset = data.startOffset;
-    	        var endOffset = data.endOffset;
-    	        var tag = data.tag;
-    	        var comment = data.comment;
-    	        var text = data.text;
-    	        setTimeout(function(){
-    	        	 menu.applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
-    	        },0)
-     	       
-    		}   
-        }catch(e){
-    	    console.log(e);
-        } 
+    b.onclick = selectedTextCallback;
+    var data_str = window.localStorage.getItem('note') || '{"dataId":"9bc1b40b-eafa-44f1-8e11-86e2751b757f","index":2,' +
+        '"startContainer":[6,9],' +
+        '"endContainer":[8,1],' +
+        '"startOffset":81,"endOffset":144,' +
+        '"parent":[2],' +
+        '"time":1445755306203,' +
+        '"tag":"comment",' +
+        '"text":"篇4种，课文全部经过调整，部分课文完全重写，一些小知识也相应",' +
+        '"comment":"ddddddd"}';
+    if (data_str) {
+        try {
+            var data = JSON.parse(data_str);
+            if (data.index != undefined && data.index == view.currentChapter.spinePos) {
+                menu.setDocument(view.doc || view.document);
+                var parentEle = EPUBJS.DomUtil.findNode(d.body, data.parent);
+                var startContainerEle = EPUBJS.DomUtil.findNode(parentEle, data.startContainer);
+                var endContainerEle = EPUBJS.DomUtil.findNode(parentEle, data.endContainer);
+                var startOffset = data.startOffset;
+                var endOffset = data.endOffset;
+                var tag = data.tag;
+                var comment = data.comment;
+                var text = data.text;
+                setTimeout(function() {
+                    menu.applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
+                }, 0)
+
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 
 
-EPUBJS.Hooks.register("selected").a = function(view, continuous){
+EPUBJS.Hooks.register("selected").a = function(view, continuous) {
     var d = view.document;
     var b = d.body;
     var canSelected = false;
