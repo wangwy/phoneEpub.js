@@ -67,7 +67,6 @@ EPUBJS.Book.prototype.initialize = function () {
   container.style.verticalAlign = "top";
   container.style.width = "100%";
   container.style.height = "100%";
-  container.style.position = "absolute";
   return container;
 };
 
@@ -231,11 +230,14 @@ EPUBJS.Book.prototype.preloadNextChapter = function () {
  * 为文档添加监听
  */
 EPUBJS.Book.prototype.addEventListeners = function () {
+  var pageWidth = this.renderer.pageWidth;
   var time = 500; //翻一页所持续的时间为500ms;
-  var startX, endX, durTime;
+  var Threshold = pageWidth/4; //翻页移动的阈值，没超过这个阈值将停留在当前页面
+  var startX, endX, durTime, startTime, endTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
     event.preventDefault();
     startX = event.touches[0].clientX;
+    startTime = new Date();
   }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
@@ -248,14 +250,17 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 
   this.renderer.doc.addEventListener("touchend", function (event) {
     endX = event.changedTouches[0].clientX;
+    endTime = new Date();
     var deltaX = endX - startX;
-    var pageWidth = this.renderer.pageWidth;
-    if (deltaX < 0) {
+    if (deltaX < -Threshold || (endTime- startTime < 100 && deltaX < 0)) {
       durTime = (pageWidth + deltaX) * (time / pageWidth);
       this.nextPage(durTime);
-    } else if (deltaX > 0) {
+    } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX >0)) {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
+    }else if(Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold){
+      durTime = Math.abs(deltaX) * (time / pageWidth);
+      this.renderer.currentPage(durTime);
     } else if (deltaX === 0) {
       if (endX > (window.innerWidth / 3 * 2)) {
         this.nextPage(time);

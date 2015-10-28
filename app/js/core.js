@@ -10,7 +10,6 @@ EPUBJS.core = {};
  */
 EPUBJS.core.prefixed = function (unprefixed) {
   var vendors = ["Webkit", "Moz", "O", "ms" ],
-      prefixes = ['-Webkit-', '-moz-', '-o-', '-ms-'],
       upper = unprefixed[0].toUpperCase() + unprefixed.slice(1),
       length = vendors.length;
 

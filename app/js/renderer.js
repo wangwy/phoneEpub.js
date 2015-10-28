@@ -298,6 +298,14 @@ EPUBJS.Renderer.prototype.firstPage = function () {
 };
 
 /**
+ * 停留在当前页
+ * @param durTime
+ */
+EPUBJS.Renderer.prototype.currentPage = function (durTime) {
+  this.page(this.chapterPos, durTime);
+};
+
+/**
  * 根据fragment找到所在的节点
  * @param fragment
  */
@@ -350,7 +358,7 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   }.bind(this);
   if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
-    this.render.docEl.addEventListener('webkitTransitionEnd', translationEnd, false);
+    this.render.docEl.addEventListener('transitionend', translationEnd, false);
     this.render.page(pg, time);
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {

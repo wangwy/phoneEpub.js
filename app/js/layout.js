@@ -55,5 +55,5 @@ EPUBJS.Layout.Reflowable.prototype.calculatePages = function () {
   this.documentElement.style.width = totalWidth + "px";
   displayedPages = Math.ceil(totalWidth / this.pageWidth);
 
-  return totalWidth;
+  return displayedPages;
 };
