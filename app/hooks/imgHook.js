@@ -6,13 +6,6 @@ EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view, continuous){
     
     var menu = new EPUBJS.pluginView.PopMenu();
     var ee = menu.eventEmitter;
-    // menu.registListeners(function(evt){
-    // 	alert('i am first');
-    // },function(evt){
-    // 	alert('i am seconde');
-    // }, function(evt){
-    // 	alert('i am third');
-    // });
     var selectedTextCallback = function(e){
     	var selectedRange = EPUBJS.core.getSelection.apply(view);
     	console.log(selectedRange);
@@ -29,8 +22,7 @@ EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view, continuous){
     		menu.hide();
     		return;
     	}
-    	// menu.setSelectionRange(selectedRange);
-    	// console.log(selectedRange);
+    
     	menu.show({
     		'view':view,
     		'selection': selectedRange,
