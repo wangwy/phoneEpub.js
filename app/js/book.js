@@ -273,18 +273,22 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     var deltaX = endX - startX;
     if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < 0)) {
       durTime = (pageWidth + deltaX) * (time / pageWidth);
-      this.nextPage(durTime);
+      this.q.enqueue(this.nextPage, durTime);
+//      this.nextPage(durTime);
     } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > 0)) {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
-      this.prevPage(durTime);
+//      this.prevPage(durTime);
+      this.q.enqueue(this.prevPage, durTime);
     } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
       durTime = Math.abs(deltaX) * (time / pageWidth);
       this.renderer.currentPage(durTime);
     } else if (deltaX === 0) {
       if (endX > (window.innerWidth / 3 * 2)) {
-        this.nextPage(time);
+        this.q.enqueue(this.nextPage,time);
+//        this.nextPage(time);
       } else if (endX < window.innerWidth / 3) {
-        this.prevPage(time);
+        this.q.enqueue(this.prevPage,time);
+//        this.prevPage(time);
       } else {
         EPUBJS.core.postMessageToMobile("screenClick", {screenX: endX, screenY: event.changedTouches[0].clientY});
       }
