@@ -8,6 +8,7 @@ EPUBJS.Book = function (options) {
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.spinePos = 0;
+  this.q = new EPUBJS.Queue(this);
   this.registerReplacements(this.renderer);
 };
 
@@ -77,7 +78,7 @@ EPUBJS.Book.prototype.initialize = function () {
  */
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
-  return this.displayChapter();
+  return this.q.enqueue(this.displayChapter);
 };
 
 /**
@@ -283,10 +284,18 @@ EPUBJS.Book.prototype.registerReplacements = function (renderer) {
 };
 
 /**
- * 获取正本书的页码
+ * 将获取正本书页码的函数添加到队列中
  * @returns {*}
  */
 EPUBJS.Book.prototype.getAllChapterNum = function () {
+  return this.q.enqueue(this._getAllChapterNum);
+};
+
+/**
+ * 获取正本书的页码
+ * @returns {*}
+ */
+EPUBJS.Book.prototype._getAllChapterNum = function () {
   var book = this;
   var chaptersNum = {}, chapterAllNum = 0;
   var width = this.renderer.pageWidth;

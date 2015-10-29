@@ -24,6 +24,7 @@
 <script src="../js/layout.js"></script>
 <script src="../js/render_iframe.js"></script>
 <script src="../js/hooks.js"></script>
+<script src="../js/queue.js"></script>
 <script src="../js/replace.js"></script>
 <script>
     var spine = [
@@ -230,6 +231,7 @@
 <script type="text/javascript" src="../hooks/menu.js"></script>
 <script type="text/javascript" src="../hooks/imgHook.js"></script>
 <script>
-    var book = initReader({spine: spine3, padding: {top: 0, right: 10, bottom: 0, left: 10}, path: path3});
+    var book = initReader({spine: spine, padding: {top: 100, right: 10, bottom: 100, left: 10}, path: path});
+    book.getAllChapterNum();
 </script>
 </html>
