@@ -250,7 +250,6 @@ EPUBJS.core.uuid = function() {
  */
 EPUBJS.core.postMessageToMobile = function (msgType, info) {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  console.log(info);
   if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)){
     window.webkit.messageHandlers.app.postMessage({msgType: msgType,info: info});
   }else if(userAgent.match(/Android/i)){

@@ -161,6 +161,23 @@ EPUBJS.Book.prototype.gotoHref = function (url) {
 };
 
 /**
+ * 根据页码跳转到相应页面
+ * @param spinePos
+ * @param pageNum
+ */
+EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
+  return this.q.enqueue(function () {
+    if(spinePos >= 0 && spinePos < this.spine.length){
+      this.displayChapter(spinePos).then(function () {
+        if(pageNum){
+          this.renderer.page(pageNum);
+        }
+      }.bind(this))
+    }
+  }.bind(this));
+};
+
+/**
  * 下一页
  * @returns {*}
  */
