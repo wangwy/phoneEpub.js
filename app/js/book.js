@@ -67,6 +67,7 @@ EPUBJS.Book.prototype.initialize = function () {
   container.style.verticalAlign = "top";
   container.style.width = "100%";
   container.style.height = "100%";
+  container.style.overflowY = "hidden";
   return container;
 };
 
@@ -232,7 +233,7 @@ EPUBJS.Book.prototype.preloadNextChapter = function () {
 EPUBJS.Book.prototype.addEventListeners = function () {
   var pageWidth = this.renderer.pageWidth;
   var time = 500; //翻一页所持续的时间为500ms;
-  var Threshold = pageWidth/4; //翻页移动的阈值，没超过这个阈值将停留在当前页面
+  var Threshold = pageWidth / 4; //翻页移动的阈值，没超过这个阈值将停留在当前页面
   var startX, endX, durTime, startTime, endTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
     // event.preventDefault();
@@ -241,7 +242,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
-    // event.preventDefault();
+    event.preventDefault();
     endX = event.touches[0].clientX;
     var deltaX = endX - startX;
     var pageOffsetX = this.renderer.getLeft() - deltaX;
@@ -252,13 +253,13 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     endX = event.changedTouches[0].clientX;
     endTime = new Date();
     var deltaX = endX - startX;
-    if (deltaX < -Threshold || (endTime- startTime < 100 && deltaX < 0)) {
+    if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < 0)) {
       durTime = (pageWidth + deltaX) * (time / pageWidth);
       this.nextPage(durTime);
-    } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX >0)) {
+    } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > 0)) {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
-    }else if(Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold){
+    } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
       durTime = Math.abs(deltaX) * (time / pageWidth);
       this.renderer.currentPage(durTime);
     } else if (deltaX === 0) {
@@ -267,10 +268,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
       } else if (endX < window.innerWidth / 3) {
         this.prevPage(time);
       } else {
-        window.webkit.messageHandlers.app.postMessage({
-          msgType: "screenClick",
-          info: {screenX: endX, screenY: event.changedTouches[0].clientY}
-        })
+        EPUBJS.core.postMessageToMobile("screenClick", {screenX: endX, screenY: event.changedTouches[0].clientY});
       }
     }
   }.bind(this), false);
@@ -282,4 +280,62 @@ EPUBJS.Book.prototype.addEventListeners = function () {
  */
 EPUBJS.Book.prototype.registerReplacements = function (renderer) {
   renderer.registerHook("beforeChapterDisplay", EPUBJS.replace.hrefs.bind(this), true);
+};
+
+/**
+ * 获取正本书的页码
+ * @returns {*}
+ */
+EPUBJS.Book.prototype.getAllChapterNum = function () {
+  var book = this;
+  var chaptersNum = {}, chapterAllNum = 0;
+  var width = this.renderer.pageWidth;
+  var height = this.renderer.pageHeight;
+
+  //创建iframe
+  function createFrame() {
+    var iframe = document.createElement('iframe');
+    iframe.scrolling = "no";
+    iframe.style.border = "none";
+    iframe.seamless = "seamless";
+    iframe.style.height = "100%";
+    iframe.style.width = "100%";
+    iframe.style.visibility = "hidden";
+    return iframe;
+  }
+
+  //获取每一章节的页码
+  function getChapterPageNum(document) {
+    if (this.padding) {
+      var body = document.body || document.querySelector("body");
+      body.style.paddingLeft = this.padding.left + "px";
+      body.style.paddingRight = this.padding.right + "px";
+    }
+    var layout = new EPUBJS.Layout["Reflowable"]();
+    layout.format(document, width, height);
+    var pageNum = layout.calculatePages();
+    return pageNum;
+  }
+
+  //获取所有章节的页码
+  function getChapter(i) {
+    var iframe = createFrame();
+    book.container.appendChild(iframe);
+    iframe.contentWindow.location.replace(book.spine[i].url);
+    iframe.onload = function () {
+      var num = getChapterPageNum(iframe.contentDocument.documentElement);
+      chapterAllNum += num;
+      chaptersNum[i] = num;
+      book.container.removeChild(iframe);
+      i++;
+      if (i < book.spine.length) {
+        getChapter(i);
+      } else {
+        chaptersNum["allNum"] = chapterAllNum;
+        EPUBJS.core.postMessageToMobile("chaptersNum", chaptersNum);
+      }
+    }.bind(this);
+  }
+
+  getChapter(0);
 };

@@ -49,10 +49,9 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
  * @returns {{displayedPages: number, pageCount}}
  */
 EPUBJS.Layout.Reflowable.prototype.calculatePages = function () {
+
   var totalWidth, displayedPages;
-  this.documentElement.style.width = "auto";
   totalWidth = this.documentElement.scrollWidth;
-  this.documentElement.style.width = totalWidth + "px";
   displayedPages = Math.ceil(totalWidth / this.pageWidth);
 
   return displayedPages;

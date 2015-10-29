@@ -242,3 +242,12 @@ EPUBJS.core.uuid = function() {
   });
   return uuid;
 };
+
+/**
+ * 向手机端发送消息
+ * @param msgType
+ * @param info
+ */
+EPUBJS.core.postMessageToMobile = function (msgType, info) {
+  window.webkit.messageHandlers.app.postMessage(JSON.stringify({msgType: msgType,info: info}));
+};

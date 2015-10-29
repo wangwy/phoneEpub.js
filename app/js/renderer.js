@@ -66,11 +66,11 @@ EPUBJS.Renderer.prototype.load = function (url) {
   render.then(function (contents) {
     this.doc = this.render.document;
     this.docEl = this.render.docEl;
-    this.render.resetWidthAndHeight();
     this.formated = this.layout.format(contents, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
     //页面宽度
     this.pageWidth = this.formated.pageWidth;
+    this.pageHeight = this.formated.pageHeight;
 //      this.pages = this.layout.calculatePages();
     this.triggerHooks("beforeChapterDisplay", this);
     this.render.setWidthAndHeight(this.pages, this.formated.pageHeight);
@@ -87,7 +87,6 @@ EPUBJS.Renderer.prototype.load = function (url) {
 EPUBJS.Renderer.prototype.updatePages = function () {
   this.pageMap = this.mapPage();
   this.displayedPages = this.pageMap.length;
-
 };
 
 /**

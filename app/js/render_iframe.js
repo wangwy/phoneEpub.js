@@ -120,14 +120,6 @@ EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
 };
 
 /**
- * 页面加载之前设置iframe的高度与宽度
- */
-EPUBJS.Render.Iframe.prototype.resetWidthAndHeight = function () {
-  this.iframe.style.width = "100%";
-  this.iframe.style.height = "100%";
-};
-
-/**
  * 计算节点在第几页
  * @param el
  * @returns {number}
