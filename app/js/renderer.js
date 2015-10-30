@@ -71,9 +71,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
     //页面宽度
     this.pageWidth = this.formated.pageWidth;
     this.pageHeight = this.formated.pageHeight;
-//      this.pages = this.layout.calculatePages();
+    this.viewDimensions = this.render.getViewDimensions();
     this.triggerHooks("beforeChapterDisplay", this);
-    this.render.setWidthAndHeight(this.pages, this.formated.pageHeight);
     this.updatePages();
     this.visible(true);
     deferred.resolve(this);

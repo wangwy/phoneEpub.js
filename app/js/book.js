@@ -122,11 +122,16 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
   return defer.promise;
 };
 
+
+EPUBJS.Book.prototype.gotoHref = function (url) {
+  return this._gotoHref(url);
+};
+
 /**
  * 根据链接跳转到相应的页面
  * @param url
  */
-EPUBJS.Book.prototype.gotoHref = function (url) {
+EPUBJS.Book.prototype._gotoHref = function (url) {
   var split, chapter, section, relativeURL, spinePos;
   var deferred = new RSVP.defer();
 
@@ -273,22 +278,18 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     var deltaX = endX - startX;
     if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < 0)) {
       durTime = (pageWidth + deltaX) * (time / pageWidth);
-      this.q.enqueue(this.nextPage, durTime);
-//      this.nextPage(durTime);
+      this.nextPage(durTime);
     } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > 0)) {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
-//      this.prevPage(durTime);
-      this.q.enqueue(this.prevPage, durTime);
+      this.prevPage(durTime);
     } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
       durTime = Math.abs(deltaX) * (time / pageWidth);
       this.renderer.currentPage(durTime);
     } else if (deltaX === 0) {
       if (endX > (window.innerWidth / 3 * 2)) {
-        this.q.enqueue(this.nextPage,time);
-//        this.nextPage(time);
+        this.nextPage(time);
       } else if (endX < window.innerWidth / 3) {
-        this.q.enqueue(this.prevPage,time);
-//        this.prevPage(time);
+        this.prevPage(time);
       } else {
         EPUBJS.core.postMessageToMobile("screenClick", {screenX: endX, screenY: event.changedTouches[0].clientY});
       }

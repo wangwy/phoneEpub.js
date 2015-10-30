@@ -65,6 +65,16 @@ EPUBJS.Render.Iframe.prototype.setPageDimensions = function (pageWidth, pageHeig
 };
 
 /**
+ * 获取显示区域的高度与宽度
+ */
+EPUBJS.Render.Iframe.prototype.getViewDimensions = function () {
+  return {
+    viewHeight: this.pageHeight,
+    viewWidth: this.pageWidth - this.padding.left - this.padding.right
+  };
+};
+
+/**
  * 计算iframe的高宽
  */
 EPUBJS.Render.Iframe.prototype.resized = function () {
