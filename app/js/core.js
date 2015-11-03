@@ -249,14 +249,14 @@ EPUBJS.core.uuid = function () {
  * @param info
  */
 EPUBJS.core.postMessageToMobile = function (msgType, info) {
-  var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  try {
-    if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
-      window.webkit.messageHandlers.app.postMessage({msgType: msgType, info: info});
-    } else if (userAgent.match(/Android/i)) {
-      window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
-    }
-  }catch (e){
-    console.error(e);
-  }
+  // var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  // try {
+  //   if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+  //     window.webkit.messageHandlers.app.postMessage({msgType: msgType, info: info});
+  //   } else if (userAgent.match(/Android/i)) {
+  //     window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
+  //   }
+  // }catch (e){
+  //   console.error(e);
+  // }
 };
