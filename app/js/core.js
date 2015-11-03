@@ -132,31 +132,31 @@ EPUBJS.core.uri = function (url) {
       withoutProtocol,
       dot,
       firstSlash;
-  if(blob === 0){
+  if (blob === 0) {
     uri.protocol = "blob";
     uri.base = url.indexOf(0, fragment);
     return uri;
   }
 
-  if(fragment != -1){
+  if (fragment != -1) {
     uri.fragment = url.slice(fragment + 1);
     url = url.slice(0, fragment);
   }
 
-  if(search != -1){
+  if (search != -1) {
     uri.search = url.slice(search + 1);
     url = url.slice(0, search);
   }
 
-  if(doubleSlash != -1){
+  if (doubleSlash != -1) {
     uri.protocol = url.slice(0, doubleSlash);
-    withoutProtocol = url.slice(doubleSlash+3);
+    withoutProtocol = url.slice(doubleSlash + 3);
     firstSlash = withoutProtocol.indexOf('/');
 
-    if(firstSlash === -1){
+    if (firstSlash === -1) {
       uri.host = uri.path;
       uri.path = "";
-    }else{
+    } else {
       uri.host = withoutProtocol.slice(0, firstSlash);
       uri.path = withoutProtocol.slice(firstSlash);
     }
@@ -164,7 +164,7 @@ EPUBJS.core.uri = function (url) {
     uri.origin = uri.protocol + "://" + uri.host;
     uri.directory = EPUBJS.core.folder(uri.path);
     uri.base = uri.origin + uri.directory;
-  }else{
+  } else {
     uri.path = url;
     uri.directory = EPUBJS.core.folder(url);
     uri.base = uri.directory;
@@ -173,8 +173,8 @@ EPUBJS.core.uri = function (url) {
   uri.filename = url.replace(uri.base, '');
   dot = uri.filename.lastIndexOf('.');
 
-  if(dot != -1){
-    uri.extension = uri.filename.slice(dot+1)
+  if (dot != -1) {
+    uri.extension = uri.filename.slice(dot + 1)
   }
 
   return uri;
@@ -185,10 +185,10 @@ EPUBJS.core.uri = function (url) {
  * @param url
  * @returns {string}
  */
-EPUBJS.core.folder = function(url){
+EPUBJS.core.folder = function (url) {
   var lastSlash = url.lastIndexOf('/');
   var folder = '';
-  if(lastSlash != -1){
+  if (lastSlash != -1) {
 
     folder = url.slice(0, lastSlash + 1);
 
@@ -233,12 +233,12 @@ EPUBJS.core.resolveUrl = function (base, path) {
  * 形成唯一标识
  * @returns {string}
  */
-EPUBJS.core.uuid = function() {
+EPUBJS.core.uuid = function () {
   var d = new Date().getTime();
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = (d + Math.random()*16)%16 | 0;
-    d = Math.floor(d/16);
-    return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (d + Math.random() * 16) % 16 | 0;
+    d = Math.floor(d / 16);
+    return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
   });
   return uuid;
 };
@@ -250,9 +250,13 @@ EPUBJS.core.uuid = function() {
  */
 EPUBJS.core.postMessageToMobile = function (msgType, info) {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  if(userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)){
-    window.webkit.messageHandlers.app.postMessage({msgType: msgType,info: info});
-  }else if(userAgent.match(/Android/i)){
-    window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
+  try {
+    if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+      window.webkit.messageHandlers.app.postMessage({msgType: msgType, info: info});
+    } else if (userAgent.match(/Android/i)) {
+      window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
+    }
+  }catch (e){
+    console.error(e);
   }
 };

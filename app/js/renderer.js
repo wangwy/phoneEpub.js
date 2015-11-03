@@ -8,6 +8,7 @@ EPUBJS.Renderer = function () {
 
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
+  this.q = new EPUBJS.Queue(this);
 };
 
 /**
@@ -75,6 +76,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.triggerHooks("beforeChapterDisplay", this);
     this.updatePages();
     this.visible(true);
+    this.trigger("renderer:chapterDisplayed");
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
@@ -358,6 +360,7 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     this.chapterPos = pg;
     this.render.docEl.addEventListener('transitionend', translationEnd, false);
     this.render.page(pg, time);
+    this.trigger("renderer:locationChanged",{spinePos: this.currentChapter.spinePos, page: this.chapterPos});
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {
     this.render.page(pg, time);
@@ -399,3 +402,4 @@ EPUBJS.Renderer.prototype.replace = function (query, func, progress) {
   }.bind(this));
 };
 
+RSVP.EventTarget.mixin(EPUBJS.Renderer.prototype);

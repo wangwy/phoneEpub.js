@@ -140,3 +140,5 @@ EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
   pg = Math.floor(left/this.pageWidth) + 1;
   return pg;
 };
+
+RSVP.EventTarget.mixin(EPUBJS.Render.Iframe);

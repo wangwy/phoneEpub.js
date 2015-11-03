@@ -3,11 +3,16 @@
  */
 EPUBJS.Book = function (options) {
   this.renderer = new EPUBJS.Renderer();
+  this.renderer.on("renderer:locationChanged", this.showBookNum.bind(this));
+  this.renderer.on("renderer:chapterDisplayed", this.showBookNum.bind(this));
   this.spine = options.spine;
   this.path = options.path;
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
+  this.chaptersNum = options.chaptersNum;
   this.spinePos = 0;
+  this.chapterName = document.getElementById("chapterName");
+  this.bookPage = document.getElementById("bookPage");
   this.q = new EPUBJS.Queue(this);
   this.registerReplacements(this.renderer);
 };
@@ -78,7 +83,13 @@ EPUBJS.Book.prototype.initialize = function () {
  */
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
-  return this.q.enqueue(this.displayChapter);
+  this.q.enqueue(this.displayChapter);
+  if(!Object.keys(this.chaptersNum).length){
+    this.getAllChapterNum().then(function (chaptersNum) {
+      this.chaptersNum = chaptersNum;
+      this.showBookNum();
+    }.bind(this));
+  }
 };
 
 /**
@@ -102,16 +113,16 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
     pos = 0;
   }
 
+  book.chapterName.textContent = book.spine[pos].chapterName;
   chapter = new EPUBJS.Chapter(this.spine[pos]);
 
+  book.spinePos = pos;
   render = book.renderer.displayChapter(chapter);
 
   render.then(function () {
     if (end) { //上一章的最后一页
       book.renderer.lastPage();
     }
-
-    book.spinePos = pos;
     defer.resolve(book.renderer);
     book.preloadNextChapter();
 
@@ -122,6 +133,22 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, deferred) {
   return defer.promise;
 };
 
+/**
+ * 显示页码
+ */
+EPUBJS.Book.prototype.showBookNum = function () {
+  if (Object.keys(this.chaptersNum).length) {
+    var num = 0;
+    for (var i = 0; i < this.spinePos; i++) {
+      num += this.chaptersNum[i];
+    }
+    num += this.renderer.chapterPos;
+
+    this.bookPage.textContent = num + "/" + this.chaptersNum.allNum;
+
+    EPUBJS.core.postMessageToMobile("currentBookNum", {currentBookNum: num});
+  }
+};
 
 EPUBJS.Book.prototype.gotoHref = function (url) {
   return this._gotoHref(url);
@@ -172,9 +199,9 @@ EPUBJS.Book.prototype._gotoHref = function (url) {
  */
 EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
   return this.q.enqueue(function () {
-    if(spinePos >= 0 && spinePos < this.spine.length){
+    if (spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos).then(function () {
-        if(pageNum){
+        if (pageNum) {
           this.renderer.page(pageNum);
         }
       }.bind(this))
@@ -310,7 +337,11 @@ EPUBJS.Book.prototype.registerReplacements = function (renderer) {
  * @returns {*}
  */
 EPUBJS.Book.prototype.getAllChapterNum = function () {
-  return this.q.enqueue(this._getAllChapterNum);
+  if(!Object.keys(this.chaptersNum).length){
+    return this.q.enqueue(this._getAllChapterNum);
+  }else{
+    return EPUBJS.core.postMessageToMobile("chaptersNum", this.chaptersNum);
+  }
 };
 
 /**
@@ -318,7 +349,7 @@ EPUBJS.Book.prototype.getAllChapterNum = function () {
  * @returns {*}
  */
 EPUBJS.Book.prototype._getAllChapterNum = function () {
-  var book = this;
+  var book = this, defer = new RSVP.defer();
   var chaptersNum = {}, chapterAllNum = 0;
   var width = this.renderer.pageWidth;
   var height = this.renderer.pageHeight;
@@ -363,10 +394,14 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
         getChapter(i);
       } else {
         chaptersNum["allNum"] = chapterAllNum;
+        defer.resolve(chaptersNum);
         EPUBJS.core.postMessageToMobile("chaptersNum", chaptersNum);
       }
     }.bind(this);
   }
 
   getChapter(0);
+  return defer.promise;
 };
+
+RSVP.EventTarget.mixin(EPUBJS.Book.prototype);
