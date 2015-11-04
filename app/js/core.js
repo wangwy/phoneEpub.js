@@ -257,6 +257,6 @@ EPUBJS.core.postMessageToMobile = function (msgType, info) {
       window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
     }
   }catch (e){
-    console.error(e);
+//    console.error(e);
   }
 };

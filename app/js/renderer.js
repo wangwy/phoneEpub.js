@@ -9,6 +9,7 @@ EPUBJS.Renderer = function () {
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
+  this.chapterName = document.getElementById("chapterName");
 };
 
 /**
@@ -76,7 +77,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.triggerHooks("beforeChapterDisplay", this);
     this.updatePages();
     this.visible(true);
-    this.trigger("renderer:chapterDisplayed");
+    this.chapterName.textContent = this.getChapterNameBypg(1) || "";
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
@@ -88,6 +89,46 @@ EPUBJS.Renderer.prototype.load = function (url) {
 EPUBJS.Renderer.prototype.updatePages = function () {
   this.pageMap = this.mapPage();
   this.displayedPages = this.pageMap.length;
+  this.chapterNamePage = this.parseChapterNames(this.currentChapter.chapterNames);
+};
+
+/**
+ * 格式化标题
+ * @param chapterNames
+ */
+EPUBJS.Renderer.prototype.parseChapterNames = function (chapterNames) {
+  var chapterName, path, chapterNamePage = [];
+  chapterNames.forEach(function (item, index) {
+    chapterName = item.chapterName;
+    path = item.path;
+    var paths = path.split("#");
+    if(paths.length === 1){
+      chapterNamePage.push({chapterName: chapterName, startPg: 1, endPg: null});
+    }else{
+      var section = paths[1];
+      var el = this.doc.getElementById(section);
+      var pg = this.render.getPageNumberByElement(el);
+      chapterNamePage.push({chapterName: chapterName, startPg: pg, endPg: null});
+      chapterNamePage[index - 1].endPg = pg - 1;
+    }
+  },this);
+  chapterNamePage[chapterNamePage.length - 1].endPg = this.displayedPages;
+  return chapterNamePage;
+};
+
+/**
+ * 根据页码获取章节名称
+ * @param pg
+ */
+EPUBJS.Renderer.prototype.getChapterNameBypg = function (pg) {
+  var chapterNames = [];
+  this.chapterNamePage.forEach(function (item) {
+    if(pg >= item.startPg && pg <= item.endPg){
+      chapterNames.push(item.chapterName);
+    }
+  },this);
+
+  return chapterNames[chapterNames.length - 1];
 };
 
 /**
@@ -311,7 +352,7 @@ EPUBJS.Renderer.prototype.currentPage = function (durTime) {
  */
 EPUBJS.Renderer.prototype.section = function (fragment) {
   var el = this.doc.getElementById(fragment);
-  if(el){
+  if (el) {
     this.pageByElement(el);
   }
 };
@@ -322,7 +363,7 @@ EPUBJS.Renderer.prototype.section = function (fragment) {
  */
 EPUBJS.Renderer.prototype.pageByElement = function (el) {
   var pg = this.render.getPageNumberByElement(el);
-  this.page(pg,0);
+  this.page(pg, 0);
 };
 
 /**
@@ -360,7 +401,11 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     this.chapterPos = pg;
     this.render.docEl.addEventListener('transitionend', translationEnd, false);
     this.render.page(pg, time);
-    this.trigger("renderer:locationChanged",{spinePos: this.currentChapter.spinePos, page: this.chapterPos});
+    this.trigger("renderer:locationChanged", {spinePos: this.currentChapter.spinePos, page: this.chapterPos});
+    var chapterName = this.getChapterNameBypg(pg);
+    if(chapterName != this.chapterName.textContent){
+      this.chapterName.textContent = chapterName;
+    }
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {
     this.render.page(pg, time);
@@ -384,16 +429,16 @@ EPUBJS.Renderer.prototype.replace = function (query, func, progress) {
   var items = this.docEl.querySelectorAll(query),
       resources = Array.prototype.slice.call(items),
       count = resources.length;
-  if(count === 0){
+  if (count === 0) {
     return;
   }
   resources.forEach(function (item) {
     var called = false;
     var after = function (result, full) {
-      if(called === false){
+      if (called === false) {
         count--;
-        if(progress) progress(result, full, count);
-        if(count <= 0) return;
+        if (progress) progress(result, full, count);
+        if (count <= 0) return;
         called = true;
       }
     };
