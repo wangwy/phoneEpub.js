@@ -6,6 +6,7 @@ EPUBJS.Chapter = function (spineObject) {
   this.absolute = spineObject.url;
   this.id = spineObject.id;
   this.spinePos = spineObject.index;
+  this.chapterNames = spineObject.chapterNames;
   this.pages = 1;
   this.deferred = new RSVP.defer();
   this.loaded = this.deferred.promise;
