@@ -1,4 +1,14 @@
 EPUBJS.DomUtil = {
+    getSelection: function (view) {
+        var window_ = view.element.contentWindow;
+        var selection;
+        if (window_.getSelection) {
+            selection = window_.getSelection();
+        } else if (this.doc.selection) {
+            selection = this.doc.selection.createRange().text;
+        }
+        return selection;
+    },
 	/**
 	 * 根据位置信息找到目标节点
 	   @param root 父节点
@@ -23,9 +33,9 @@ EPUBJS.DomUtil = {
 	getPosition: function(root, child){
 		var data = [];
 		//1.获取深度
-		var depth = getDepth(root, child);
+		var depth = EPUBJS.DomUtil.getDepth(root, child);
 		while(depth > 0){
-			var width = getWidth(child);
+			var width = EPUBJS.DomUtil.getWidth(child);
 			data.push(width);
 			child = child.parentElement;
 			depth--;

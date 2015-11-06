@@ -1,6 +1,6 @@
 EPUBJS.pluginView = EPUBJS.pluginView || {};
 EPUBJS.pluginView.PopMenu = function() {
-		this.eventEmitter = new EventEmitter();
+		// this.eventEmitter = new EventEmitter();
 		this.height = 40;
 		var div = this.initial();
 		this.getPopMenu = function() {
@@ -18,6 +18,9 @@ EPUBJS.pluginView.PopMenu.prototype = {
 	},
 	setDocument: function(d) {
 		this.document = d;
+	},
+	setView: function(v){
+		this.view = view;
 	},
 	/**
 	 * 创建界面 绑定按钮事件
@@ -66,7 +69,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 						}
 					} else {
 						if (this.id === 'menu_note_clear') {
-							self_.clearInlineStyle(self_.groupId);
+							self_.clearInlineStyle(this.groupId);
 						}
 					}
 					self_.hide();
@@ -90,10 +93,10 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		var self_ = this;
 		var x = config.x;
 		var y = config.y;
-		var view = config.view;
-		this.view = view;
-		var doc = view.doc;
-		this.document = doc;
+		// var view = config.view;
+		// this.view = view;
+		var doc = this.document;
+		// this.document = doc;
 		this.selection = config.selection;
 		var menu_container = doc.getElementById('menu_container');
 		if (!menu_container) {
@@ -104,10 +107,11 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		if (config.flag == this.CLEAR) {
 			button.innerText = '清除';
 			button.id = 'menu_note_clear';
+			button.groupId = config.groupId;
 			var callback = function(evt) {
 				evt.stopPropagation();
-				var groupId = config.groupId;
-				self_.clearInlineStyle(groupId);
+				// var groupId = config.groupId;
+				self_.clearInlineStyle(button.groupId);
 				self_.hide();
 			}
 			button.onclick = button.ontouch = callback;
@@ -174,7 +178,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		var callback = function(evt) {
 			var textContent = range.toString();
 			var comment = textarea.value;
-			self_.applyInlineStyle(textContent, comment, range.startContainer, range.endContainer, range.startOffset, range.endOffset, range.commonAncestorContainer, true);
+			self_._applyInlineStyle(textContent, comment, range.startContainer, range.endContainer, range.startOffset, range.endOffset, range.commonAncestorContainer, true);
 			selection.removeAllRanges();
 			container.style.display = 'none';
 		}
@@ -216,7 +220,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 	   @param parent 起始节点与终止节点的共同直接父元素 Range.commonAncestorContainer
 	   @param needStore 当前划线信息是否需要存储 重绘的线不需要 新增的笔记需要存储 true 存储｜false 不存储
 	 */
-	applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore) {
+	_applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore) {
 		var self_ = this;
 		/**
 		 * 通过解析所有字的坐标信息 获取矩形区域的信息
@@ -251,6 +255,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		 * 创建矩形区域
 		 */
 		function resolveDivData(divDatas) {
+			var self_ = this;
 			if (!divDatas || divDatas.length === 0) {
 				return null;
 			}
@@ -265,7 +270,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				//show menu 
 				var menu_container = this.ownerDocument.getElementById('menu_container');
 				if (!menu_container) {
-					var menu = new EPUBJS.pluginView.PopMenu();
+					var menu = EPUBJS.BookInterface.menu;
 					menu.show({
 						x: lastText.x,
 						y: lastText.y - menu.height,
@@ -276,6 +281,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 						groupId: self__.groupId
 					});
 				} else {
+					var buttons = menu_container.getElementsByTagName('button');
+					buttons[2].groupId = self__.groupId;
 					menu_container.style.left = lastText.x - 60 + 'px';
 					menu_container.style.top = lastText.y - parseFloat(menu_container.style.height) + 'px';
 					menu_container.style.display = 'block';
@@ -293,7 +300,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					div.style.height = data[0].height + 'px';
 					div.style.width = data[0].width + 'px';
 					div.style.top = data[0].y + 'px';
-					div.style.left = data[0].x + 'px';
+					div.style.left = (EPUBJS.BookInterface.view.chapterPos -1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + 'px';
 					divs.push(div);
 				} else {
 					var length = data.length;
@@ -303,7 +310,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					//中止矩形x - 起始矩形x + 最后一个矩形的宽度
 					div.style.width = endX - startX + data[length - 1].width + 'px';
 					div.style.top = data[0].y + 'px';
-					div.style.left = data[0].x + 'px';
+					div.style.left = (EPUBJS.BookInterface.view.chapterPos -1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + 'px';
 					divs.push(div);
 				}
 			}
@@ -355,10 +362,10 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			}
 			if (data.length == 1) {
 				icon.style.top = data[0].y + data[0].height / 2 + 'px';
-				icon.style.left = data[0].x + data[0].width + 'px';
+				icon.style.left = (EPUBJS.BookInterface.view.chapterPos -1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + data[0].width + 'px';
 			} else {
 				icon.style.top = data[data.length - 1].y + data[data.length - 1].height / 2 + 'px';
-				icon.style.left = data[data.length - 1].x + data[data.length - 1].width + 'px';
+				icon.style.left = (EPUBJS.BookInterface.view.chapterPos -1) * EPUBJS.BookInterface.view.pageWidth + data[data.length - 1].x + data[data.length - 1].width + 'px';
 			}
 			return icon;
 		}
@@ -379,9 +386,9 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			self_.document.body.appendChild(icon);
 		// 将数据回传外层
 		if (needStore) {
-			var position_parent = getPosition(self_.document.body, parent);
-			var position_start = getPosition(parent, startContainer);
-			var position_end = getPosition(parent, endContainer);
+			var position_parent = EPUBJS.DomUtil.getPosition(self_.document.body, parent);
+			var position_start = EPUBJS.DomUtil.getPosition(parent, startContainer);
+			var position_end = EPUBJS.DomUtil.getPosition(parent, endContainer);
 			var uuid = divs[0].groupId;
 			var data = {
 					dataId: uuid,
@@ -397,8 +404,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					'comment': comment
 				}
 				//采用事件机制回传
-			self_.eventEmitter.emitEvent('underlineComplete', [data]);
+			// self_.eventEmitter.emitEvent('underlineComplete', [data]);
+			return data;
 		}
-
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Created by wangwy on 15-9-24.
  */
-EPUBJS.Book = function (options) {
+EPUBJS.Book = function(options) {
   this.renderer = new EPUBJS.Renderer();
   this.renderer.on("renderer:locationChanged", this.showBookNum.bind(this));
   this.on("book:chapterDisplayed", this.showBookNum.bind(this));
@@ -33,7 +33,7 @@ EPUBJS.Book.prototype.parseSpine = function (spine) {
  * 添加container
  * @param eleId
  */
-EPUBJS.Book.prototype.attachTo = function (eleId) {
+EPUBJS.Book.prototype.attachTo = function(eleId) {
   this.element = document.getElementById(eleId) || eleId;
   this.element.style.paddingTop = this.padding.top + "px";
   this.element.style.paddingBottom = this.padding.bottom + "px";
@@ -47,7 +47,7 @@ EPUBJS.Book.prototype.attachTo = function (eleId) {
  * 计算container的height
  * @returns {number|*|EPUBJS.Renderer.height}
  */
-EPUBJS.Book.prototype.elementHeight = function () {
+EPUBJS.Book.prototype.elementHeight = function() {
   var height = document.documentElement.clientHeight;
   this.elementStyles = window.getComputedStyle(this.element);
   this.elementPadding = {
@@ -61,7 +61,7 @@ EPUBJS.Book.prototype.elementHeight = function () {
  * 初始化容器
  * @returns {HTMLElement}
  */
-EPUBJS.Book.prototype.initialize = function () {
+EPUBJS.Book.prototype.initialize = function() {
   var container;
 
   container = document.createElement("div");
@@ -80,7 +80,7 @@ EPUBJS.Book.prototype.initialize = function () {
  * 初始化显示区域
  * @param eleId
  */
-EPUBJS.Book.prototype.renderTo = function (eleId) {
+EPUBJS.Book.prototype.renderTo = function(eleId) {
   this.attachTo(eleId);
   this.q.enqueue(this.displayChapter);
   if (!Object.keys(this.chaptersNum).length) {
@@ -121,7 +121,7 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
     if (!goto) {
       this.trigger("book:chapterDisplayed");
     }
-    if (end) { //上一章的最后一页
+        if (end) { //上一章的最后一页
       this.renderer.lastPage();
     }
     defer.resolve(this.renderer);
@@ -218,13 +218,13 @@ EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
  * 下一页
  * @returns {*}
  */
-EPUBJS.Book.prototype.nextPage = function (durTime) {
+EPUBJS.Book.prototype.nextPage = function(durTime) {
   return this.renderer.nextPage(durTime)
-      .then(function (result) {
-        if (!result) {
-          return this.nextChapter();
-        }
-      }.bind(this));
+    .then(function(result) {
+      if (!result) {
+        return this.nextChapter();
+      }
+    }.bind(this));
 
 };
 
@@ -232,7 +232,7 @@ EPUBJS.Book.prototype.nextPage = function (durTime) {
  * 上一页
  * @returns {*}
  */
-EPUBJS.Book.prototype.prevPage = function (durTime) {
+EPUBJS.Book.prototype.prevPage = function(durTime) {
   return this.renderer.prevPage(durTime)
       .then(function (result) {
         if (!result) {
@@ -245,7 +245,7 @@ EPUBJS.Book.prototype.prevPage = function (durTime) {
  * 下一章节
  * @returns {deferred.promise|*}
  */
-EPUBJS.Book.prototype.nextChapter = function () {
+EPUBJS.Book.prototype.nextChapter = function() {
   if (this.spinePos < this.spine.length - 1) {
     return this.displayChapter(this.spinePos + 1);
   } else {
@@ -257,7 +257,7 @@ EPUBJS.Book.prototype.nextChapter = function () {
  * 上一章节
  * @returns {deferred.promise|*}
  */
-EPUBJS.Book.prototype.prevChapter = function () {
+EPUBJS.Book.prototype.prevChapter = function() {
   if (this.spinePos > 0) {
     return this.displayChapter(this.spinePos - 1, true);
   } else {
@@ -269,7 +269,7 @@ EPUBJS.Book.prototype.prevChapter = function () {
  * 加载下一章
  * @returns {boolean}
  */
-EPUBJS.Book.prototype.preloadNextChapter = function () {
+EPUBJS.Book.prototype.preloadNextChapter = function() {
   var next;
   var chap = this.spinePos + 1;
 
@@ -302,9 +302,10 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     var deltaX = endX - startX;
     var pageOffsetX = this.renderer.getLeft() - deltaX;
     this.renderer.setLeft(pageOffsetX);
+
   }.bind(this), false);
 
-  this.renderer.doc.addEventListener("touchend", function (event) {
+  this.renderer.doc.addEventListener("touchend", function(event) {
     endX = event.changedTouches[0].clientX;
     endTime = new Date();
     var deltaX = endX - startX;
