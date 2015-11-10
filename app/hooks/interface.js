@@ -32,8 +32,32 @@ EPUBJS.BookInterface = {
 			EPUBJS.core.postMessageToMobile("createNote", data);
 		}
 	},
-	deleteNote: function(){
-
+	repaintNote: function(data){
+		var view = EPUBJS.BookInterface.view;
+		var d = view.doc;
+		if(!data || data.constructor.name.tirm().toLowerCase() != 'array'){
+			return;
+		}
+		if(data.length == 0)
+			return;
+		for(var i=0; i< data.length; i++){
+			var note = data[i];
+			if (note.index != undefined && note.index == view.currentChapter.spinePos) {
+                // menu.setDocument(view.doc || view.document);
+                var parentEle = EPUBJS.DomUtil.findNode(d.body, note.parent);
+                var startContainerEle = EPUBJS.DomUtil.findNode(parentEle, note.startContainer);
+                var endContainerEle = EPUBJS.DomUtil.findNode(parentEle, note.endContainer);
+                var startOffset = note.startOffset;
+                var endOffset = note.endOffset;
+                var tag = note.tag;
+                var comment = note.comment;
+                var text = note.text;
+                //添加至任务队列 异步加载 此处页面并未显示 如果直接调用划线将不准确
+                setTimeout(function() {
+                    menu._applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
+                }, 0)
+            }
+		}
 	},
 	updateNote: function() {
 		// body...
