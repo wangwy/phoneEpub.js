@@ -1,12 +1,12 @@
 EPUBJS.pluginView = EPUBJS.pluginView || {};
 EPUBJS.pluginView.PopMenu = function() {
-		this.eventEmitter = new EventEmitter();
-		this.height = 40;
-		var div = this.initial();
-		this.getPopMenu = function() {
-			return div;
-		}
+	// this.eventEmitter = new EventEmitter();
+	this.height = 40;
+	var div = this.initial();
+	this.getPopMenu = function() {
+		return div;
 	}
+}
 EPUBJS.pluginView.PopMenu.prototype = {
 	CLEAR: 'clear',
 	NOTE: 'note',
@@ -18,6 +18,9 @@ EPUBJS.pluginView.PopMenu.prototype = {
 	},
 	setDocument: function(d) {
 		this.document = d;
+	},
+	setView: function(v) {
+		this.view = view;
 	},
 	/**
 	 * 创建界面 绑定按钮事件
@@ -66,7 +69,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 						}
 					} else {
 						if (this.id === 'menu_note_clear') {
-							self_.clearInlineStyle(self_.groupId);
+							self_.clearInlineStyle(this.groupId);
+							EPUBJS.core.postMessageToMobile('deleteNote', this.groupId);
 						}
 					}
 					self_.hide();
@@ -90,10 +94,10 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		var self_ = this;
 		var x = config.x;
 		var y = config.y;
-		var view = config.view;
-		this.view = view;
-		var doc = view.doc;
-		this.document = doc;
+		// var view = config.view;
+		// this.view = view;
+		var doc = this.document;
+		// this.document = doc;
 		this.selection = config.selection;
 		var menu_container = doc.getElementById('menu_container');
 		if (!menu_container) {
@@ -104,10 +108,11 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		if (config.flag == this.CLEAR) {
 			button.innerText = '清除';
 			button.id = 'menu_note_clear';
+			button.groupId = config.groupId;
 			var callback = function(evt) {
 				evt.stopPropagation();
-				var groupId = config.groupId;
-				self_.clearInlineStyle(groupId);
+				// var groupId = config.groupId;
+				self_.clearInlineStyle(button.groupId);
 				self_.hide();
 			}
 			button.onclick = button.ontouch = callback;
@@ -174,7 +179,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		var callback = function(evt) {
 			var textContent = range.toString();
 			var comment = textarea.value;
-			self_.applyInlineStyle(textContent, comment, range.startContainer, range.endContainer, range.startOffset, range.endOffset, range.commonAncestorContainer, true);
+			self_._applyInlineStyle(textContent, comment, range.startContainer, range.endContainer, range.startOffset, range.endOffset, range.commonAncestorContainer, true);
 			selection.removeAllRanges();
 			container.style.display = 'none';
 		}
@@ -205,6 +210,14 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			div.parentElement.removeChild(div);
 		}
 	},
+	hideCommentText: function() {
+		if (this.document) {
+			var container = this.document.getElementById('comment_text_container');
+			if (container) {
+				container.style.display = 'none';
+			}
+		}
+	},
 	/**
 	 * 划线
 	   @param text 选中的纯文本
@@ -216,7 +229,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 	   @param parent 起始节点与终止节点的共同直接父元素 Range.commonAncestorContainer
 	   @param needStore 当前划线信息是否需要存储 重绘的线不需要 新增的笔记需要存储 true 存储｜false 不存储
 	 */
-	applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore) {
+	_applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore) {
 		var self_ = this;
 		/**
 		 * 通过解析所有字的坐标信息 获取矩形区域的信息
@@ -251,6 +264,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		 * 创建矩形区域
 		 */
 		function resolveDivData(divDatas) {
+			var self_ = this;
 			if (!divDatas || divDatas.length === 0) {
 				return null;
 			}
@@ -265,7 +279,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				//show menu 
 				var menu_container = this.ownerDocument.getElementById('menu_container');
 				if (!menu_container) {
-					var menu = new EPUBJS.pluginView.PopMenu();
+					var menu = EPUBJS.BookInterface.menu;
 					menu.show({
 						x: lastText.x,
 						y: lastText.y - menu.height,
@@ -276,6 +290,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 						groupId: self__.groupId
 					});
 				} else {
+					var buttons = menu_container.getElementsByTagName('button');
+					buttons[2].groupId = self__.groupId;
 					menu_container.style.left = lastText.x - 60 + 'px';
 					menu_container.style.top = lastText.y - parseFloat(menu_container.style.height) + 'px';
 					menu_container.style.display = 'block';
@@ -283,7 +299,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			}
 			for (var i = 0; i < divDatas.length; i++) {
 				var div = document.createElement('div');
-				div.style.borderBottom = '2px solid red';
+				div.style.borderBottom = '2px solid rgb(255, 96, 0)';
 				div.style.position = 'absolute';
 				div.groupId = uuid;
 
@@ -293,7 +309,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					div.style.height = data[0].height + 'px';
 					div.style.width = data[0].width + 'px';
 					div.style.top = data[0].y + 'px';
-					div.style.left = data[0].x + 'px';
+					div.style.left = (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + 'px';
 					divs.push(div);
 				} else {
 					var length = data.length;
@@ -303,7 +319,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					//中止矩形x - 起始矩形x + 最后一个矩形的宽度
 					div.style.width = endX - startX + data[length - 1].width + 'px';
 					div.style.top = data[0].y + 'px';
-					div.style.left = data[0].x + 'px';
+					div.style.left = (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + 'px';
 					divs.push(div);
 				}
 			}
@@ -323,12 +339,33 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				container.style.position = 'absolute';
 				container.style.color = 'red';
 				container.id = 'comment_text_container';
+				container.style.backgroundColor = '#ffffc4';
+				container.style.border = "1px solid #c48b40";
+				container.style.borderRadius = '3px';
+				container.style.padding = '0 20px';
 				div.ownerDocument.body.appendChild(container);
 			}
-			container.innerHTML = comment;
+			container.innerHTML = '<p style="color:#a04e00; font-size:14px">' + comment + '</p>' +
+				'<div style="left:40px;position: absolute; height:14px; width:14px;"></div>';
 			var width = container.clientWidth;
 			var height = container.clientHeight;
-			container.style.top = top - height + 'px';
+			//小三角
+			var div_ = container.getElementsByTagName('div')[0];
+			div_.style.left = Math.floor(width / 2) - 7 + 'px';
+			//如果可以从上方显示
+			if (top > height + 14) {
+				//减去小三角的高度
+				container.style.top = top - height - 7 + 'px';
+				div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
+			}else{
+				//显示在下方
+				container.style.top = width_div + 10 + 7 + 'px';
+				div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
+				div_.style.top =  '-14px';
+			}
+
+			var p = container.getElementsByTagName('p')[0];
+			// var inner_width = p.clientWidth;
 			container.style.left = left - width / 2 + width_div / 2 + 'px';
 			container.style.display = 'block';
 		}
@@ -337,7 +374,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		 * 创建划线笔记后的小圆点
 		 */
 		function resolveCommentIcon(data, comment, groupId) {
-			if (comment.trim().length === 0) {
+			if (!comment || comment.trim().length === 0) {
 				return null;
 			}
 			var icon_width = 20;
@@ -347,18 +384,24 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			icon.style.height = icon_height + 'px';
 			icon.style.width = icon_width + 'px';
 			icon.style.position = 'absolute';
-			icon.style.backgroundColor = 'blue';
+			icon.style.lineHeight = "20px";
+			icon.style.backgroundColor = 'rgb(250,122,32)';
+			icon.style.borderRadius = '50%';
+			icon.style.fontSize = "14px";
+			icon.style.color = "white";
+			icon.style.lineHeight = '10px';
 			icon.data = comment;
+			icon.innerText = "...";
 			icon.onclick = icon.ontouch = function(evt) {
 				evt.stopPropagation();
 				showCommentText(this);
 			}
 			if (data.length == 1) {
-				icon.style.top = data[0].y + data[0].height / 2 + 'px';
-				icon.style.left = data[0].x + data[0].width + 'px';
+				icon.style.top = Math.floor(data[0].y + data[0].height / 2) + 'px';
+				icon.style.left = (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + data[0].width + 'px';
 			} else {
-				icon.style.top = data[data.length - 1].y + data[data.length - 1].height / 2 + 'px';
-				icon.style.left = data[data.length - 1].x + data[data.length - 1].width + 'px';
+				icon.style.top = Math.floor(data[data.length - 1].y + data[data.length - 1].height / 2) + 'px';
+				icon.style.left = (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth + data[data.length - 1].x + data[data.length - 1].width + 'px';
 			}
 			return icon;
 		}
@@ -379,13 +422,13 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			self_.document.body.appendChild(icon);
 		// 将数据回传外层
 		if (needStore) {
-			var position_parent = getPosition(self_.document.body, parent);
-			var position_start = getPosition(parent, startContainer);
-			var position_end = getPosition(parent, endContainer);
+			var position_parent = EPUBJS.DomUtil.getPosition(self_.document.body, parent);
+			var position_start = EPUBJS.DomUtil.getPosition(parent, startContainer);
+			var position_end = EPUBJS.DomUtil.getPosition(parent, endContainer);
 			var uuid = divs[0].groupId;
 			var data = {
 					dataId: uuid,
-					index: self_.view.index,
+					index: self_.view.currentChapter.spinePos,
 					'startContainer': position_start,
 					'endContainer': position_end,
 					'startOffset': startOffset,
@@ -394,11 +437,12 @@ EPUBJS.pluginView.PopMenu.prototype = {
 					'time': new Date().getTime(),
 					'tag': 'comment',
 					'text': text,
-					'comment': comment
+					'comment': comment,
+					'chapterName': self_.view.chapterName.innerText
 				}
 				//采用事件机制回传
-			self_.eventEmitter.emitEvent('underlineComplete', [data]);
+				// self_.eventEmitter.emitEvent('underlineComplete', [data]);
+			return data;
 		}
-
 	}
 }

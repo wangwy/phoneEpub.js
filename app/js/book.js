@@ -263,7 +263,7 @@ EPUBJS.Book.prototype.getCurrentPos = function () {
   return this.q.enqueue(function () {
     var pos = this.renderer.getCurrentPos();
     var chapterName = this.renderer.chapterName.textContent;
-    var context = pos.startRange.startContainer.textContent.substr(pos.startRange.startOffset,100);
+    var context = pos.startRange.startContainer.textContent.substr(pos.startRange.startOffset, 100);
     EPUBJS.core.postMessageToMobile("currentPos", {spinePos: this.spinePos, chapterOffset: pos.start, chapterName: chapterName, context: context});
   }.bind(this));
 };
@@ -356,6 +356,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     var deltaX = endX - startX;
     var pageOffsetX = this.renderer.getLeft() - deltaX;
     this.renderer.setLeft(pageOffsetX);
+
   }.bind(this), false);
 
   this.renderer.doc.addEventListener("touchend", function (event) {
