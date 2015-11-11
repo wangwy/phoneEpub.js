@@ -83,14 +83,6 @@ EPUBJS.Render.Iframe.prototype.resized = function () {
 };
 
 /**
- * 返回根节点
- * @returns {null|*}
- */
-EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
-  return this.bodyEl;
-};
-
-/**
  * 根据页码获取向左的偏移量
  * @param pg
  * @param time
@@ -138,6 +130,18 @@ EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
   var left, pg;
   left = this.leftPos + el.getBoundingClientRect().left;
   pg = Math.floor(left/this.pageWidth) + 1;
+  return pg;
+};
+
+/**
+ * 计算RECT在第几页
+ * @param boundingClientRect
+ * @returns {number}
+ */
+EPUBJS.Render.Iframe.prototype.getPageNumberByRect = function (boundingClientRect) {
+  var left, pg;
+  left = this.leftPos + boundingClientRect.left;
+  pg = Math.floor(left / this.pageWidth) + 1;
   return pg;
 };
 

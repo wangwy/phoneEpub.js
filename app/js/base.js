@@ -22,4 +22,15 @@ RSVP.on('error', function(event) {
   root.gotoPage = function (spinePos, pageNum) {
     return book.gotoPage(spinePos, pageNum)
   };
+
+  root.gotoXpath = function (spinePos, xpath, offset) {
+    return book.gotoXpath(spinePos, xpath, offset)
+  };
+
+  root.gotoOffset = function (spinePos, offset) {
+    return book.gotoOffset(spinePos, offset);
+  };
+  root.getCurrentPos = function () {
+    return book.getCurrentPos();
+  }
 })(window);

@@ -207,10 +207,64 @@ EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
         this.displayChapter(spinePos, false, true).then(function () {
           this.renderer.page(pageNum);
         }.bind(this))
-      }else{
+      } else {
         this.displayChapter(spinePos);
       }
     }
+  }.bind(this));
+};
+
+/**
+ * 根据章节,xpath,偏移量跳转到相应页面
+ * @param spinePos
+ * @param xpath
+ * @param offset
+ * @returns {*}
+ */
+EPUBJS.Book.prototype.gotoXpath = function (spinePos, xpath, offset) {
+  return this.q.enqueue(function () {
+    if (spinePos >= 0 && spinePos < this.spine.length) {
+      this.displayChapter(spinePos, false, true).then(function () {
+        var element = this.renderer.getElementByXPath(xpath);
+        var range = document.createRange();
+        if (offset) {
+          range.setStart(element, offset);
+          range.setEnd(element, element.textContent.length);
+        } else {
+          range.selectNode(element);
+        }
+        this.renderer.gotoRange(range);
+      }.bind(this));
+    }
+  }.bind(this))
+};
+
+/**
+ * 根据章节,章节偏移量跳转到相应页面
+ * @param spinePos
+ * @param offset
+ * @returns {*}
+ */
+EPUBJS.Book.prototype.gotoOffset = function (spinePos, offset) {
+  return this.q.enqueue(function () {
+    if (spinePos >= 0 && spinePos < this.spine.length) {
+      this.displayChapter(spinePos, false, true).then(function () {
+        this.renderer.gotoOffset(offset);
+      }.bind(this));
+    }
+  }.bind(this))
+};
+
+/**
+ * 获取当前位置信息
+ */
+EPUBJS.Book.prototype.getCurrentPos = function () {
+
+  return this.q.enqueue(function () {
+    var pos = this.renderer.getCurrentPos();
+    var chapterName = this.renderer.chapterName.textContent;
+    var context = pos.startRange.startContainer.textContent.substr(pos.startRange.startOffset,100);
+    EPUBJS.core.postMessageToMobile("currentPos", {spinePos: this.spinePos, chapterOffset: pos.start, chapterName: chapterName, context: context});
   }.bind(this));
 };
 
@@ -315,7 +369,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
       durTime = (pageWidth - deltaX) * (time / pageWidth);
       this.prevPage(durTime);
     } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
-      durTime = Math.abs(deltaX) * (time / pageWidth);
+      durTime = Math.abs(deltaX) * (time * 4 / pageWidth);
       this.renderer.currentPage(durTime);
     } else if (deltaX === 0) {
       if (endX > (window.innerWidth / 3 * 2)) {

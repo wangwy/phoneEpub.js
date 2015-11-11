@@ -250,6 +250,7 @@ EPUBJS.core.uuid = function () {
  */
 EPUBJS.core.postMessageToMobile = function (msgType, info) {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  console.log(info);
   try {
     if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
       window.webkit.messageHandlers.app.postMessage({msgType: msgType, info: info});
@@ -259,4 +260,17 @@ EPUBJS.core.postMessageToMobile = function (msgType, info) {
   }catch (e){
 //    console.error(e);
   }
+};
+
+/**
+ * 根据前缀获取xpath的命名空间
+ * @param prefix
+ * @returns {*|null}
+ */
+EPUBJS.core.nsResolver = function (prefix) {
+  var ns = {
+    'xhtml' : 'http://www.w3.org/1999/xhtml',
+    'epub' : 'http://www.idpf.org/2007/ops'
+  };
+  return ns[prefix] || null;
 };
