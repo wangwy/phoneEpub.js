@@ -100,8 +100,7 @@ EPUBJS.Book.prototype.renderTo = function (eleId) {
  */
 EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
   this.renderer.initialize(this.container, this.padding);
-  var book = this,
-      render,
+  var render,
       pos,
       defer = new RSVP.defer();
 
@@ -147,7 +146,9 @@ EPUBJS.Book.prototype.showBookNum = function () {
 
     this.bookPage.textContent = num + "/" + this.chaptersNum.allNum;
 
-    EPUBJS.core.postMessageToMobile("currentBookNum", {currentBookNum: num});
+    var map = this.renderer.pageMap[this.renderer.chapterPos - 1];
+
+    EPUBJS.core.postMessageToMobile("currentBookNum", {currentBookNum: num, spinePos: this.spinePos, startOffset: map.start, endOffset: map.end});
   } else {
     EPUBJS.core.postMessageToMobile("currentBookNum", {currentBookNum: -1});
   }

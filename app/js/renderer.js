@@ -87,11 +87,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
  * 更新页面
  */
 EPUBJS.Renderer.prototype.updatePages = function () {
-//  var time1 = new Date();
   this.pageMap = this.mapPage();
-  console.log(this.pageMap);
-//  var time2 = new Date();
-//  alert(time2 - time1);
   this.displayedPages = this.pageMap.length;
   this.chapterNamePage = this.parseChapterNames(this.currentChapter.chapterNames);
 };
@@ -161,7 +157,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     if (!elPos || (elPos.width === 0 && elPos.height === 0)) {
       return;
     }
-    if (elPos.left >= elLimit || elPos.right >= elLimit) {
+    if (elPos.left >= elLimit || (elPos.right >= elLimit && elPos.left <= elLimit - width)) {
       children.forEach(function (node) {
         if (checkNode(node)) {
           checkChild(node);
