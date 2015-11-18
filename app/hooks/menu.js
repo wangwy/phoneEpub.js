@@ -329,12 +329,12 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			return divs;
 		}
 
-		function showCommentText(div) {
+		function showCommentText(div, bodyHeight) {
 			var left = parseFloat(div.style.left);
 			var top = parseFloat(div.style.top);
 			var width_div = parseFloat(div.style.width);
 			var comment = div.data;
-			var bodyHeight = div.ownerDocument.body.clientHeight;
+			// var bodyHeight = div.ownerDocument.body.scrollHeight;
 			var bodyWidth = div.ownerDocument.body.clientWidth;
 			var paddingLeft = parseFloat(div.ownerDocument.body.style.paddingLeft);
 			var paddingRight = parseFloat(div.ownerDocument.body.style.paddingRight);
@@ -344,75 +344,64 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				container = document.createElement('div');
 				container.style.position = 'absolute';
 				container.style.color = 'red';
-				container.style.overflowY = 'scroll';
-				container.style.width = 'auto';
+				// container.style.overflowY = 'scroll';
+				// container.style.width = 'auto';
+				container.style.maxHeight = bodyHeight / 2 + 'px';
 				container.style.minWidth = '100px';
-				container.style.maxWidth = bodyWidth + 'px';
+				//左右各10cm间距
+				container.style.maxWidth = bodyWidth - 20 + 'px';
+				//盒模型 包括边框与内距 
+				container.style.boxSizing = 'border-box';
 				container.id = 'comment_text_container';
 				container.style.backgroundColor = '#ffffc4';
 				container.style.border = "1px solid #c48b40";
 				container.style.borderRadius = '3px';
 				container.style.padding = '0 20px';
+				container.style.zIndex = 1;
 				div.ownerDocument.body.appendChild(container);
 			}
-			container.innerHTML = '<p style="color:#a04e00; font-size:14px">' + comment + '</p>' +
+			var innerDivHeight = Math.floor((bodyHeight / 2 - 40) / 14) * 14 + 'px';
+			container.innerHTML = '<p style="overflow-y:scroll;color:#a04e00; align:center; max-height:' + innerDivHeight + ' ;font-size:14px; word-wrap: break-word">' + comment + '</p>' +
 				'<div style="left:40px;position: absolute; height:14px; width:14px;"></div>';
 			var width = container.offsetWidth;
 			var height = container.offsetHeight;
 
-			if (width >= bodyWidth - paddingLeft - paddingRight) {
-				if (top > bodyHeight / 2) {
-					//显示在上方
-					var top_ = top - height - 7;
-					if (top_ < 0) {
-						top_ = 0;
-						container.style.height = top + 'px';
-					}
-					container.style.top = top_ + 'px';
-
-					div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
-				} else {
-					//显示在下方
-					container.style.top = width_div + 10 + 7 + 'px';
-					var visibleHeight = bodyWidth - (width_div + 10 + 7) + 20;
-					if (visibleHeight < height) {
-						container.style.height = visibleHeight;
-					}
-					div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
-					div_.style.top = '-14px';
-				}
-			}
-
 			//小三角
 			var div_ = container.getElementsByTagName('div')[0];
-			div_.style.left = Math.floor(width / 2) - 7 + 'px';
+			div_.style.left = left % bodyWidth - 10 + 'px';
 
 			if (top > bodyHeight / 2) {
 				//显示在上方
-				container.style.top = top - height - 7 + 'px';
+				var top_ = top - height - 7;
+				container.style.top = top_ + 'px';
 				div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
 			} else {
 				//显示在下方
-				container.style.top = width_div + 10 + 7 + 'px';
+				container.style.top = width_div + top + 7 + 'px';
 				div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
 				div_.style.top = '-14px';
 			}
 
-			//如果可以从上方显示
-			// if (top > height + 14) {
-			// 	//减去小三角的高度
-			// 	container.style.top = top - height - 7 + 'px';
-			// 	div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
-			// }else{
-			// 	//显示在下方
-			// 	container.style.top = width_div + 10 + 7 + 'px';
-			// 	div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
-			// 	div_.style.top =  '-14px';
-			// }
-
 			var p = container.getElementsByTagName('p')[0];
 			// var inner_width = p.clientWidth;
-			container.style.left = left - width / 2 + width_div / 2 + 'px';
+
+			// container.style.left = left - width / 2 + width_div / 2 + 'px';
+			if(left % bodyWidth  > (bodyWidth + width) /2){
+				//小圆点在div范围之外 小圆点靠右
+				//靠右显示
+				//10位div图标的宽度一半 7位小箭头宽度的一半
+				container.style.left = left - width + 10 + 7 + 'px';
+				div_.style.left = width - 14 + 'px';
+			}else if(left % bodyWidth < (bodyWidth - width) /2){
+				//靠左显示
+				container.style.left = left + 'px';
+				div_.style.left = '0px';
+			}else{
+				//显示在中间
+				container.style.left = Math.floor(left / bodyWidth) * bodyWidth + (bodyWidth - width) / 2 + 'px';
+				div_.style.left = Math.abs((bodyWidth - width)/2 - left % bodyWidth) + 'px';
+			}
+			
 			container.style.display = 'block';
 		}
 
@@ -423,6 +412,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			if (!comment || comment.trim().length === 0) {
 				return null;
 			}
+			var self_ = this;
 			var icon_width = 20;
 			var icon_height = 20;
 			var icon = document.createElement('div');
@@ -440,7 +430,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			icon.innerText = "...";
 			icon.onclick = icon.ontouch = function(evt) {
 				evt.stopPropagation();
-				showCommentText(this);
+				showCommentText(this, self_.pageHeight);
 			}
 			if (data.length == 1) {
 				icon.style.top = Math.floor(data[0].y + data[0].height / 2) + 'px';
@@ -460,7 +450,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		// 根据解析来的坐标信息创建出div信息
 		var divs = resolveDivData(divDatas);
 		// 创建小圆点 如果 comment为null or "" icon为null
-		var icon = resolveCommentIcon(divDatas[divDatas.length - 1], comment, divs[0].groupId);
+		var icon = resolveCommentIcon.call(self_, divDatas[divDatas.length - 1], comment, divs[0].groupId);
 		for (var i = 0; i < divs.length; i++) {
 			self_.document.body.appendChild(divs[i]);
 		}

@@ -23,8 +23,8 @@ RSVP.on('error', function(event) {
     return book.gotoPage(spinePos, pageNum)
   };
 
-  root.gotoNote = function(spinePos, position, offset){
-    return book.gotoNote(spinePos, position, offset);
+  root.gotoNote = function(spinePos, parentPosition, startContainerPosition, offset){
+    return book.gotoNote(spinePos, parentPosition, startContainerPosition, offset);
   }
 
   root.gotoOffset = function (spinePos, offset) {

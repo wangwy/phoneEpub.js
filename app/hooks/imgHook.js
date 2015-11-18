@@ -8,6 +8,7 @@ EPUBJS.Hooks.register("beforeChapterDisplay").img = function(view) {
     EPUBJS.BookInterface.view = view;
     EPUBJS.BookInterface.menu.setDocument(view.doc);
     EPUBJS.BookInterface.menu.view = view;
+    EPUBJS.BookInterface.menu.pageHeight = view.pageHeight;
 }
 
 
