@@ -113,7 +113,9 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				evt.stopPropagation();
 				// var groupId = config.groupId;
 				self_.clearInlineStyle(button.groupId);
+				EPUBJS.core.postMessageToMobile('deleteNote', this.groupId);
 				self_.hide();
+				self_.hideCommentText();
 			}
 			button.onclick = button.ontouch = callback;
 
@@ -332,12 +334,20 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			var top = parseFloat(div.style.top);
 			var width_div = parseFloat(div.style.width);
 			var comment = div.data;
+			var bodyHeight = div.ownerDocument.body.clientHeight;
+			var bodyWidth = div.ownerDocument.body.clientWidth;
+			var paddingLeft = parseFloat(div.ownerDocument.body.style.paddingLeft);
+			var paddingRight = parseFloat(div.ownerDocument.body.style.paddingRight);
 			var container;
 			container = div.ownerDocument.getElementById('comment_text_container');
 			if (!container) {
 				container = document.createElement('div');
 				container.style.position = 'absolute';
 				container.style.color = 'red';
+				container.style.overflowY = 'scroll';
+				container.style.width = 'auto';
+				container.style.minWidth = '100px';
+				container.style.maxWidth = bodyWidth + 'px';
 				container.id = 'comment_text_container';
 				container.style.backgroundColor = '#ffffc4';
 				container.style.border = "1px solid #c48b40";
@@ -347,22 +357,58 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			}
 			container.innerHTML = '<p style="color:#a04e00; font-size:14px">' + comment + '</p>' +
 				'<div style="left:40px;position: absolute; height:14px; width:14px;"></div>';
-			var width = container.clientWidth;
-			var height = container.clientHeight;
+			var width = container.offsetWidth;
+			var height = container.offsetHeight;
+
+			if (width >= bodyWidth - paddingLeft - paddingRight) {
+				if (top > bodyHeight / 2) {
+					//显示在上方
+					var top_ = top - height - 7;
+					if (top_ < 0) {
+						top_ = 0;
+						container.style.height = top + 'px';
+					}
+					container.style.top = top_ + 'px';
+
+					div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
+				} else {
+					//显示在下方
+					container.style.top = width_div + 10 + 7 + 'px';
+					var visibleHeight = bodyWidth - (width_div + 10 + 7) + 20;
+					if (visibleHeight < height) {
+						container.style.height = visibleHeight;
+					}
+					div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
+					div_.style.top = '-14px';
+				}
+			}
+
 			//小三角
 			var div_ = container.getElementsByTagName('div')[0];
 			div_.style.left = Math.floor(width / 2) - 7 + 'px';
-			//如果可以从上方显示
-			if (top > height + 14) {
-				//减去小三角的高度
+
+			if (top > bodyHeight / 2) {
+				//显示在上方
 				container.style.top = top - height - 7 + 'px';
 				div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
-			}else{
+			} else {
 				//显示在下方
 				container.style.top = width_div + 10 + 7 + 'px';
 				div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
-				div_.style.top =  '-14px';
+				div_.style.top = '-14px';
 			}
+
+			//如果可以从上方显示
+			// if (top > height + 14) {
+			// 	//减去小三角的高度
+			// 	container.style.top = top - height - 7 + 'px';
+			// 	div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
+			// }else{
+			// 	//显示在下方
+			// 	container.style.top = width_div + 10 + 7 + 'px';
+			// 	div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
+			// 	div_.style.top =  '-14px';
+			// }
 
 			var p = container.getElementsByTagName('p')[0];
 			// var inner_width = p.clientWidth;
@@ -426,6 +472,21 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			var position_start = EPUBJS.DomUtil.getPosition(parent, startContainer);
 			var position_end = EPUBJS.DomUtil.getPosition(parent, endContainer);
 			var uuid = divs[0].groupId;
+			/**
+     * 返回data含义
+      '{"dataId":"9bc1b40b-eafa-44f1-8e11-86e2751b757f",'此条笔记的id
+    '"index":2,' 此条笔记所在的html对应页面的index
+    '"startContainer":[6,9],' 此条笔记对应的开始节点 从 body元素找起 第一层的第六个元素，第二层的第9个元素
+    '"endContainer":[8,1],' 此条笔记对应的开始节点 从 body元素找起 第一层的第六个元素，第二层的第9个元素
+    '"startOffset":81,"endOffset":144,' 在起始节点中的文字偏移量
+    '"parent":[2],' 起始节点与中止节点公共父元素（直接父元素）位置信息
+    '"time":1445755306203,'+ note创建时间
+    '"tag":"comment",'+ 此条笔记属于评论（还有 underline 与 copy 对应不同的操作）
+        //选中的纯文本信息
+    '"text":"篇4种，课文全部经过调整，部分课文完全重写，一些小知识也相应更新，同时采纳读者建议，增设生词表，方便读者查阅。《中文在手》系列丛书主要面向来华旅游、学习、工作的外国人和希望学习汉语、了解中国的外国朋友。整套丛书注重实用性、趣味性，兼顾科学性，突出时代感。所展示的日常交际用语和实用情景对话，基本可以满足外国人在中国的日常交际需要。该丛书既可以作为汉语实用交际手册，又可以作为专题式短期汉语教材使用。",'+
+        //评论内容(tag为comment时才有)
+    '"comment":"ddddddd"}';
+     */
 			var data = {
 					dataId: uuid,
 					index: self_.view.currentChapter.spinePos,

@@ -11,8 +11,22 @@ EPUBJS.BookInterface = {
 		} catch (e) {
 			text = "";
 		}
-		EPUBJS.core.postMessageToMobile("textCopy", text);
+		EPUBJS.core.postMessageToMobile('textCopy', text);
 	},
+	
+	getText: function(){
+		var selectedRange = EPUBJS.DomUtil.getSelection(EPUBJS.BookInterface.view);
+		var text;
+		try {
+			var range = selectedRange.getRangeAt(0);
+			text = range.toString();
+			// length = text.length;
+		} catch (e) {
+			text = "";
+		}
+		EPUBJS.core.postMessageToMobile('selectedText', text);
+	},
+
 	createNote: function(comment) {
 		var selectedRange = EPUBJS.DomUtil.getSelection(EPUBJS.BookInterface.view);
 		var length, text, range;
@@ -35,7 +49,7 @@ EPUBJS.BookInterface = {
 	repaintNote: function(data){
 		var view = EPUBJS.BookInterface.view;
 		var d = view.doc;
-		if(!data || data.constructor.name.tirm().toLowerCase() != 'array'){
+		if(!data || !(data instanceof Array)){
 			return;
 		}
 		if(data.length == 0)
@@ -54,12 +68,12 @@ EPUBJS.BookInterface = {
                 var text = note.text;
                 //添加至任务队列 异步加载 此处页面并未显示 如果直接调用划线将不准确
                 setTimeout(function() {
-                    menu._applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
+                    EPUBJS.BookInterface.menu._applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
                 }, 0)
             }
 		}
 	},
-	updateNote: function() {
+	updateNote: function(dataId, comment) {
 		// body...
 	}
 };

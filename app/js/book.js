@@ -226,11 +226,11 @@ EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
  * @param offset
  * @returns {*}
  */
-EPUBJS.Book.prototype.gotoXpath = function (spinePos, xpath, offset) {
+EPUBJS.Book.prototype.gotoNote = function (spinePos, position, offset) {
   return this.q.enqueue(function () {
     if (spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
-        var element = this.renderer.getElementByXPath(xpath);
+        var element = EPUBJS.DomUtil.findNode(position);
         var range = document.createRange();
         if (offset) {
           range.setStart(element, offset);
