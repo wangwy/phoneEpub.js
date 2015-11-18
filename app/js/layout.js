@@ -16,6 +16,8 @@ EPUBJS.Layout.Reflowable = function () {
  * @returns {{pageWidth: (null|*), pageHeight: *}}
  */
 EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _height) {
+  var body = documentElement.querySelector("body");
+
   var columnAxis = EPUBJS.core.prefixed('columnAxis');
   var columnGap = EPUBJS.core.prefixed('columnGap');
   var columnWidth = EPUBJS.core.prefixed('columnWidth');

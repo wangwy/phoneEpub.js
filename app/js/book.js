@@ -95,7 +95,7 @@ EPUBJS.Book.prototype.renderTo = function (eleId) {
  * 展示章节
  * @param chap
  * @param end
- * @param deferred
+ * @param goto
  * @returns {deferred.promise|*}
  */
 EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
@@ -203,13 +203,17 @@ EPUBJS.Book.prototype._gotoHref = function (url) {
  */
 EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
   return this.q.enqueue(function () {
-    if (spinePos >= 0 && spinePos < this.spine.length) {
-      if (pageNum) {
-        this.displayChapter(spinePos, false, true).then(function () {
+    if (spinePos != this.spinePos && spinePos >= 0 && spinePos < this.spine.length) {
+      this.displayChapter(spinePos, false, true).then(function () {
+        if (pageNum) {
           this.renderer.page(pageNum);
-        }.bind(this))
+        }
+      }.bind(this))
+    } else {
+      if (pageNum) {
+        this.renderer.page(pageNum);
       } else {
-        this.displayChapter(spinePos);
+        this.renderer.firstPage();
       }
     }
   }.bind(this));
@@ -248,10 +252,18 @@ EPUBJS.Book.prototype.gotoXpath = function (spinePos, xpath, offset) {
  */
 EPUBJS.Book.prototype.gotoOffset = function (spinePos, offset) {
   return this.q.enqueue(function () {
-    if (spinePos >= 0 && spinePos < this.spine.length) {
+    if (spinePos != this.spinePos && spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
-        this.renderer.gotoOffset(offset);
+        if(offset){
+          this.renderer.gotoOffset(offset);
+        }
       }.bind(this));
+    }else{
+      if(offset){
+        this.renderer.gotoOffset(offset);
+      }else{
+        this.renderer.firstPage();
+      }
     }
   }.bind(this))
 };
@@ -266,6 +278,42 @@ EPUBJS.Book.prototype.getCurrentPos = function () {
     var chapterName = this.renderer.chapterName.textContent;
     var context = pos.startRange.startContainer.textContent.substr(pos.startRange.startOffset, 100);
     EPUBJS.core.postMessageToMobile("currentPos", {spinePos: this.spinePos, chapterOffset: pos.start, chapterName: chapterName, context: context});
+  }.bind(this));
+};
+
+/**
+ * 改变字号
+ * @param size
+ */
+EPUBJS.Book.prototype.resetFontSize = function (size) {
+  this.chaptersNum = {};
+  this.renderer.resetFontSize(size);
+  this.reset();
+};
+
+/**
+ * 改变字体
+ * @param family
+ */
+EPUBJS.Book.prototype.resetFontFamily = function (family) {
+  this.chaptersNum = {};
+  this.renderer.resetFontFamily(family);
+  this.reset();
+};
+
+/**
+ * 刷新页面
+ * @returns {!Promise.<RESULT>}
+ */
+EPUBJS.Book.prototype.reset = function () {
+  var spinePos = this.spinePos;
+  var offset = this.renderer.currentOffset;
+  return this.displayChapter(spinePos, false, true).then(function(){
+    this.renderer.gotoOffset(offset);
+    return this.getAllChapterNum();
+  }.bind(this)).then(function (chaptersNum) {
+    this.chaptersNum = chaptersNum;
+    this.showBookNum();
   }.bind(this));
 };
 
@@ -414,6 +462,7 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
   var chaptersNum = {}, chapterAllNum = 0;
   var width = this.renderer.pageWidth;
   var height = this.renderer.pageHeight;
+  var padding = this.padding, renderer = this.renderer;
 
   //创建iframe
   function createFrame() {
@@ -429,12 +478,18 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
 
   //获取每一章节的页码
   function getChapterPageNum(document) {
-    if (this.padding) {
+    if (padding) {
       var body = document.body || document.querySelector("body");
-      body.style.paddingLeft = this.padding.left + "px";
-      body.style.paddingRight = this.padding.right + "px";
+      body.style.paddingLeft = padding.left + "px";
+      body.style.paddingRight = padding.right + "px";
     }
     var layout = new EPUBJS.Layout["Reflowable"]();
+    if (renderer.fontSize) {
+      body.style.fontSize = renderer.fontSize;
+    }
+    if (renderer.fontFamily) {
+      body.style.fontFamily = renderer.fontFamily;
+    }
     layout.format(document, width, height);
     var pageNum = layout.calculatePages();
     return pageNum;

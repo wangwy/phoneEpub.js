@@ -5,7 +5,8 @@ EPUBJS.Renderer = function () {
   this.hidden = false;
   this.render = new EPUBJS.Render.Iframe();
   this.chapterPos = 1;
-
+  this.fontSize = "";
+  this.fontFamily = "";
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
@@ -65,10 +66,16 @@ EPUBJS.Renderer.prototype.load = function (url) {
   this.layout = new EPUBJS.Layout["Reflowable"]();
   this.visible(false);
   var render = this.render.load(url);
-  render.then(function (contents) {
+  render.then(function () {
     this.doc = this.render.document;
     this.docEl = this.render.docEl;
-    this.formated = this.layout.format(contents, this.render.width, this.render.height);
+    if (this.fontSize) {
+      this.doc.body.style.fontSize = this.fontSize + "px";
+    }
+    if (this.fontFamily) {
+      this.doc.body.style.fontFamily = this.fontFamily;
+    }
+    this.formated = this.layout.format(this.docEl, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
     //页面宽度
     this.pageWidth = this.formated.pageWidth;
@@ -76,11 +83,28 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.viewDimensions = this.render.getViewDimensions();
     this.triggerHooks("beforeChapterDisplay", this);
     this.updatePages();
+    this.currentOffset = this.pageMap[0].start;
     this.visible(true);
     this.chapterName.textContent = this.getChapterNameBypg(1) || "";
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
+};
+
+/**
+ * 重置字号
+ * @param size
+ */
+EPUBJS.Renderer.prototype.resetFontSize = function (size) {
+  this.fontSize = size;
+};
+
+/**
+ * 重置字体
+ * @param family
+ */
+EPUBJS.Renderer.prototype.resetFontFamily = function (family) {
+  this.fontFamily = family;
 };
 
 /**
@@ -249,6 +273,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
 /**
  * 将字符转换成range
  * @param node
+ * @param limit
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
@@ -429,6 +454,7 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     if (chapterName != this.chapterName.textContent) {
       this.chapterName.textContent = chapterName;
     }
+    this.currentOffset = this.pageMap[pg - 1].start;
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {
     this.render.page(pg, time);

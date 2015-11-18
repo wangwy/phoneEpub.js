@@ -30,7 +30,16 @@ RSVP.on('error', function(event) {
   root.gotoOffset = function (spinePos, offset) {
     return book.gotoOffset(spinePos, offset);
   };
+
   root.getCurrentPos = function () {
     return book.getCurrentPos();
-  }
+  };
+
+  root.resetFontSize = function (size) {
+    return book.resetFontSize(size);
+  };
+
+  root.resetFontFamily = function (family) {
+    return book.resetFontFamily(family);
+  };
 })(window);
