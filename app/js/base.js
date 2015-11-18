@@ -23,9 +23,9 @@ RSVP.on('error', function(event) {
     return book.gotoPage(spinePos, pageNum)
   };
 
-  root.gotoXpath = function (spinePos, xpath, offset) {
-    return book.gotoXpath(spinePos, xpath, offset)
-  };
+  root.gotoNote = function(spinePos, parentPosition, startContainerPosition, offset){
+    return book.gotoNote(spinePos, parentPosition, startContainerPosition, offset);
+  }
 
   root.gotoOffset = function (spinePos, offset) {
     return book.gotoOffset(spinePos, offset);

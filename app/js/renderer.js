@@ -497,52 +497,6 @@ EPUBJS.Renderer.prototype.replace = function (query, func, progress) {
 };
 
 /**
- * 获取range的xpath
- * @param element
- * @param index
- * @returns {string}
- */
-EPUBJS.Renderer.prototype.getElementXPath = function (element) {
-  var paths = [];
-  var isXhtml = (element.ownerDocument.documentElement.getAttribute("xmlns") === "http://www.w3.org/1999/xhtml");
-  var index, nodeName, tagName, pathIndex;
-
-
-  if (element.nodeType == Node.TEXT_NODE) {
-    element = element.parentNode;
-  }
-
-  for (; element && element.nodeType == Node.ELEMENT_NODE; element = element.parentNode) {
-    index = 0;
-    for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
-
-      //忽略document的类型声明
-      if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE) {
-        continue;
-      }
-      if (sibling.nodeName == element.nodeName) {
-        ++index;
-      }
-    }
-    nodeName = element.nodeName.toLowerCase();
-    tagName = (isXhtml ? "xhtml:" + nodeName : nodeName);
-    pathIndex = (index ? "[" + (index + 1) + "]" : "");
-    paths.splice(0, 0, tagName + pathIndex);
-  }
-
-  return paths.length ? "./" + paths.join("/") : null;
-};
-
-/**
- * 根据xpath获得节点
- * @param xpath
- */
-EPUBJS.Renderer.prototype.getElementByXPath = function (xpath) {
-  var startContainer = this.doc.evaluate(xpath, this.doc, EPUBJS.core.nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-  return startContainer;
-};
-
-/**
  * 获取当前页面的偏移量
  */
 EPUBJS.Renderer.prototype.getCurrentPos = function () {
