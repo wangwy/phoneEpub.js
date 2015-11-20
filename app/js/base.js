@@ -25,7 +25,7 @@ RSVP.on('error', function(event) {
 
   root.gotoNote = function(spinePos, parentPosition, startContainerPosition, offset){
     return book.gotoNote(spinePos, parentPosition, startContainerPosition, offset);
-  }
+  };
 
   root.gotoOffset = function (spinePos, offset) {
     return book.gotoOffset(spinePos, offset);

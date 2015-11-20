@@ -222,7 +222,8 @@ EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
 /**
  * 根据章节,xpath,偏移量跳转到相应页面
  * @param spinePos
- * @param xpath
+ * @param parentPosition
+ * @param startContainerPosition
  * @param offset
  * @returns {*}
  */
