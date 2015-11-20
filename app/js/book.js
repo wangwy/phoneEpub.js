@@ -10,6 +10,12 @@ EPUBJS.Book = function (options) {
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.chaptersNum = options.chaptersNum || {};
+  if(options.fontSize){
+    this.renderer.resetFontSize(options.fontSize);
+  }
+  if(options.fontFamily){
+    this.renderer.resetFontFamily(options.fontFamily);
+  }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
   this.bookPage = document.getElementById("bookPage");
