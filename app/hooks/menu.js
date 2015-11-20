@@ -29,56 +29,55 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		var self_ = this;
 		var div = document.createElement('div');
 		div.id = 'menu_container';
-		div.style.height = this.height + 'px';
-		div.style.width = '120px';
-		div.style.border = '1px solid red';
+		div.style.boxSizing = 'border-box';
+		div.style.padding = "10px 20px";
+		div.style.whiteSpace = 'nowrap';
+		div.style.lineHeight = '20px';
+		div.style.zIndex = 20;
+		div.style.backgroundColor ='#000';
+		div.style.color = '#fff';
+		div.style.borderRadius = '3px';
 		div.style.position = 'absolute';
 		div.style.display = 'none';
+
 		var text = '复制';
 
-		for (var i = 0; i < 2; i++) {
-			var id = 'menu_';
-			switch (i) {
-				case 0:
-					text = '复制';
-					id += 'copy';
-					break;
-				case 1:
-					text = '分享';
-					id += 'share';
-					break;
-			}
-			var button = document.createElement('button');
-			button.innerText = text;
-			button.id = id;
-			div.appendChild(button);
-		}
+		div.innerHTML = '<span id="button-copy" class="btn" style="cursor:pointer;padding:2px 5px; font-size:14px" text="江出版集团数字传媒有">复制</span><span class="sep" style="color:#333;margin:0 10px">|</span>'+
+		'<span id="button-share" class="btn" style="cursor:pointer;padding:2px 5px; font-size:14px" index="0">分享</span>'+
+        '<span class="sep" style="color:#333;margin:0 10px">|</span><span id="button-clear" class="btn" style="cursor:pointer;padding:2px 5px; font-size:14px">清除</span>';
 
-		var buttons = div.getElementsByTagName('button');
+        var narrow = document.createElement('div');
+        narrow.style.cssText = 'position:absolute; height:14px; width:14px; background:url:("/app/svg/narrow_up_black.svg") no-repeat;';
+
+		var buttons = div.getElementsByTagName('span');
 		for (var i = 0; i < buttons.length; i++) {
+			if(!buttons[i].id){
+				continue;
+			}
 			//闭包
 			(function(_i) {
-				buttons[_i].onclick = buttons[_i].ontouch = function(evt) {
+				// buttons[_i].onclick = buttons[_i].ontouch = function(evt) {
+					
+				// };
+				buttons[_i].addEventListener('touchend', function(evt){
 					evt.stopPropagation();
 					var selection = self_.range;
 					if (selection) {
 						var range = selection.getRangeAt(0);
-						if (this.id === 'menu_note' && range.toString().length > 0) {
+						if (this.id === 'button-note' && range.toString().length > 0) {
 							var comment = self_.getCommentPanel(selection);
 
 						}
 					} else {
-						if (this.id === 'menu_note_clear') {
+						if (this.id === 'button-clear') {
 							self_.clearInlineStyle(this.groupId);
 							EPUBJS.core.postMessageToMobile('deleteNote', this.groupId);
 						}
 					}
 					self_.hide();
-				};
+				}, false);
 			})(i)
 		}
-		var button = document.createElement('button');
-		div.appendChild(button);
 		return div;
 	},
 	/**
@@ -104,31 +103,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			menu_container = self_.getPopMenu();
 			doc.body.appendChild(menu_container);
 		}
-		var button = menu_container.getElementsByTagName('button')[2];
-		if (config.flag == this.CLEAR) {
-			button.innerText = '清除';
-			button.id = 'menu_note_clear';
-			button.groupId = config.groupId;
-			var callback = function(evt) {
-				evt.stopPropagation();
-				// var groupId = config.groupId;
-				self_.clearInlineStyle(button.groupId);
-				self_.hide();
-			}
-			button.onclick = button.ontouch = callback;
-
-		} else if (config.flag == this.NOTE) {
-			button.innerText = '笔记';
-			button.id = 'menu_note';
-			(function(s) {
-				button.onclick = button.ontouch = function(evt) {
-					evt.stopPropagation();
-					var comment = self_.getCommentPanel(config.selection);
-				}
-			})(config.selection);
-
-
-		}
+		var button = menu_container.ownerDocument.getElementById('button-clear');
+		button.groupId = config.groupId;
 		var top = y;
 		var left = x - 60;
 		menu_container.style.top = top + 'px';
@@ -177,13 +153,32 @@ EPUBJS.pluginView.PopMenu.prototype = {
 
 
 		var callback = function(evt) {
+			evt.stopPropagation();
 			var textContent = range.toString();
 			var comment = textarea.value;
 			self_._applyInlineStyle(textContent, comment, range.startContainer, range.endContainer, range.startOffset, range.endOffset, range.commonAncestorContainer, true);
 			selection.removeAllRanges();
 			container.style.display = 'none';
 		}
-		button.onclick = button.ontouch = callback;
+		// button.onclick = button.ontouch = callback;
+		button.addEventListener('touchend', callback, false);
+	},
+
+	updateNote : function(groupId, comment) {
+		var treeWalker = this.document.createTreeWalker(this.document.body, NodeFilter.SHOW_ELEMENT, {
+			acceptNode: function(node) {
+				if (node.tagName.toLowerCase().trim() === 'div' && node.groupId == groupId) {
+					return NodeFilter.FILTER_ACCEPT;
+				} else {
+					return NodeFilter.FILTER_SKIP;
+				}
+			}
+		}, false);
+		var divs = [];
+		while (treeWalker.nextNode()) {
+			node = treeWalker.currentNode;
+			node.data = comment;
+		}
 	},
 	/**
 	 * 清除笔记
@@ -275,13 +270,14 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			var lastDiv = divDatas[divDatas.length - 1];
 			var lastText = lastDiv[lastDiv.length - 1];
 			var callback = function(evt) {
+				evt.stopPropagation();
 				var self__ = this;
 				//show menu 
 				var menu_container = this.ownerDocument.getElementById('menu_container');
 				if (!menu_container) {
 					var menu = EPUBJS.BookInterface.menu;
 					menu.show({
-						x: lastText.x,
+						x: lastText.x + (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth,
 						y: lastText.y - menu.height,
 						flag: 'clear',
 						view: {
@@ -290,9 +286,17 @@ EPUBJS.pluginView.PopMenu.prototype = {
 						groupId: self__.groupId
 					});
 				} else {
-					var buttons = menu_container.getElementsByTagName('button');
-					buttons[2].groupId = self__.groupId;
-					menu_container.style.left = lastText.x - 60 + 'px';
+					var buttons = menu_container.getElementsByTagName('span');
+					var button = null;
+					for(var i=0; i< buttons.length; i++){
+						if(buttons[i].id == 'button-clear'){
+							button = buttons[i];
+							break;
+						}
+					}
+						
+					button.groupId = self__.groupId;
+					menu_container.style.left = lastText.x +(EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth - 60  + 'px';
 					menu_container.style.top = lastText.y - parseFloat(menu_container.style.height) + 'px';
 					menu_container.style.display = 'block';
 				}
@@ -303,7 +307,8 @@ EPUBJS.pluginView.PopMenu.prototype = {
 				div.style.position = 'absolute';
 				div.groupId = uuid;
 
-				div.onclick = div.ontouch = callback;
+				// div.onclick = div.ontouch = callback;
+				div.addEventListener('touchend', callback, false);
 				var data = divDatas[i];
 				if (data.length == 1) {
 					div.style.height = data[0].height + 'px';
@@ -327,46 +332,79 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			return divs;
 		}
 
-		function showCommentText(div) {
+		function showCommentText(div, bodyHeight) {
 			var left = parseFloat(div.style.left);
 			var top = parseFloat(div.style.top);
 			var width_div = parseFloat(div.style.width);
 			var comment = div.data;
+			// var bodyHeight = div.ownerDocument.body.scrollHeight;
+			var bodyWidth = div.ownerDocument.body.clientWidth;
+			var paddingLeft = parseFloat(div.ownerDocument.body.style.paddingLeft);
+			var paddingRight = parseFloat(div.ownerDocument.body.style.paddingRight);
 			var container;
 			container = div.ownerDocument.getElementById('comment_text_container');
 			if (!container) {
 				container = document.createElement('div');
 				container.style.position = 'absolute';
 				container.style.color = 'red';
+				// container.style.overflowY = 'scroll';
+				// container.style.width = 'auto';
+				container.style.maxHeight = bodyHeight / 2 + 'px';
+				container.style.minWidth = '100px';
+				//左右各10cm间距
+				container.style.maxWidth = bodyWidth - 20 + 'px';
+				//盒模型 包括边框与内距 
+				container.style.boxSizing = 'border-box';
 				container.id = 'comment_text_container';
 				container.style.backgroundColor = '#ffffc4';
 				container.style.border = "1px solid #c48b40";
 				container.style.borderRadius = '3px';
 				container.style.padding = '0 20px';
+				container.style.zIndex = 1;
 				div.ownerDocument.body.appendChild(container);
 			}
-			container.innerHTML = '<p style="color:#a04e00; font-size:14px">' + comment + '</p>' +
+			var innerDivHeight = Math.floor((bodyHeight / 2 - 40) / 14) * 14 + 'px';
+			container.innerHTML = '<p style="overflow-y:scroll;color:#a04e00; align:center; max-height:' + innerDivHeight + ' ;font-size:14px; word-wrap: break-word">' + comment + '</p>' +
 				'<div style="left:40px;position: absolute; height:14px; width:14px;"></div>';
-			var width = container.clientWidth;
-			var height = container.clientHeight;
+			var width = container.offsetWidth;
+			var height = container.offsetHeight;
+
 			//小三角
 			var div_ = container.getElementsByTagName('div')[0];
-			div_.style.left = Math.floor(width / 2) - 7 + 'px';
-			//如果可以从上方显示
-			if (top > height + 14) {
-				//减去小三角的高度
-				container.style.top = top - height - 7 + 'px';
+			div_.style.left = left % bodyWidth - 10 + 'px';
+
+			if (top > bodyHeight / 2) {
+				//显示在上方
+				var top_ = top - height - 7;
+				container.style.top = top_ + 'px';
 				div_.style.background = "url('/app/svg/narrow_down.svg') no-repeat";
-			}else{
+			} else {
 				//显示在下方
-				container.style.top = width_div + 10 + 7 + 'px';
+				container.style.top = width_div + top + 7 + 'px';
 				div_.style.background = "url('/app/svg/narrow_up.svg') no-repeat";
-				div_.style.top =  '-14px';
+				div_.style.top = '-14px';
 			}
 
 			var p = container.getElementsByTagName('p')[0];
 			// var inner_width = p.clientWidth;
-			container.style.left = left - width / 2 + width_div / 2 + 'px';
+
+			// container.style.left = left - width / 2 + width_div / 2 + 'px';
+			if(left % bodyWidth  > (bodyWidth + width) /2){
+				//小圆点在div范围之外 小圆点靠右
+				//靠右显示
+				//10位div图标的宽度一半 7位小箭头宽度的一半
+				container.style.left = left - width + 10 + 7 + 'px';
+				div_.style.left = width - 14 + 'px';
+			}else if(left % bodyWidth < (bodyWidth - width) /2){
+				//靠左显示
+				container.style.left = left + 'px';
+				div_.style.left = '0px';
+			}else{
+				//显示在中间
+				container.style.left = Math.floor(left / bodyWidth) * bodyWidth + (bodyWidth - width) / 2 + 'px';
+				div_.style.left = Math.abs((bodyWidth - width)/2 - left % bodyWidth) + 'px';
+			}
+			
 			container.style.display = 'block';
 		}
 
@@ -377,6 +415,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			if (!comment || comment.trim().length === 0) {
 				return null;
 			}
+			var self_ = this;
 			var icon_width = 20;
 			var icon_height = 20;
 			var icon = document.createElement('div');
@@ -392,10 +431,14 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			icon.style.lineHeight = '10px';
 			icon.data = comment;
 			icon.innerText = "...";
-			icon.onclick = icon.ontouch = function(evt) {
+			// icon.onclick = icon.ontouch = function(evt) {
+			// 	evt.stopPropagation();
+			// 	showCommentText(this, self_.pageHeight);
+			// }
+			icon.addEventListener('touchend', function (evt) {
 				evt.stopPropagation();
-				showCommentText(this);
-			}
+				showCommentText(this, self_.pageHeight);
+			}, false);
 			if (data.length == 1) {
 				icon.style.top = Math.floor(data[0].y + data[0].height / 2) + 'px';
 				icon.style.left = (EPUBJS.BookInterface.view.chapterPos - 1) * EPUBJS.BookInterface.view.pageWidth + data[0].x + data[0].width + 'px';
@@ -414,7 +457,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
 		// 根据解析来的坐标信息创建出div信息
 		var divs = resolveDivData(divDatas);
 		// 创建小圆点 如果 comment为null or "" icon为null
-		var icon = resolveCommentIcon(divDatas[divDatas.length - 1], comment, divs[0].groupId);
+		var icon = resolveCommentIcon.call(self_, divDatas[divDatas.length - 1], comment, divs[0].groupId);
 		for (var i = 0; i < divs.length; i++) {
 			self_.document.body.appendChild(divs[i]);
 		}
@@ -426,6 +469,21 @@ EPUBJS.pluginView.PopMenu.prototype = {
 			var position_start = EPUBJS.DomUtil.getPosition(parent, startContainer);
 			var position_end = EPUBJS.DomUtil.getPosition(parent, endContainer);
 			var uuid = divs[0].groupId;
+			/**
+     * 返回data含义
+      '{"dataId":"9bc1b40b-eafa-44f1-8e11-86e2751b757f",'此条笔记的id
+    '"index":2,' 此条笔记所在的html对应页面的index
+    '"startContainer":[6,9],' 此条笔记对应的开始节点 从 body元素找起 第一层的第六个元素，第二层的第9个元素
+    '"endContainer":[8,1],' 此条笔记对应的开始节点 从 body元素找起 第一层的第六个元素，第二层的第9个元素
+    '"startOffset":81,"endOffset":144,' 在起始节点中的文字偏移量
+    '"parent":[2],' 起始节点与中止节点公共父元素（直接父元素）位置信息
+    '"time":1445755306203,'+ note创建时间
+    '"tag":"comment",'+ 此条笔记属于评论（还有 underline 与 copy 对应不同的操作）
+        //选中的纯文本信息
+    '"text":"篇4种，课文全部经过调整，部分课文完全重写，一些小知识也相应更新，同时采纳读者建议，增设生词表，方便读者查阅。《中文在手》系列丛书主要面向来华旅游、学习、工作的外国人和希望学习汉语、了解中国的外国朋友。整套丛书注重实用性、趣味性，兼顾科学性，突出时代感。所展示的日常交际用语和实用情景对话，基本可以满足外国人在中国的日常交际需要。该丛书既可以作为汉语实用交际手册，又可以作为专题式短期汉语教材使用。",'+
+        //评论内容(tag为comment时才有)
+    '"comment":"ddddddd"}';
+     */
 			var data = {
 					dataId: uuid,
 					index: self_.view.currentChapter.spinePos,
