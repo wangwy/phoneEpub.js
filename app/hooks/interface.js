@@ -87,6 +87,7 @@ EPUBJS.BookInterface = {
 		}
 	},
 	updateNote: function(dataId, comment) {
-		// body...
+		EPUBJS.BookInterface.menu.updateNote(dataId, comment);
+		EPUBJS.core.postMessageToMobile("updateNote", true);
 	}
 };

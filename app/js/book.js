@@ -230,7 +230,7 @@ EPUBJS.Book.prototype.gotoNote = function (spinePos, parentPosition, startContai
   return this.q.enqueue(function () {
     if (spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
-        var parent = EPUBJS.DomUtil.findNode(this.renderer.view.doc.body, parentPosition);
+        var parent = EPUBJS.DomUtil.findNode(this.renderer.doc.body, parentPosition);
         var element = EPUBJS.DomUtil.findNode(parent, startContainerPosition);
         var range = document.createRange();
         if (offset) {
