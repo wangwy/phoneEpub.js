@@ -286,7 +286,6 @@ EPUBJS.Book.prototype.getCurrentPos = function () {
  * @param size
  */
 EPUBJS.Book.prototype.resetFontSize = function (size) {
-  this.chaptersNum = {};
   this.renderer.resetFontSize(size);
   this.reset();
 };
@@ -296,7 +295,6 @@ EPUBJS.Book.prototype.resetFontSize = function (size) {
  * @param family
  */
 EPUBJS.Book.prototype.resetFontFamily = function (family) {
-  this.chaptersNum = {};
   this.renderer.resetFontFamily(family);
   this.reset();
 };
@@ -308,6 +306,7 @@ EPUBJS.Book.prototype.resetFontFamily = function (family) {
 EPUBJS.Book.prototype.reset = function () {
   var spinePos = this.spinePos;
   var offset = this.renderer.currentOffset;
+  this.chaptersNum = {};
   return this.displayChapter(spinePos, false, true).then(function(){
     this.renderer.gotoOffset(offset);
     return this.getAllChapterNum();
@@ -400,34 +399,39 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   }, false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
-    event.preventDefault();
-    endX = event.touches[0].clientX;
-    var deltaX = endX - startX;
-    var pageOffsetX = this.renderer.getLeft() - deltaX;
-    this.renderer.setLeft(pageOffsetX);
+    endTime = new Date();
+    if(endTime - startTime < 500){
+      event.preventDefault();
+      endX = event.touches[0].clientX;
+      var deltaX = endX - startX;
+      var pageOffsetX = this.renderer.getLeft() - deltaX;
+      this.renderer.setLeft(pageOffsetX);
+    }
 
   }.bind(this), false);
 
   this.renderer.doc.addEventListener("touchend", function (event) {
-    endX = event.changedTouches[0].clientX;
     endTime = new Date();
-    var deltaX = endX - startX;
-    if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < 0)) {
-      durTime = (pageWidth + deltaX) * (time / pageWidth);
-      this.nextPage(durTime);
-    } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > 0)) {
-      durTime = (pageWidth - deltaX) * (time / pageWidth);
-      this.prevPage(durTime);
-    } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
-      durTime = Math.abs(deltaX) * (time * 4 / pageWidth);
-      this.renderer.currentPage(durTime);
-    } else if (deltaX === 0) {
-      if (endX > (window.innerWidth / 3 * 2)) {
-        this.nextPage(time);
-      } else if (endX < window.innerWidth / 3) {
-        this.prevPage(time);
-      } else {
-        EPUBJS.core.postMessageToMobile("screenClick", {screenX: endX, screenY: event.changedTouches[0].clientY});
+    if(endTime - startTime < 500){
+      endX = event.changedTouches[0].clientX;
+      var deltaX = endX - startX;
+      if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < -window.innerWidth/100)) {
+        durTime = (pageWidth + deltaX) * (time / pageWidth);
+        this.nextPage(durTime);
+      } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > window.innerWidth/100)) {
+        durTime = (pageWidth - deltaX) * (time / pageWidth);
+        this.prevPage(durTime);
+      } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
+        durTime = Math.abs(deltaX) * (time * 4 / pageWidth);
+        this.renderer.currentPage(durTime);
+      } else if (deltaX >= -window.innerWidth/100 && deltaX <= window.innerWidth/100) {
+        if (endX > (window.innerWidth / 3 * 2)) {
+          this.nextPage(time);
+        } else if (endX < window.innerWidth / 3) {
+          this.prevPage(time);
+        } else {
+          EPUBJS.core.postMessageToMobile("screenClick", {screenX: endX, screenY: event.changedTouches[0].clientY});
+        }
       }
     }
   }.bind(this), false);
@@ -485,7 +489,7 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
     }
     var layout = new EPUBJS.Layout["Reflowable"]();
     if (renderer.fontSize) {
-      body.style.fontSize = renderer.fontSize;
+      body.style.fontSize = renderer.fontSize + "px";
     }
     if (renderer.fontFamily) {
       body.style.fontFamily = renderer.fontFamily;
