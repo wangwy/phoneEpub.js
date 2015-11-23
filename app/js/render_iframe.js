@@ -134,6 +134,25 @@ EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
 };
 
 /**
+ * head标签里添加新的标签
+ * @param tag
+ * @param attrs
+ */
+EPUBJS.Render.Iframe.prototype.addHeadTag = function (tag, attrs) {
+  var doc = this.document;
+  var tagEl = doc.createElement(tag);
+  var headEl = doc.head;
+
+  for(var attr in attrs){
+    tagEl.setAttribute(attr, attrs[attr]);
+  }
+
+  if(headEl){
+    headEl.insertBefore(tagEl, headEl.firstChild);
+  }
+};
+
+/**
  * 计算RECT在第几页
  * @param boundingClientRect
  * @returns {number}

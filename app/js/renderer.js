@@ -468,10 +468,19 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
 };
 
 /**
+ * head里添加标签
+ * @param headTags
+ */
+EPUBJS.Renderer.prototype.addHeadTags = function (headTags) {
+  for(var headTag in headTags){
+    this.render.addHeadTag(headTag, headTags[headTag]);
+  }
+};
+
+/**
  * 轮训"query",让它执行"func"函数
  * @param query
  * @param func
- * @param finished
  * @param progress
  */
 EPUBJS.Renderer.prototype.replace = function (query, func, progress) {

@@ -10,10 +10,11 @@ EPUBJS.Book = function (options) {
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.chaptersNum = options.chaptersNum || {};
-  if(options.fontSize){
+  this.headTags = options.headTags || {};
+  if (options.fontSize) {
     this.renderer.resetFontSize(options.fontSize);
   }
-  if(options.fontFamily){
+  if (options.fontFamily) {
     this.renderer.resetFontFamily(options.fontFamily);
   }
   this.spinePos = 0;
@@ -262,14 +263,14 @@ EPUBJS.Book.prototype.gotoOffset = function (spinePos, offset) {
   return this.q.enqueue(function () {
     if (spinePos != this.spinePos && spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
-        if(offset){
+        if (offset) {
           this.renderer.gotoOffset(offset);
         }
       }.bind(this));
-    }else{
-      if(offset){
+    } else {
+      if (offset) {
         this.renderer.gotoOffset(offset);
-      }else{
+      } else {
         this.renderer.firstPage();
       }
     }
@@ -315,7 +316,7 @@ EPUBJS.Book.prototype.reset = function () {
   var spinePos = this.spinePos;
   var offset = this.renderer.currentOffset;
   this.chaptersNum = {};
-  return this.displayChapter(spinePos, false, true).then(function(){
+  return this.displayChapter(spinePos, false, true).then(function () {
     this.renderer.gotoOffset(offset);
     return this.getAllChapterNum();
   }.bind(this)).then(function (chaptersNum) {
@@ -408,7 +409,7 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
     endTime = new Date();
-    if(endTime - startTime < 500){
+    if (endTime - startTime < 500) {
       event.preventDefault();
       endX = event.touches[0].clientX;
       var deltaX = endX - startX;
@@ -420,19 +421,19 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 
   this.renderer.doc.addEventListener("touchend", function (event) {
     endTime = new Date();
-    if(endTime - startTime < 500){
+    if (endTime - startTime < 500) {
       endX = event.changedTouches[0].clientX;
       var deltaX = endX - startX;
-      if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < -window.innerWidth/100)) {
+      if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < -window.innerWidth / 100)) {
         durTime = (pageWidth + deltaX) * (time / pageWidth);
         this.nextPage(durTime);
-      } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > window.innerWidth/100)) {
+      } else if (deltaX > Threshold || (endTime - startTime < 100 && deltaX > window.innerWidth / 100)) {
         durTime = (pageWidth - deltaX) * (time / pageWidth);
         this.prevPage(durTime);
       } else if (Math.abs(deltaX) > 0 && Math.abs(deltaX) <= Threshold) {
         durTime = Math.abs(deltaX) * (time * 4 / pageWidth);
         this.renderer.currentPage(durTime);
-      } else if (deltaX >= -window.innerWidth/100 && deltaX <= window.innerWidth/100) {
+      } else if (deltaX >= -window.innerWidth / 100 && deltaX <= window.innerWidth / 100) {
         if (endX > (window.innerWidth / 3 * 2)) {
           this.nextPage(time);
         } else if (endX < window.innerWidth / 3) {
@@ -446,10 +447,21 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 };
 
 /**
+ * head标签里添加标签
+ * @param renderer
+ */
+EPUBJS.Book.prototype.addHeadTags = function (renderer) {
+  if (Object.keys(this.headTags).length) {
+    renderer.addHeadTags(this.headTags);
+  }
+};
+
+/**
  * 注册hooks回调函数
  * @param renderer
  */
 EPUBJS.Book.prototype.registerReplacements = function (renderer) {
+  renderer.registerHook("beforeChapterDisplay", this.addHeadTags.bind(this), true);
   renderer.registerHook("beforeChapterDisplay", EPUBJS.replace.hrefs.bind(this), true);
 };
 
