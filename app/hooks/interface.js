@@ -81,7 +81,7 @@ EPUBJS.BookInterface = {
         var text = note.text;
         //添加至任务队列 异步加载 此处页面并未显示 如果直接调用划线将不准确
         setTimeout(function() {
-          EPUBJS.BookInterface.menu._applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false);
+          EPUBJS.BookInterface.menu._applyInlineStyle(text, comment, startContainerEle, endContainerEle, startOffset, endOffset, parentEle, false, note.dataId);
         }, 0)
       }
     }

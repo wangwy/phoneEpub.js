@@ -102,7 +102,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
      @param parent 起始节点与终止节点的共同直接父元素 Range.commonAncestorContainer
      @param needStore 当前划线信息是否需要存储 重绘的线不需要 新增的笔记需要存储 true 存储｜false 不存储
    */
-  _applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore) {
+  _applyInlineStyle: function(text, comment, startContainer, endContainer, startOffset, endOffset, parent, needStore, dataId) {
     var self_ = this;
     /**
      * 通过解析所有字的坐标信息 获取矩形区域的信息
@@ -143,7 +143,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
         return null;
       }
       var divs = [];
-      var uuid = EPUBJS.core.uuid();
+      var uuid = dataId ? dataID : EPUBJS.core.uuid();
 
       //笔记区域点击后的回调
       var callback = function(evt) {
