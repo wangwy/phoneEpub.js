@@ -308,6 +308,39 @@ EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) 
 };
 
 /**
+ * 全局搜索text
+ * @param text
+ * @returns {Promise.promise|*}
+ */
+EPUBJS.Book.prototype.searchText = function (text) {
+  var book = this, textsMap = [], texts = [];
+  var url, defer = new RSVP.defer();
+
+  function getSearchText(i) {
+    if (i < spine.length) {
+      url = book.spine[i].url;
+      EPUBJS.core.request(url, "xml").then(function (content) {
+        texts = book.renderer.searchText(text, content, i);
+        textsMap = textsMap.concat(texts);
+        if (textsMap.length >= 50) {
+          EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap});
+          defer.resolve(textsMap);
+        } else {
+          getSearchText(i + 1);
+        }
+      });
+    } else {
+      EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap});
+      defer.resolve(textsMap);
+    }
+  }
+
+  getSearchText(0);
+
+  return defer.promise;
+};
+
+/**
  * 获取当前位置信息
  */
 EPUBJS.Book.prototype.getCurrentPos = function () {
@@ -572,37 +605,6 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
   }
 
   getChapter(0);
-  return defer.promise;
-};
-
-/**
- * 全局搜索text
- * @param text
- * @returns {Promise.promise|*}
- */
-EPUBJS.Book.prototype.searchText = function (text) {
-  var book = this, textsMap = [], texts = [];
-  var url, defer = new RSVP.defer();
-
-  function getSearchText(i) {
-    if (i < spine.length) {
-      url = book.spine[i].url;
-      EPUBJS.core.request(url, "xml").then(function (content) {
-        texts = book.renderer.searchText(text, content, i);
-        textsMap = textsMap.concat(texts);
-        if (textsMap.length >= 50) {
-          defer.resolve(textsMap);
-        } else {
-          getSearchText(i + 1);
-        }
-      });
-    } else {
-      defer.resolve(textsMap);
-    }
-  }
-
-  getSearchText(0);
-
   return defer.promise;
 };
 
