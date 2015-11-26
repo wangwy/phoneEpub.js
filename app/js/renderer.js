@@ -162,7 +162,7 @@ EPUBJS.Renderer.prototype.getChapterNameBypg = function (pg) {
 EPUBJS.Renderer.prototype.mapPage = function () {
   var renderer = this;
   var map = [];
-  var root = this.render.docEl;
+  var root = this.render.bodyEl;
   var page = 1;
   var width = this.layout.colWidth;
   var count = 0;
@@ -472,7 +472,7 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
  * @param headTags
  */
 EPUBJS.Renderer.prototype.addHeadTags = function (headTags) {
-  for(var headTag in headTags){
+  for (var headTag in headTags) {
     this.render.addHeadTag(headTag, headTags[headTag]);
   }
 };
@@ -510,6 +510,155 @@ EPUBJS.Renderer.prototype.replace = function (query, func, progress) {
  */
 EPUBJS.Renderer.prototype.getCurrentPos = function () {
   return this.pageMap[this.chapterPos - 1];
+};
+
+/**
+ * 获取element的xPath
+ * @param element
+ * @returns {string}
+ */
+EPUBJS.Renderer.prototype.getXPathByElement = function (element) {
+  var paths = [];
+  var isXhtml = (element.ownerDocument.documentElement.getAttribute("xmlns") === "http://www.w3.org/1999/xhtml");
+  var index, nodeName, tagName, pathIndex;
+  if (element.nodeType == Node.TEXT_NODE) {
+    index = EPUBJS.core.indexOfTextNode(element) + 1;
+    paths.push("text()[" + index + "]");
+    element = element.parentNode;
+  }
+  for (; element && element.nodeType == Node.ELEMENT_NODE; element = element.parentNode) {
+    index = 0;
+    for (var sibling = element.previousSibling; sibling; sibling = sibling.previousSibling) {
+
+      //忽略doc的类型声明
+      if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE) {
+        continue;
+      }
+      if (sibling.nodeName == element.nodeName) {
+        ++index;
+      }
+    }
+    nodeName = element.nodeName.toLowerCase();
+    tagName = (isXhtml ? "xhtml:" + nodeName : nodeName);
+    pathIndex = (index ? "[" + (index + 1) + "]" : "");
+    paths.splice(0, 0, tagName + pathIndex);
+  }
+  return paths.length ? "./" + paths.join("/") : null;
+};
+
+/**
+ * 通过xPath获取element
+ * @param xpath
+ * @returns {Node}
+ */
+EPUBJS.Renderer.prototype.getElementByXPath = function (xpath) {
+  var startContainer = this.doc.evaluate(xpath, this.doc, EPUBJS.core.nsResolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  return startContainer;
+};
+
+/**
+ * 从本页面中查找文本
+ * @param doc
+ * @param text
+ * @param spinePos
+ * @returns {Array}
+ */
+EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos) {
+  var treeWalker = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, {
+    acceptNode: function (node) {
+      if (node.textContent.trim().length > 0) {
+        return NodeFilter.FILTER_ACCEPT;
+      } else {
+        return NodeFilter.FILTER_REJECT;
+      }
+    }
+  }, false);
+  var node, results = [], offset = -1, xPath;//,  pg, rectMap, divFrag = document.createDocumentFragment();
+  while (node = treeWalker.nextNode()) {
+    offset = node.textContent.indexOf(text);
+    if (offset != -1) {
+      xPath = this.getXPathByElement(node);
+      results.push({nodeText: node.textContent, search: text, spinePos: spinePos, xPath: xPath, offset: offset});
+    }
+  }
+  return results;
+};
+
+/**
+ * 获取坐标
+ * @param node
+ * @param offset
+ * @param length
+ * @returns {Array}
+ */
+EPUBJS.Renderer.prototype.getHighlightRects = function (node, offset, length) {
+  var range = document.createRange(), rect, endRect = {}, map = [];
+  for (var i = offset; i < (offset + length); i++) {
+    range.setStart(node, i);
+    range.setEnd(node, i + 1);
+    rect = range.getBoundingClientRect();
+    if (i == offset) {
+      endRect = rect;
+      map.push({start: rect, end: null});
+    } else {
+      if (rect.top == endRect.top) {
+        endRect = rect;
+      } else {
+        map[map.length - 1].end = endRect;
+        endRect = rect;
+        map.push({start: rect, end: null});
+      }
+    }
+  }
+  if (endRect) {
+    map[map.length - 1].end = endRect;
+  }
+  return map;
+};
+
+/**
+ * 根据坐标创建div，用于做背景
+ * @param width
+ * @param height
+ * @param left
+ * @param top
+ */
+EPUBJS.Renderer.prototype.createHighlightDiv = function (width, height, left, top) {
+  var div = this.doc.createElement("div");
+  div.style.position = "absolute";
+  div.style.opacity = "0.16";
+  div.style.width = width + "px";
+  div.style.height = height + "px";
+  div.style.left = left + "px";
+  div.style.top = top + "px";
+  div.style.backgroundColor = "rgb(204,51,0)";
+  div.setAttribute("class", "highlight-search");
+  return div;
+};
+
+/**
+ * 高亮文字
+ * @param node
+ * @param offset
+ * @param length
+ */
+EPUBJS.Renderer.prototype.highlight = function (node, offset, length) {
+  var rectMap = this.getHighlightRects(node, offset, length);
+  var divFrag = document.createDocumentFragment();
+  rectMap.forEach(function (rects) {
+    divFrag.appendChild(this.createHighlightDiv(rects.end.right - rects.start.left, rects.start.height, rects.start.left, rects.start.top));
+  }, this);
+  this.doc.body.appendChild(divFrag);
+};
+
+/**
+ * 清除背景
+ */
+EPUBJS.Renderer.prototype.unHighlight = function () {
+  var items = Array.prototype.slice.apply(this.doc.body.getElementsByClassName("highlight-search"));
+  items.forEach(function (item) {
+    this.doc.body.removeChild(item);
+  }, this);
 };
 
 RSVP.EventTarget.mixin(EPUBJS.Renderer.prototype);
