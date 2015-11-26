@@ -143,7 +143,7 @@ EPUBJS.pluginView.PopMenu.prototype = {
         return null;
       }
       var divs = [];
-      var uuid = dataId ? dataID : EPUBJS.core.uuid();
+      var uuid = dataId ? dataId : EPUBJS.core.uuid();
 
       //笔记区域点击后的回调
       var callback = function(evt) {
