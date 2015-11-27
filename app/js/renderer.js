@@ -162,7 +162,7 @@ EPUBJS.Renderer.prototype.getChapterNameBypg = function (pg) {
 EPUBJS.Renderer.prototype.mapPage = function () {
   var renderer = this;
   var map = [];
-  var root = this.render.bodyEl;
+  var root = this.render.docEl;
   var page = 1;
   var width = this.layout.colWidth;
   var count = 0;
@@ -573,7 +573,7 @@ EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos) {
       }
     }
   }, false);
-  var node, results = [], offset = -1, xPath;//,  pg, rectMap, divFrag = document.createDocumentFragment();
+  var node, results = [], offset = -1, xPath;
   while (node = treeWalker.nextNode()) {
     offset = node.textContent.indexOf(text);
     if (offset != -1) {

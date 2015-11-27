@@ -8,9 +8,8 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartimages = function (renderer) 
   items.forEach(function (item) {
     var itemRect = item.getBoundingClientRect(),
         rectHeight = itemRect.height,
+        rectWidth = itemRect.width,
         top = itemRect.top,
-        oHeight = item.getAttribute('data-height'),
-        height = oHeight || rectHeight,
         newHeight,
         fontSize = Number(getComputedStyle(item, "").fontSize.match(/(\d*(\.\d*)?)px/)[1]),
         fontAdjust = fontSize ? fontSize / 2 : 0;
@@ -18,18 +17,16 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartimages = function (renderer) 
     iheight = renderer.viewDimensions.viewHeight;
     iwidth = renderer.viewDimensions.viewWidth;
     if (top < 0) top = 0;
-    if (height + top >= iheight) {
+    if (rectHeight + top >= iheight || rectWidth >= iwidth) {
       if (top < iheight / 2) {
         newHeight = iheight - top - fontAdjust;
         item.style.maxHeight = newHeight + "px";
 
         item.style.maxWidth = iwidth + "px";
       } else {
-        if (height > iheight) {
+        if (rectHeight > iheight || rectWidth >= iwidth) {
           item.style.maxHeight = iheight + "px";
           item.style.maxWidth = iwidth + "px";
-          itemRect = item.getBoundingClientRect();
-          height = itemRect.height;
         }
         item.style["WebkitColumnBreakBefore"] = "always";
         item.style["breakBefore"] = "column";
