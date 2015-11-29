@@ -19,6 +19,8 @@ EPUBJS.Book = function (options) {
   }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
+  //翻页队列
+  this.paginationQ = new EPUBJS.Queue(this);
   this.bookPage = document.getElementById("bookPage");
   this.registerReplacements(this.renderer);
 };
@@ -278,6 +280,69 @@ EPUBJS.Book.prototype.gotoOffset = function (spinePos, offset) {
 };
 
 /**
+ * 查询内容的跳转
+ * @param spinePos
+ * @param xPath
+ * @param offset
+ * @param text
+ * @returns {*}
+ */
+EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) {
+  return this.q.enqueue(function () {
+    if (spinePos != this.spinePos && spinePos >= 0 && spinePos < this.spine.length) {
+      this.displayChapter(spinePos, false, true).then(function () {
+        var ele = this.renderer.getElementByXPath(xPath);
+        this.renderer.highlight(ele, offset, text.length);
+        var range = document.createRange();
+        range.setStart(ele, offset);
+        range.setEnd(ele, offset + text.length);
+        this.renderer.gotoRange(range);
+      }.bind(this));
+    } else {
+      var ele = this.renderer.getElementByXPath(xPath);
+      this.renderer.highlight(ele, offset, text.length);
+      var range = document.createRange();
+      range.setStart(ele, offset);
+      range.setEnd(ele, offset + text.length);
+      this.renderer.gotoRange(range);
+    }
+  }.bind(this))
+};
+
+/**
+ * 全局搜索text
+ * @param text
+ * @returns {Promise.promise|*}
+ */
+EPUBJS.Book.prototype.searchText = function (text) {
+  var book = this, textsMap = [], texts = [];
+  var url, defer = new RSVP.defer();
+
+  function getSearchText(i) {
+    if (i < spine.length) {
+      url = book.spine[i].url;
+      EPUBJS.core.request(url, "xml").then(function (content) {
+        texts = book.renderer.searchText(text, content, i);
+        textsMap = textsMap.concat(texts);
+        if (textsMap.length >= 50) {
+          EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap});
+          defer.resolve(textsMap);
+        } else {
+          getSearchText(i + 1);
+        }
+      });
+    } else {
+      EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap});
+      defer.resolve(textsMap);
+    }
+  }
+
+  getSearchText(0);
+
+  return defer.promise;
+};
+
+/**
  * 获取当前位置信息
  */
 EPUBJS.Book.prototype.getCurrentPos = function () {
@@ -330,13 +395,15 @@ EPUBJS.Book.prototype.reset = function () {
  * @returns {*}
  */
 EPUBJS.Book.prototype.nextPage = function (durTime) {
-  return this.renderer.nextPage(durTime)
-      .then(function (result) {
-        if (!result) {
-          return this.nextChapter();
-        }
-      }.bind(this));
-
+  this.paginationQ.clear();
+  return  this.paginationQ.enqueue(function () {
+    this.renderer.nextPage(durTime)
+        .then(function (result) {
+          if (!result) {
+            return this.nextChapter();
+          }
+        }.bind(this));
+  }.bind(this));
 };
 
 /**
@@ -344,12 +411,15 @@ EPUBJS.Book.prototype.nextPage = function (durTime) {
  * @returns {*}
  */
 EPUBJS.Book.prototype.prevPage = function (durTime) {
-  return this.renderer.prevPage(durTime)
-      .then(function (result) {
-        if (!result) {
-          return this.prevChapter();
-        }
-      }.bind(this));
+  this.paginationQ.clear();
+  return this.paginationQ.enqueue(function () {
+    this.renderer.prevPage(durTime)
+        .then(function (result) {
+          if (!result) {
+            return this.prevChapter();
+          }
+        }.bind(this));
+  }.bind(this));
 };
 
 /**
@@ -403,9 +473,10 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   var startX, endX, durTime, startTime, endTime;
   this.renderer.doc.addEventListener("touchstart", function (event) {
     // event.preventDefault();
+    this.renderer.unHighlight();
     startX = event.touches[0].clientX;
     startTime = new Date();
-  }, false);
+  }.bind(this), false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
     endTime = new Date();
@@ -421,9 +492,9 @@ EPUBJS.Book.prototype.addEventListeners = function () {
 
   this.renderer.doc.addEventListener("touchend", function (event) {
     endTime = new Date();
-    if (endTime - startTime < 500) {
-      endX = event.changedTouches[0].clientX;
-      var deltaX = endX - startX;
+    endX = event.changedTouches[0].clientX;
+    var deltaX = endX - startX;
+    if ((endTime - startTime < 500) || deltaX != 0) {
       if (deltaX < -Threshold || (endTime - startTime < 100 && deltaX < -window.innerWidth / 100)) {
         durTime = (pageWidth + deltaX) * (time / pageWidth);
         this.nextPage(durTime);

@@ -273,3 +273,23 @@ EPUBJS.core.nsResolver = function (prefix) {
   };
   return ns[prefix] || null;
 };
+
+/**
+ * 获取textNode在父元素里的位置
+ * @param textNode
+ * @returns {number}
+ */
+EPUBJS.core.indexOfTextNode = function (textNode) {
+  var parent = textNode.parentNode;
+  var children = parent.childNodes;
+  var sib;
+  var index = -1;
+  for(var i = 0; i < children.length; i++){
+    sib = children[i];
+    if(sib.nodeType === Node.TEXT_NODE){
+      index++;
+    }
+    if(sib == textNode) break;
+  }
+  return index;
+};
