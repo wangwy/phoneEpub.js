@@ -309,12 +309,16 @@ EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) 
   }.bind(this))
 };
 
+EPUBJS.Book.prototype.searchText = function (text) {
+  return this.q.enqueue(this._searchText.bind(this), text);
+};
+
 /**
  * 全局搜索text
  * @param text
  * @returns {Promise.promise|*}
  */
-EPUBJS.Book.prototype.searchText = function (text) {
+EPUBJS.Book.prototype._searchText = function (text) {
   var book = this, textsMap = [], texts = [];
   var url, defer = new RSVP.defer();
 

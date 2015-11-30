@@ -42,8 +42,7 @@ EPUBJS.core.request = function (url) {
   function handler() {
     if (this.readyState === this.DONE) {
       if (this.status === 200) {
-        var r = this.responseXML;
-        deferred.resolve(r);
+        deferred.resolve(this.responseXML);
       } else {
         deferred.reject({
           message: this.response,
