@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <head>
+    <meta name="dtb:uid" content="urn:uuid:b6c45774-b30c-4cb0-b518-f4e64836fa98" />
+    <meta name="dtb:depth" content="2" />
+    <meta name="dtb:totalPageCount" content="0" />
+    <meta name="dtb:maxPageNumber" content="0" />
+  </head>
+  <docTitle>
+    <text>别随情绪做傻事</text>
+  </docTitle>
+  <navMap>
+    <navPoint id="navPoint-1" playOrder="1">
+      <navLabel>
+        <text>封面</text>
+      </navLabel>
+      <content src="Cover.xhtml" />
+    </navPoint>
+    <navPoint id="navPoint-2" playOrder="2">
+      <navLabel>
+        <text>版权信息</text>
+      </navLabel>
+      <content src="Copyright.xhtml" />
+    </navPoint>
+	<navPoint id="navPoint-0" playOrder="0">
+	<navLabel>
+	<text>前言</text>
+	</navLabel>
+	<content src="ds00216101.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-1" playOrder="1">
+	<navLabel>
+	<text>第一章 为什么老是有人说你少根筋</text>
+	</navLabel>
+	<content src="ds00216102.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-2" playOrder="2">
+	<navLabel>
+	<text>第二章 哈佛学生喜欢做的那些事儿</text>
+	</navLabel>
+	<content src="ds00216103.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-3" playOrder="3">
+	<navLabel>
+	<text>第三章 没有几个忧郁女生会等到她的白马王子</text>
+	</navLabel>
+	<content src="ds00216104.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-4" playOrder="4">
+	<navLabel>
+	<text>第四章 柴米酱醋盐,谁家七年痒</text>
+	</navLabel>
+	<content src="ds00216105.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-5" playOrder="5">
+	<navLabel>
+	<text>第五章 闪开,让我歌唱小鬼们</text>
+	</navLabel>
+	<content src="ds00216106.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-6" playOrder="6">
+	<navLabel>
+	<text>第六章 火爆脾气玩的小花招——让你和饭碗说拜拜</text>
+	</navLabel>
+	<content src="ds00216107.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-7" playOrder="7">
+	<navLabel>
+	<text>第七章 物以类聚、人以群分,你调节好自己的气场了吗</text>
+	</navLabel>
+	<content src="ds00216108.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-8" playOrder="8">
+	<navLabel>
+	<text>第八章 情绪的蝴蝶扇扇翅膀,拿破仑也要败在滑铁卢</text>
+	</navLabel>
+	<content src="ds00216109.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-9" playOrder="9">
+	<navLabel>
+	<text>第九章 改变,从心开始</text>
+	</navLabel>
+	<content src="ds00216110.xhtml" />
+	</navPoint>
+	<navPoint id="navPoint-10" playOrder="10">
+	<navLabel>
+	<text>第十章 吸引力法则,不需要实践</text>
+	</navLabel>
+	<content src="ds00216111.xhtml" />
+	</navPoint>
+
+  </navMap>
+</ncx>
