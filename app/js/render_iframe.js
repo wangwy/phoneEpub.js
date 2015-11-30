@@ -65,19 +65,21 @@ EPUBJS.Render.Iframe.prototype.setPageDimensions = function (pageWidth, pageHeig
 };
 
 /**
+ * 获取显示区域的高度与宽度
+ */
+EPUBJS.Render.Iframe.prototype.getViewDimensions = function () {
+  return {
+    viewHeight: this.pageHeight,
+    viewWidth: this.pageWidth - this.padding.left - this.padding.right
+  };
+};
+
+/**
  * 计算iframe的高宽
  */
 EPUBJS.Render.Iframe.prototype.resized = function () {
   this.width = this.iframe.getBoundingClientRect().width;
   this.height = this.iframe.getBoundingClientRect().height;
-};
-
-/**
- * 返回根节点
- * @returns {null|*}
- */
-EPUBJS.Render.Iframe.prototype.getBaseElement = function () {
-  return this.bodyEl;
 };
 
 /**
@@ -105,7 +107,7 @@ EPUBJS.Render.Iframe.prototype.getLeft = function (pg) {
  * @param time
  */
 EPUBJS.Render.Iframe.prototype.setLeft = function (lefPos, time) {
-  this.docEl.style.webkitTransition = '-webkit-transform ' + time +'ms';
+  this.docEl.style.webkitTransition = '-webkit-transform ' + time +'ms cubic-bezier(0.33, 0.66, 0.66, 1)';
   this.docEl.style.webkitTransform = 'translate3d('+(-lefPos)+'px, 0, 0)';
 };
 
@@ -120,9 +122,46 @@ EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
 };
 
 /**
- * 页面加载之前设置iframe的高度与宽度
+ * 计算节点在第几页
+ * @param el
+ * @returns {number}
  */
-EPUBJS.Render.Iframe.prototype.resetWidthAndHeight = function () {
-  this.iframe.style.width = "100%";
-  this.iframe.style.height = "100%";
+EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
+  var left, pg;
+  left = this.leftPos + el.getBoundingClientRect().left;
+  pg = Math.floor(left/this.pageWidth) + 1;
+  return pg;
 };
+
+/**
+ * head标签里添加新的标签
+ * @param tag
+ * @param attrs
+ */
+EPUBJS.Render.Iframe.prototype.addHeadTag = function (tag, attrs) {
+  var doc = this.document;
+  var tagEl = doc.createElement(tag);
+  var headEl = doc.head;
+
+  for(var attr in attrs){
+    tagEl.setAttribute(attr, attrs[attr]);
+  }
+
+  if(headEl){
+    headEl.insertBefore(tagEl, headEl.firstChild);
+  }
+};
+
+/**
+ * 计算RECT在第几页
+ * @param boundingClientRect
+ * @returns {number}
+ */
+EPUBJS.Render.Iframe.prototype.getPageNumberByRect = function (boundingClientRect) {
+  var left, pg;
+  left = this.leftPos + boundingClientRect.left;
+  pg = Math.floor(left / this.pageWidth) + 1;
+  return pg;
+};
+
+RSVP.EventTarget.mixin(EPUBJS.Render.Iframe);

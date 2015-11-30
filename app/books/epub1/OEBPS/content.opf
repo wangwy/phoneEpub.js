@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0">
+  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+    <dc:identifier id="BookId" opf:scheme="UUID">urn:uuid:b6c45774-b30c-4cb0-b518-f4e64836fa98</dc:identifier>
+    <dc:title>别随情绪做傻事</dc:title>
+    <dc:creator opf:role="aut">王云峰</dc:creator>
+    <dc:language>zh-CN</dc:language>
+    <dc:publisher>中国戏剧出版社</dc:publisher>
+    <dc:date>2011-11-1</dc:date>
+    <meta name="cover" content="ds002161.jpg" />
+    <meta content="0.5.3" name="Sigil version" />
+  </metadata>
+  <manifest>
+    <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />
+    <item href="Cover.xhtml" id="Cover.xhtml" media-type="application/xhtml+xml" />
+    <item href="Copyright.xhtml" id="Copyright.xhtml" media-type="application/xhtml+xml" />
+<item href="Images/ds002161.jpg" id="ds002161.jpg" media-type="image/png" />
+<item href="Images/ds00216103-1-l.jpg" id="ds00216103-1-l" media-type="image/png" />
+<item href="Images/ds00216103-2-l.jpg" id="ds00216103-2-l" media-type="image/png" />
+<item href="Images/ds00216104-1-l.jpg" id="ds00216104-1-l" media-type="image/png" />
+<item href="ds00216101.xhtml" id="ds00216101" media-type="application/xhtml+xml" />	
+<item href="ds00216102.xhtml" id="ds00216102" media-type="application/xhtml+xml" />	
+<item href="ds00216103.xhtml" id="ds00216103" media-type="application/xhtml+xml" />	
+<item href="ds00216104.xhtml" id="ds00216104" media-type="application/xhtml+xml" />	
+<item href="ds00216105.xhtml" id="ds00216105" media-type="application/xhtml+xml" />	
+<item href="ds00216106.xhtml" id="ds00216106" media-type="application/xhtml+xml" />	
+<item href="ds00216107.xhtml" id="ds00216107" media-type="application/xhtml+xml" />	
+<item href="ds00216108.xhtml" id="ds00216108" media-type="application/xhtml+xml" />	
+<item href="ds00216109.xhtml" id="ds00216109" media-type="application/xhtml+xml" />	
+<item href="ds00216110.xhtml" id="ds00216110" media-type="application/xhtml+xml" />	
+<item href="ds00216111.xhtml" id="ds00216111" media-type="application/xhtml+xml" />	
+
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="Cover.xhtml" />
+    <itemref idref="Copyright.xhtml" />
+<itemref idref="ds00216101" />	
+<itemref idref="ds00216102" />	
+<itemref idref="ds00216103" />	
+<itemref idref="ds00216104" />	
+<itemref idref="ds00216105" />	
+<itemref idref="ds00216106" />	
+<itemref idref="ds00216107" />	
+<itemref idref="ds00216108" />	
+<itemref idref="ds00216109" />	
+<itemref idref="ds00216110" />	
+<itemref idref="ds00216111" />	
+
+  </spine>
+  <guide>
+    <reference href="Cover.xhtml" title="Cover" type="cover" />
+  </guide>
+</package>

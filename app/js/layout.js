@@ -16,6 +16,8 @@ EPUBJS.Layout.Reflowable = function () {
  * @returns {{pageWidth: (null|*), pageHeight: *}}
  */
 EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _height) {
+  var body = documentElement.querySelector("body");
+
   var columnAxis = EPUBJS.core.prefixed('columnAxis');
   var columnGap = EPUBJS.core.prefixed('columnGap');
   var columnWidth = EPUBJS.core.prefixed('columnWidth');
@@ -49,11 +51,12 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
  * @returns {{displayedPages: number, pageCount}}
  */
 EPUBJS.Layout.Reflowable.prototype.calculatePages = function () {
+
   var totalWidth, displayedPages;
-  this.documentElement.style.width = "auto";
-  totalWidth = this.documentElement.scrollWidth;
-  this.documentElement.style.width = totalWidth + "px";
+  var range = this.documentElement.ownerDocument.createRange();
+  range.selectNodeContents(this.documentElement.querySelector("body"));
+  totalWidth = range.getBoundingClientRect().width;
   displayedPages = Math.ceil(totalWidth / this.pageWidth);
 
-  return totalWidth;
+  return displayedPages;
 };
