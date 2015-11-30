@@ -29,75 +29,24 @@ EPUBJS.core.prefixed = function (unprefixed) {
 /**
  * 与后台接口
  * @param url
- * @param type
- * @param withCredentials
  * @returns {Promise.promise|*}
  */
-EPUBJS.core.request = function (url, type, withCredentials) {
-  var supportsURL = window.URL;
-  var BLOB_RESPONSE = supportsURL ? "blob" : "arraybuffer";
-
+EPUBJS.core.request = function (url) {
   var deferred = new RSVP.defer();
-
   var xhr = new XMLHttpRequest();
-
-  var xhrPrototype = XMLHttpRequest.prototype;
-
-  if (!('overrideMimeType' in xhrPrototype)) {
-    Object.defineProperty(xhrPrototype, 'overrideMimeType', {
-      value: function xmlHttpRequestOverrideMimeType(mimeType) {
-      }
-    });
-  }
-  if (withCredentials) {
-    xhr.withCredentials = true;
-  }
   xhr.open("GET", url, true);
-  xhr.onreadystatechange = handler;
-
-  if (type == 'blob') {
-    xhr.responseType = BLOB_RESPONSE;
-  }
-
-  if (type == "json") {
-    xhr.setRequestHeader("Accept", "application/json");
-  }
-
-  if (type == 'xml') {
-    xhr.overrideMimeType('text/xml');
-  }
-
-  if (type == "binary") {
-    xhr.responseType = "arraybuffer";
-  }
 
   xhr.send();
-
+  xhr.overrideMimeType('text/xml');
+  xhr.onreadystatechange = handler;
   function handler() {
     if (this.readyState === this.DONE) {
       if (this.status === 200) {
-        var r;
-
-        if (type == 'xml') {
-          r = new DOMParser().parseFromString(this.responseText, 'text/xml');
-        } else if (type == 'json') {
-          r = JSON.parse(this.responseText);
-        } else if (type == 'blob') {
-
-          if (supportsURL) {
-            r = this.responseText;
-          } else {
-            r = new Blob([this.responseText]);
-          }
-
-        } else {
-          r = this.responseText;
-        }
-
+        var r = this.responseXML;
         deferred.resolve(r);
       } else {
         deferred.reject({
-          message: this.responseText,
+          message: this.response,
           stack: new Error().stack
         });
       }
@@ -256,7 +205,7 @@ EPUBJS.core.postMessageToMobile = function (msgType, info) {
     } else if (userAgent.match(/Android/i)) {
       window.androidApp.postMessage(JSON.stringify({msgType: msgType, info: info}));
     }
-  }catch (e){
+  } catch (e) {
 //    console.error(e);
   }
 };
@@ -268,8 +217,8 @@ EPUBJS.core.postMessageToMobile = function (msgType, info) {
  */
 EPUBJS.core.nsResolver = function (prefix) {
   var ns = {
-    'xhtml' : 'http://www.w3.org/1999/xhtml',
-    'epub' : 'http://www.idpf.org/2007/ops'
+    'xhtml': 'http://www.w3.org/1999/xhtml',
+    'epub': 'http://www.idpf.org/2007/ops'
   };
   return ns[prefix] || null;
 };
@@ -284,12 +233,12 @@ EPUBJS.core.indexOfTextNode = function (textNode) {
   var children = parent.childNodes;
   var sib;
   var index = -1;
-  for(var i = 0; i < children.length; i++){
+  for (var i = 0; i < children.length; i++) {
     sib = children[i];
-    if(sib.nodeType === Node.TEXT_NODE){
+    if (sib.nodeType === Node.TEXT_NODE) {
       index++;
     }
-    if(sib == textNode) break;
+    if (sib == textNode) break;
   }
   return index;
 };

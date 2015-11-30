@@ -321,7 +321,7 @@ EPUBJS.Book.prototype.searchText = function (text) {
   function getSearchText(i) {
     if (i < spine.length) {
       url = book.spine[i].url;
-      EPUBJS.core.request(url, "xml").then(function (content) {
+      EPUBJS.core.request(url).then(function (content) {
         texts = book.renderer.searchText(text, content, i);
         textsMap = textsMap.concat(texts);
         if (textsMap.length >= 50) {
