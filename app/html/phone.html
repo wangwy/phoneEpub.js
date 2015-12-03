@@ -332,53 +332,6 @@ var path3 = {
     bookPath: "/app/books/中文在手：交通篇去音频201504211819/",
     basePath: "OEBPS/"
 };
-
-var spine4 = [
-    {href: 'Cover.xhtml', id: 'Cover.xhtml', index: 0, url: '/app/books/epub1/OEBPS/Cover.xhtml', chapterNames: [
-        {chapterName: '封面', path: 'Cover.xhtml'}
-    ]},
-    {href: 'Copyright.xhtml', id: 'Copyright.xhtml', index: 1, url: '/app/books/epub1/OEBPS/Copyright.xhtml', chapterNames: [
-        {chapterName: '版权信息', path: 'Copyright.xhtml'}
-    ]},
-    {href: 'ds00216101.xhtml', id: 'ds00216101', index: 2, url: '/app/books/epub1/OEBPS/ds00216101.xhtml', chapterNames: [
-        {chapterName: '前言', path: 'ds00216101.xhtml'}
-    ]},
-    {href: 'ds00216102.xhtml', id: 'ds00216102', index: 3, url: '/app/books/epub1/OEBPS/ds00216102.xhtml', chapterNames: [
-        {chapterName: '第一章 为什么老是有人说你少根筋', path: 'ds00216102.xhtml'}
-    ]},
-    {href: 'ds00216103.xhtml', id: 'ds00216103', index: 4, url: '/app/books/epub1/OEBPS/ds00216103.xhtml', chapterNames: [
-        {chapterName: '第二章 哈佛学生喜欢做的那些事儿', path: 'ds00216103.xhtml'}
-    ]},
-    {href: 'ds00216104.xhtml', id: 'ds00216104', index: 5, url: '/app/books/epub1/OEBPS/ds00216104.xhtml', chapterNames: [
-        {chapterName: '第三章 没有几个忧郁女生会等到她的白马王子', path: 'ds00216104.xhtml'}
-    ]},
-    {href: 'ds00216105.xhtml', id: 'ds00216105', index: 6, url: '/app/books/epub1/OEBPS/ds00216105.xhtml', chapterNames: [
-        {chapterName: '第四章 柴米酱醋盐,谁家七年痒', path: 'ds00216105.xhtml'}
-    ]},
-    {href: 'ds00216106.xhtml', id: 'ds00216106', index: 7, url: '/app/books/epub1/OEBPS/ds00216106.xhtml', chapterNames: [
-        {chapterName: '第五章 闪开,让我歌唱小鬼们', path: 'ds00216106.xhtml'}
-    ]},
-    {href: 'ds00216107.xhtml', id: 'ds00216107', index: 8, url: '/app/books/epub1/OEBPS/ds00216107.xhtml', chapterNames: [
-        {chapterName: '第六章 火爆脾气玩的小花招——让你和饭碗说拜拜', path: 'ds00216107.xhtml'}
-    ]},
-    {href: 'ds00216108.xhtml', id: 'ds00216108', index: 9, url: '/app/books/epub1/OEBPS/ds00216108.xhtml', chapterNames: [
-        {chapterName: '第七章 物以类聚、人以群分,你调节好自己的气场了吗', path: 'ds00216108.xhtml'}
-    ]},
-    {href: 'ds00216109.xhtml', id: 'ds00216109', index: 10, url: '/app/books/epub1/OEBPS/ds00216109.xhtml', chapterNames: [
-        {chapterName: '第八章 情绪的蝴蝶扇扇翅膀,拿破仑也要败在滑铁卢', path: 'ds00216109.xhtml'}
-    ]},
-    {href: 'ds00216110.xhtml', id: 'ds00216110', index: 11, url: '/app/books/epub1/OEBPS/ds00216110.xhtml', chapterNames: [
-        {chapterName: '第九章 改变,从心开始', path: 'ds00216110.xhtml'}
-    ]},
-    {href: 'ds00216111.xhtml', id: 'ds00216111', index: 12, url: '/app/books/epub1/OEBPS/ds00216111.xhtml', chapterNames: [
-        {chapterName: '第十章 吸引力法则,不需要实践', path: 'ds00216111.xhtml'}
-    ]}
-];
-
-var path4 = {
-    bookPath: "/app/books/epub1/",
-    basePath: "OEBPS/"
-}
 </script>
 </head>
 <body>
@@ -387,18 +340,13 @@ var path4 = {
 </body>
 
 
-<script type="text/javascript" src="../interactionJS/pixi.min.js"></script>
-<!-- gren.js 依赖 pixi.min.js 来兼容不支持 WebGL 的浏览器-->
-<script type="text/javascript" src="../interactionJS/gren.js"></script>
-
 <script type="text/javascript" src="../hooks/smartimages.js"></script>
 <script type="text/javascript" src="../hooks/smartmedias.js"></script>
 <script type="text/javascript" src="../js/domUtil.js"></script>
-<script type="text/javascript" src="../hooks/menu.js"></script>
-<script type="text/javascript" src="../hooks/imgHook.js"></script>
-<script type="text/javascript" src="../hooks/interface.js"></script>
-<script type="text/javascript" src="../hooks/noteElement.js"></script>
 
+<script type="text/javascript"  src="../hooks/pixi.min.js"></script>
+<!-- gren.js 依赖 pixi.min.js 来兼容不支持 WebGL 的浏览器-->
+<script type="text/javascript"  src="../hooks/gren.js"></script>
 <script>
     var book = initReader({spine: spine2, padding: {top: 30, right: 10, bottom: 30, left: 10}, path: path2, chaptersNum: {}, fontSize: 18, fontFamily: "", headTags: {link: {href: "", type: "text/css", rel: "stylesheet"}}});
 </script>
