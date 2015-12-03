@@ -309,16 +309,12 @@ EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) 
   }.bind(this))
 };
 
-EPUBJS.Book.prototype.searchText = function (text) {
-  return this.q.enqueue(this._searchText.bind(this), text);
-};
-
 /**
  * 全局搜索text
  * @param text
  * @returns {Promise.promise|*}
  */
-EPUBJS.Book.prototype._searchText = function (text) {
+EPUBJS.Book.prototype.searchText = function (text) {
   var book = this, textsMap = [], texts = [];
   var url, defer = new RSVP.defer();
 
@@ -326,7 +322,7 @@ EPUBJS.Book.prototype._searchText = function (text) {
     if (i < spine.length) {
       url = book.spine[i].url;
       EPUBJS.core.request(url).then(function (content) {
-        texts = book.renderer.searchText(text, content, i);
+        texts = book.renderer.searchText(text, content, i, book.spine[i].chapterNames[0].chapterName);
         textsMap = textsMap.concat(texts);
         if (textsMap.length >= 50) {
           EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap});

@@ -31,9 +31,6 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartimages = function (renderer) 
         item.style["WebkitColumnBreakBefore"] = "always";
         item.style["breakBefore"] = "column";
       }
-    } else {
-      item.style.removeProperty("max-height");
-      item.style.removeProperty("margin-top");
     }
   });
 };

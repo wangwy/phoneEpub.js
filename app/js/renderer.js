@@ -16,6 +16,7 @@ EPUBJS.Renderer = function () {
 /**
  * 获取显示区域的宽、高，并将iframe添加到显示区域内
  * @param element
+ * @param padding
  */
 EPUBJS.Renderer.prototype.initialize = function (element, padding) {
   this.container = element;
@@ -438,7 +439,7 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
  * @returns {boolean}
  */
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
-  var time = durTime || 0;
+  var time = durTime || 1;
   var defer = new RSVP.defer();
   var translationEnd = function () {
     this.docEl.removeEventListener('transitionend', translationEnd, false);
@@ -561,9 +562,10 @@ EPUBJS.Renderer.prototype.getElementByXPath = function (xpath) {
  * @param doc
  * @param text
  * @param spinePos
+ * @param chapterName
  * @returns {Array}
  */
-EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos) {
+EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos, chapterName) {
   var treeWalker = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, {
     acceptNode: function (node) {
       if (node.textContent.trim().length > 0) {
@@ -578,7 +580,7 @@ EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos) {
     offset = node.textContent.indexOf(text);
     if (offset != -1) {
       xPath = this.getXPathByElement(node);
-      results.push({nodeText: node.textContent, search: text, spinePos: spinePos, xPath: xPath, offset: offset});
+      results.push({nodeText: node.textContent, search: text, spinePos: spinePos, chapterName: chapterName, xPath: xPath, offset: offset});
     }
   }
   return results;
