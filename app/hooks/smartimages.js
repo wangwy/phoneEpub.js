@@ -32,5 +32,7 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartimages = function (renderer) 
         item.style["breakBefore"] = "column";
       }
     }
+    item.style["WebkitBackfaceVisibility"] = "hidden";
+    item.style["backfaceVisibility"] = "hidden";
   });
 };

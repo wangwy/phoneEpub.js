@@ -654,9 +654,4 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
   return defer.promise;
 };
 
-/*EPUBJS.Book.prototype.setNightStatus = function (nightStatus) {
-  this.renderer.setNightOn(nightStatus);
-  return this.renderer.dayNight();
-};*/
-
 RSVP.EventTarget.mixin(EPUBJS.Book.prototype);

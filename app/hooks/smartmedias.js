@@ -11,6 +11,8 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartvideos = function (renderer) 
     item.setAttribute("controls", "controls");
     item.style["WebkitColumnBreakBefore"] = "always";
     item.style["breakBefore"] = "column";
+    item.style["WebkitBackfaceVisibility"] = "hidden";
+    item.style["backfaceVisibility"] = "hidden";
   });
 };
 
@@ -21,5 +23,7 @@ EPUBJS.Hooks.register("beforeChapterDisplay").smartaudios = function (renderer) 
     var iwidth = renderer.viewDimensions.viewWidth;
     item.style.maxWidth = iwidth + "px";
     item.setAttribute("controls", "controls");
+    item.style["WebkitBackfaceVisibility"] = "hidden";
+    item.style["backfaceVisibility"] = "hidden";
   })
 };
