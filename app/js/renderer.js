@@ -7,6 +7,7 @@ EPUBJS.Renderer = function () {
   this.chapterPos = 1;
   this.fontSize = "";
   this.fontFamily = "";
+  this.nightOn = false;
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
@@ -76,6 +77,9 @@ EPUBJS.Renderer.prototype.load = function (url) {
     if (this.fontFamily) {
       this.doc.body.style.fontFamily = this.fontFamily;
     }
+    /*if (this.nightOn === 0) {
+      this.dayNightObj = this.dayNight();
+    }*/
     this.formated = this.layout.format(this.docEl, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
     //页面宽度
@@ -195,7 +199,10 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     if (node.nodeType == Node.TEXT_NODE && node.textContent.trim().length) {
       return true;
     }
-
+/*
+    if (renderer.nightOn === 0 && node.childNodes.length === 0) {
+      renderer.dayNightObj.revl(node);
+    }*/
     var elRange = document.createRange();
     elRange.selectNodeContents(node);
     var elPos = elRange.getBoundingClientRect();
@@ -264,6 +271,12 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   if (prevRange) {
     map[map.length - 1].end = count - 1;
     map[map.length - 1].endRange = prevRange;
+  }
+
+  if (!map.length) {
+    var range = this.doc.createRange();
+    range.selectNodeContents(root);
+    map.push({start: 0, startRange: range, end: 0, endRange: range});
   }
 
   prevRange = null;
@@ -473,9 +486,11 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
  * @param headTags
  */
 EPUBJS.Renderer.prototype.addHeadTags = function (headTags) {
-  for (var headTag in headTags) {
-    this.render.addHeadTag(headTag, headTags[headTag]);
-  }
+  headTags.forEach(function (headTag) {
+    for (var tag in headTag) {
+      this.render.addHeadTag(tag, headTag[tag]);
+    }
+  },this);
 };
 
 /**
@@ -662,5 +677,99 @@ EPUBJS.Renderer.prototype.unHighlight = function () {
     this.doc.body.removeChild(item);
   }, this);
 };
+/*
+EPUBJS.Renderer.prototype.dayNight = function () {
+  var props = ["color", "background-color", "border-left-color", "border-right-color", "border-top-color", "border-bottom-color"];
+  var props2 = ["color", "backgroundColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"];
 
+  function RGBtoHSL(RGBColor) {
+    var R, G, B;
+    var cMax, cMin;
+    var sum, diff;
+    var Rdelta, Gdelta, Bdelta;
+    var H, L, S;
+    R = RGBColor[0];
+    G = RGBColor[1];
+    B = RGBColor[2];
+    cMax = Math.max(Math.max(R, G), B);
+    cMin = Math.min(Math.min(R, G), B);
+    sum = cMax + cMin;
+    diff = cMax - cMin;
+    L = sum / 2;
+    if (cMax == cMin) {
+      S = 0;
+      H = 0;
+    } else {
+      if (L <= (1 / 2))S = diff / sum; else S = diff / (2 - sum);
+      Rdelta = R / 6 / diff;
+      Gdelta = G / 6 / diff;
+      Bdelta = B / 6 / diff;
+      if (R == cMax)H = Gdelta - Bdelta; else if (G == cMax)H = (1 / 3) + Bdelta - Rdelta; else H = (2 / 3) + Rdelta - Gdelta;
+      if (H < 0)H += 1;
+      if (H > 1)H -= 1;
+    }
+    return[H, S, L];
+  }
+
+  function getRGBColor(node, prop) {
+    console.log(node);
+    var rgb = window.getComputedStyle(node, null).getPropertyValue(prop);
+    var r, g, b;
+    if (/rgb\((\d+),\s(\d+),\s(\d+)\)/.exec(rgb)) {
+      r = parseInt(RegExp.$1, 10);
+      g = parseInt(RegExp.$2, 10);
+      b = parseInt(RegExp.$3, 10);
+      return[r / 255, g / 255, b / 255];
+    }
+    return rgb;
+  }
+
+  function hslToCSS(hsl) {
+    console.log(hsl);
+    return "hsl(" + Math.round(hsl[0] * 360) + ", " + Math.round(hsl[1] * 100) + "%, " + Math.round(hsl[2] * 100) + "%)";
+  }
+
+  function revl(n) {
+    var i, x, color, hsl;
+    if (n.nodeType == Node.ELEMENT_NODE) {
+      for (i = 0; x = n.childNodes[i]; ++i)revl(x);
+      for (i = 0; x = props[i]; ++i) {
+        color = getRGBColor(n, x);
+        if (typeof(color) != "string") {
+          hsl = RGBtoHSL(color);
+          hsl[2] = 1 - hsl[2];
+          n.style[props2[i]] = hslToCSS(hsl);
+        }
+      }
+    }
+  }
+
+  function setNodeNight(n) {
+    var i, x, color, hsl;
+    for (i = 0; x = props[i]; ++i) {
+      color = getRGBColor(n, x);
+      if (typeof(color) != "string") {
+        hsl = RGBtoHSL(color);
+        hsl[2] = 1 - hsl[2];
+        n.style[props2[i]] = hslToCSS(hsl);
+      }
+    }
+  }
+
+  *//*function setNightStatus(element) {
+   var treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, null, false);
+   var node;
+   while ((node = treeWalker.nextNode())) {
+   revl(node);
+   }
+   }*//*
+  return {
+    revl: revl,
+    setNodeNight: setNodeNight
+  }
+};
+
+EPUBJS.Renderer.prototype.setNightOn = function (nightStatus) {
+  this.nightOn = nightStatus;
+};*/
 RSVP.EventTarget.mixin(EPUBJS.Renderer.prototype);

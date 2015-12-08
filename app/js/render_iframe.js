@@ -148,7 +148,7 @@ EPUBJS.Render.Iframe.prototype.addHeadTag = function (tag, attrs) {
   }
 
   if(headEl){
-    headEl.insertBefore(tagEl, headEl.firstChild);
+    headEl.appendChild(tagEl);
   }
 };
 

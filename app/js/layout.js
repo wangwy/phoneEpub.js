@@ -28,7 +28,7 @@ EPUBJS.Layout.Reflowable.prototype.format = function (documentElement, _width, _
   this.documentElement = documentElement;
   this.pageWidth = width;
 
-  documentElement.style.width = width + "px";
+//  documentElement.style.width = width + "px";
   documentElement.style.height = _height + "px";
 
   //添加translate3d样式目的是让它成为一个独立的层

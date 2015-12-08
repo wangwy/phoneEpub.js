@@ -50,4 +50,22 @@ RSVP.on('error', function (event) {
   root.searchText = function (text) {
     return book.searchText(text);
   };
+
+  root.addCss = function (cssPath) {
+    return book.addCss(cssPath);
+  };
+
+  root.removeCss = function (cssPath) {
+    return book.removeCss(cssPath);
+  };
+
+  /*root.setNightStatus = function (nightStatus) {
+    var isNightOn = document.body.style.backgroundColor === "rgb(255, 255, 255)" ? false : true;
+    if (isNightOn !== nightStatus) {
+      var dayNightObj = book.setNightStatus(nightStatus);
+      dayNightObj.revl(book.renderer.doc.body);
+      dayNightObj.revl(document.body);
+    }
+    EPUBJS.core.postMessageToMobile("setNightStatus", {nightStatus: nightStatus});
+  }*/
 })(window);

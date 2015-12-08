@@ -10,12 +10,15 @@ EPUBJS.Book = function (options) {
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.chaptersNum = options.chaptersNum || {};
-  this.headTags = options.headTags || {};
+  this.headTags = options.headTags || [];
   if (options.fontSize) {
     this.renderer.resetFontSize(options.fontSize);
   }
   if (options.fontFamily) {
     this.renderer.resetFontFamily(options.fontFamily);
+  }
+  if (options.nightOn) {
+    this.renderer.setNightOn();
   }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
@@ -522,9 +525,45 @@ EPUBJS.Book.prototype.addEventListeners = function () {
  * @param renderer
  */
 EPUBJS.Book.prototype.addHeadTags = function (renderer) {
-  if (Object.keys(this.headTags).length) {
+  if (this.headTags.length) {
     renderer.addHeadTags(this.headTags);
   }
+};
+
+/**
+ * 添加css样式
+ * @param cssPath
+ * @returns {*|!Promise.<RESULT>|Promise}
+ */
+EPUBJS.Book.prototype.addCss = function (cssPath) {
+ this.headTags.push({link: {href: cssPath, type: "text/css", rel: "stylesheet"}});
+  var spinePos = this.spinePos;
+  var offset = this.renderer.currentOffset;
+  return this.displayChapter(spinePos, false, true).then(function () {
+    this.renderer.gotoOffset(offset);
+    EPUBJS.core.postMessageToMobile("addCss", {addCss: "addCss"});
+  }.bind(this));
+};
+
+/**
+ * 移除css样式
+ * @param cssPath
+ * @returns {*|!Promise.<RESULT>|Promise}
+ */
+EPUBJS.Book.prototype.removeCss = function (cssPath) {
+  this.headTags.forEach(function (headTag, index) {
+    if(headTag.link){
+      if(cssPath === headTag.link["href"]){
+        this.headTags.splice(index,1);
+      }
+    }
+  }, this);
+  var spinePos = this.spinePos;
+  var offset = this.renderer.currentOffset;
+  return this.displayChapter(spinePos, false, true).then(function () {
+    this.renderer.gotoOffset(offset);
+    EPUBJS.core.postMessageToMobile("removeCss", {removeCss: "removeCss"});
+  }.bind(this));
 };
 
 /**
@@ -614,5 +653,10 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
   getChapter(0);
   return defer.promise;
 };
+
+/*EPUBJS.Book.prototype.setNightStatus = function (nightStatus) {
+  this.renderer.setNightOn(nightStatus);
+  return this.renderer.dayNight();
+};*/
 
 RSVP.EventTarget.mixin(EPUBJS.Book.prototype);
