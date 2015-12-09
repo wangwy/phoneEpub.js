@@ -52,12 +52,12 @@ RSVP.on('error', function (event) {
   };
 
   root.setNightMode = function (cssPath) {
-    document.body.style.background = "black";
+    document.body.style.background = "#000000";
     return book.addCss(cssPath);
   };
 
   root.setDayMode = function (cssPath) {
-    document.body.style = "";
+    document.body.style.background = "#ffffff";
     return book.removeCss(cssPath);
   };
 

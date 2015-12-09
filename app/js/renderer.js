@@ -289,17 +289,17 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
   var ranges = [];
   var text = node.textContent;
   var doc = node.ownerDocument;
-  var rangeLeft, rangeRight;
+  var rangeLeft = doc.createRange(), rangeRight = doc.createRange();
 
   var startIndex = 0,
-      stopIndex = text.length - 1,
+      stopIndex = text.length,
       middle = Math.floor((startIndex + stopIndex) / 2);
   while (startIndex < stopIndex) {
-    rangeLeft = doc.createRange();
+    rangeLeft.collapse(true);
     rangeLeft.setStart(node, startIndex);
     rangeLeft.setEnd(node, middle);
 
-    rangeRight = doc.createRange();
+    rangeRight.collapse(true);
     rangeRight.setStart(node, middle);
     rangeRight.setEnd(node, stopIndex);
 
