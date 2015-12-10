@@ -18,12 +18,8 @@ EPUBJS.Book = function (options) {
     this.renderer.resetFontFamily(options.fontFamily);
   }
   if (options.nightMode) {
-    document.body.style.background = "#252525";
     EPUBJS.BookInterface.configBackgroundColor("#252525");
     this.renderer.nightMode = true;
-  }else{
-    document.body.style.background = "#fafafa";
-    EPUBJS.BookInterface.configBackgroundColor("#fafafa");
   }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
@@ -388,11 +384,9 @@ EPUBJS.Book.prototype.resetFontFamily = function (family) {
 EPUBJS.Book.prototype.setNightMode = function (isNightMode) {
   this.nightMode = isNightMode;
   if(isNightMode){
-    document.body.style.background = "#252525";
     EPUBJS.BookInterface.configBackgroundColor("#252525");
     this.renderer.setNightMode(isNightMode);
   }else{
-    document.body.style.background = "#fafafa";
     EPUBJS.BookInterface.configBackgroundColor("#fafafa");
     this.renderer.setNightMode(isNightMode);
   }
