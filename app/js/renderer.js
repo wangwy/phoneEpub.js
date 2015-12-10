@@ -7,7 +7,7 @@ EPUBJS.Renderer = function () {
   this.chapterPos = 1;
   this.fontSize = "";
   this.fontFamily = "";
-  this.nightOn = false;
+  this.nightMode = false;
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
@@ -76,6 +76,9 @@ EPUBJS.Renderer.prototype.load = function (url) {
     }
     if (this.fontFamily) {
       this.doc.body.style.fontFamily = this.fontFamily;
+    }
+    if (this.nightMode){
+      this.setNightMode(this.nightMode);
     }
     this.formated = this.layout.format(this.docEl, this.render.width, this.render.height);
     this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
@@ -671,6 +674,24 @@ EPUBJS.Renderer.prototype.unHighlight = function () {
   items.forEach(function (item) {
     this.doc.body.removeChild(item);
   }, this);
+};
+
+/**
+ * 设置日夜间模式
+ * @param isNightMode
+ */
+EPUBJS.Renderer.prototype.setNightMode = function (isNightMode) {
+  this.nightMode = isNightMode;
+  var styleTag;
+  if(isNightMode){
+    styleTag = this.doc.createElement("style");
+    styleTag.id = "nightMode";
+    styleTag.innerHTML = "html,img,video{-webkit-filter:invert(1)hue-rotate(180deg);filter:invert(1)hue-rotate(180deg)}";
+    this.doc.head.appendChild(styleTag);
+  }else{
+    styleTag = this.doc.getElementById("nightMode");
+    this.doc.head.removeChild(styleTag);
+  }
 };
 
 RSVP.EventTarget.mixin(EPUBJS.Renderer.prototype);

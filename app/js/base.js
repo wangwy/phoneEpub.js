@@ -51,14 +51,8 @@ RSVP.on('error', function (event) {
     return book.searchText(text);
   };
 
-  root.setNightMode = function (cssPath) {
-    document.body.style.background = "#000000";
-    return book.addCss(cssPath);
-  };
-
-  root.setDayMode = function (cssPath) {
-    document.body.style.background = "#ffffff";
-    return book.removeCss(cssPath);
+  root.setNightMode = function (isNightMode) {
+    return book.setNightMode(isNightMode);
   };
 
   root.addCss = function (cssPath) {

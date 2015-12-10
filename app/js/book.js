@@ -17,8 +17,9 @@ EPUBJS.Book = function (options) {
   if (options.fontFamily) {
     this.renderer.resetFontFamily(options.fontFamily);
   }
-  if (options.nightOn) {
-    this.renderer.setNightOn();
+  if (options.nightMode) {
+    document.body.style.background = "#000000";
+    this.renderer.nightMode = true;
   }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
@@ -374,6 +375,22 @@ EPUBJS.Book.prototype.resetFontSize = function (size) {
 EPUBJS.Book.prototype.resetFontFamily = function (family) {
   this.renderer.resetFontFamily(family);
   this.reset();
+};
+
+/**
+ * 设置日夜间模式
+ * @param isNightMode
+ */
+EPUBJS.Book.prototype.setNightMode = function (isNightMode) {
+  this.nightMode = isNightMode;
+  if(isNightMode){
+    document.body.style.background = "#000000";
+    this.renderer.setNightMode(isNightMode);
+  }else{
+    document.body.style.background = "#ffffff";
+    this.renderer.setNightMode(isNightMode);
+  }
+  EPUBJS.core.postMessageToMobile("setNightMode",{nightMode: isNightMode});
 };
 
 /**
