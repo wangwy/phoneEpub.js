@@ -686,7 +686,7 @@ EPUBJS.Renderer.prototype.setNightMode = function (isNightMode) {
   if(isNightMode){
     styleTag = this.doc.createElement("style");
     styleTag.id = "nightMode";
-    styleTag.innerHTML = "html,img,video{-webkit-filter:invert(1)hue-rotate(180deg);filter:invert(1)hue-rotate(180deg)}";
+    styleTag.innerHTML = "html,img,video{-webkit-filter:invert(1)hue-rotate(180deg);filter:invert(1)hue-rotate(180deg)} img,video{-webkit-backface-visibility:hidden}";
     this.doc.head.appendChild(styleTag);
   }else{
     styleTag = this.doc.getElementById("nightMode");
