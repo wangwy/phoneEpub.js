@@ -77,7 +77,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
     if (this.fontFamily) {
       this.doc.body.style.fontFamily = this.fontFamily;
     }
-    if (this.nightMode){
+    if (this.nightMode) {
       this.setNightMode(this.nightMode);
     }
     this.formated = this.layout.format(this.docEl, this.render.width, this.render.height);
@@ -94,6 +94,18 @@ EPUBJS.Renderer.prototype.load = function (url) {
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
+};
+
+/**
+ * 重新格式化页面
+ */
+EPUBJS.Renderer.prototype.reformat = function () {
+  this.formated = this.layout(this.docEl, this.render.width, this.render.height);
+  this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
+  this.updatePages();
+  if(this.currentOffset){
+    this.gotoOffset(this.currentOffset);
+  }
 };
 
 /**
@@ -138,7 +150,7 @@ EPUBJS.Renderer.prototype.parseChapterNames = function (chapterNames) {
       var el = this.doc.getElementById(section);
       var pg = this.render.getPageNumberByElement(el);
       chapterNamePage.push({chapterName: chapterName, startPg: pg, endPg: null});
-      if(index != 0){
+      if (index != 0) {
         chapterNamePage[index - 1].endPg = pg - 1;
       }
     }
@@ -198,7 +210,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   };
 
   var checkNode = function (node) {
-    if (node.nodeType == Node.TEXT_NODE && node.textContent.trim().length) {
+    if (node.nodeType == Node.TEXT_NODE && node.textContent.trim().length && node.textContent.indexOf("http://") === -1) {//当一个英文字母过长或者一个英文链接的话column不分栏
       return true;
     }
     var elRange = document.createRange();
@@ -288,7 +300,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
  * @param limit
  * @returns {*}
  */
-EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
+/*EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
   var ranges = [];
   var text = node.textContent;
   var doc = node.ownerDocument;
@@ -317,6 +329,46 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
     middle = Math.floor((startIndex + stopIndex) / 2);
   }
 
+  return ranges;
+};*/
+
+EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
+  var ranges = [], limitPos = limit, pageWidth = this.pageWidth;
+  var rangeLeft = node.ownerDocument.createRange(), rangeRight = node.ownerDocument.createRange();
+  var startIndex,stopIndex,middle;
+  var range = this.doc.createRange();
+  range.selectNode(node);
+  var rightPos = range.getBoundingClientRect().right;
+  function splitWord(index, split){
+    startIndex = index;
+    stopIndex = node.textContent.length;
+    middle = Math.floor((startIndex + stopIndex) / 2);
+    while(startIndex < stopIndex && limitPos < rightPos){
+      rangeLeft.collapse(true);
+      rangeLeft.setStart(node, startIndex);
+      rangeLeft.setEnd(node, middle);
+
+      rangeRight.collapse(true);
+      rangeRight.setStart(node, middle);
+      rangeRight.setEnd(node, stopIndex);
+
+      if (rangeLeft.getBoundingClientRect().right <= split && rangeRight.getBoundingClientRect().left >= split) {
+        ranges.push(rangeLeft.cloneRange(), rangeRight.cloneRange());
+        limitPos = limitPos + pageWidth;
+        if(limitPos < rightPos){
+          splitWord(middle, limitPos)
+        }else{
+          break;
+        }
+      } else if (rangeLeft.getBoundingClientRect().right < split) {
+        startIndex = middle;
+      } else if (rangeLeft.getBoundingClientRect().right > split) {
+        stopIndex = middle;
+      }
+      middle = Math.floor((startIndex + stopIndex) / 2);
+    }
+  }
+  splitWord(0, limitPos);
   return ranges;
 };
 
@@ -488,7 +540,7 @@ EPUBJS.Renderer.prototype.addHeadTags = function (headTags) {
     for (var tag in headTag) {
       this.render.addHeadTag(tag, headTag[tag]);
     }
-  },this);
+  }, this);
 };
 
 /**
@@ -683,12 +735,12 @@ EPUBJS.Renderer.prototype.unHighlight = function () {
 EPUBJS.Renderer.prototype.setNightMode = function (isNightMode) {
   this.nightMode = isNightMode;
   var styleTag;
-  if(isNightMode){
+  if (isNightMode) {
     styleTag = this.doc.createElement("style");
     styleTag.id = "nightMode";
     styleTag.innerHTML = "html,img,video{-webkit-filter:invert(1)hue-rotate(180deg);filter:invert(1)hue-rotate(180deg)} img,video{-webkit-backface-visibility:hidden}";
     this.doc.head.appendChild(styleTag);
-  }else{
+  } else {
     styleTag = this.doc.getElementById("nightMode");
     this.doc.head.removeChild(styleTag);
   }
