@@ -490,20 +490,25 @@ EPUBJS.Book.prototype.addEventListeners = function () {
   var pageWidth = this.renderer.pageWidth;
   var time = 500; //翻一页所持续的时间为500ms;
   var Threshold = pageWidth / 4; //翻页移动的阈值，没超过这个阈值将停留在当前页面
-  var startX, endX, durTime, startTime, endTime;
+  var startX, endX, durTime, startTime, endTime, longTouch;
   this.renderer.doc.addEventListener("touchstart", function (event) {
     // event.preventDefault();
     this.renderer.unHighlight();
+    longTouch = false;
     startX = event.touches[0].clientX;
     startTime = new Date();
   }.bind(this), false);
 
   this.renderer.doc.addEventListener("touchmove", function (event) {
     endTime = new Date();
-    if (endTime - startTime < 500) {
+    endX = event.touches[0].clientX;
+    var deltaX = endX - startX;
+    //长按
+    if(deltaX > -window.innerWidth / 100 && deltaX < window.innerWidth && endTime - startTime > 500){
+      longTouch = true;
+    }
+    if (!longTouch) {
       event.preventDefault();
-      endX = event.touches[0].clientX;
-      var deltaX = endX - startX;
       var pageOffsetX = this.renderer.getLeft() - deltaX;
       this.renderer.setLeft(pageOffsetX);
     }
