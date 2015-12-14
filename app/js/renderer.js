@@ -7,7 +7,7 @@ EPUBJS.Renderer = function () {
   this.chapterPos = 1;
   this.fontSize = "";
   this.fontFamily = "";
-  this.nightMode = false;
+  this.nightMode = 0;
   EPUBJS.Hooks.mixin(this);
   this.getHooks("beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
@@ -80,7 +80,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
     if (this.fontFamily) {
       this.doc.body.style.fontFamily = this.fontFamily;
     }
-    if (this.nightMode) {
+    if (this.nightMode === 1) {
       this.setNightMode(this.nightMode);
     }
     this.formated = this.layout.format(this.docEl, this.render.width, this.render.height);
@@ -741,7 +741,7 @@ EPUBJS.Renderer.prototype.unHighlight = function () {
 EPUBJS.Renderer.prototype.setNightMode = function (isNightMode) {
   this.nightMode = isNightMode;
   var styleTag;
-  if (isNightMode) {
+  if (isNightMode === 1) {
     styleTag = this.doc.createElement("style");
     styleTag.id = "nightMode";
     styleTag.innerHTML = "html,img,video{-webkit-filter:invert(1)hue-rotate(180deg);filter:invert(1)hue-rotate(180deg)} img,video{-webkit-backface-visibility:hidden}";

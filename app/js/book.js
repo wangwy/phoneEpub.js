@@ -22,7 +22,7 @@ EPUBJS.Book = function (options) {
   }
   if (options.nightMode) {
     EPUBJS.BookInterface.configBackgroundColor("#252525");
-    this.renderer.nightMode = true;
+    this.renderer.nightMode = 1;
   }
   this.spinePos = 0;
   this.q = new EPUBJS.Queue(this);
