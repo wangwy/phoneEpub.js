@@ -10,6 +10,9 @@ EPUBJS.Book = function (options) {
   this.spineIndexByURL = this.parseSpine(this.spine);
   this.padding = options.padding;
   this.chaptersNum = options.chaptersNum || {};
+  if(typeof this.chaptersNum == "string"){
+    this.chaptersNum = JSON.parse(this.chaptersNum);
+  }
   this.headTags = options.headTags || [];
   if (options.fontSize) {
     this.renderer.resetFontSize(options.fontSize);

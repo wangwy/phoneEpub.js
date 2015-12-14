@@ -36,6 +36,16 @@
         right: 10px;
         bottom: 10px;
     }
+
+    /*
+        html, img, video {
+            -webkit-filter: invert(1) hue-rotate(180deg);
+            filter: invert(1) hue-rotate(180deg);
+        }
+
+        body {
+            background: black;
+        }*/
 </style>
 <script src="../libs/rsvp/rsvp.js"></script>
 <script src="../js/base.js"></script>
@@ -51,83 +61,72 @@
 <script>
 var spine = [
     {
-        href: "titlepage.xhtml",
-        id: "titlepage",
+        href: "a_cover.xhtml",
+        id: "a_cover",
         index: 0,
         chapterNames: [
-            {chapterName: "", path: "titlepage.xhtml"}
+            {chapterName: "", path: "a_cover.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/titlepage.xhtml"
+        url: "/app/books/mayunshuo/ops/a_cover.xhtml"
     },
     {
-        href: "page.xhtml",
-        id: "page",
+        href: "chapter_00001.xhtml",
+        id: "chapter_00001",
         index: 1,
         chapterNames: [
-            {chapterName: "page", path: "page.xhtml"}
+            {chapterName: "chapter_00001", path: "chapter_00001.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/page.xhtml"
+        url: "/app/books/mayunshuo/ops/chapter_00001.xhtml"
     },
     {
-        href: "catalog.html",
-        id: "catalog",
+        href: "chapter_00002.html",
+        id: "chapter_00002",
         index: 2,
         chapterNames: [
-            {chapterName: "目录", path: "catalog.html"}
+            {chapterName: "chapter_00002", path: "chapter_00002.html"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/catalog.html"
+        url: "/app/books/mayunshuo/ops/chapter_00002.xhtml"
     },
     {
-        href: "article_100822.html",
-        id: "id100822",
+        href: "chapter_00003.xhtml",
+        id: "chapter_00003",
         index: 3,
         chapterNames: [
-            {chapterName: "序", path: "article_10082.html"}
+            {chapterName: "chapter_00003", path: "chapter_00003.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100822.html"
+        url: "/app/books/mayunshuo/ops/chapter_00003.xhtml"
     },
     {
-        href: "article_100823.html",
-        id: "id100823",
+        href: "chapter_00004.xhtml",
+        id: "chapter_00004",
         index: 4,
         chapterNames: [
-            {chapterName: "总序", path: "article_100823.html"}
+            {chapterName: "chapter_00004", path: "chapter_00004.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100823.html"
+        url: "/app/books/mayunshuo/ops/chapter_00004.xhtml"
     },
     {
-        href: "article_100824.html",
-        id: "id100824",
+        href: "chapter_00005.xhtml",
+        id: "chapter_00005",
         index: 5,
         chapterNames: [
-            {chapterName: "了解孩子；注重点化", path: "article_100824.html"},
-            {chapterName: "了解孩子", path: "article_100824.html#d8241"},
-            {chapterName: "注重点化", path: "article_100824.html#d8242"}
+            {chapterName: "chapter_00005", path: "chapter_00005.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100824.html"
+        url: "/app/books/mayunshuo/ops/chapter_00005.xhtml"
     },
     {
-        href: "article_100825.html",
-        id: "id100825",
+        href: "chapter_00006.xhtml",
+        id: "chapter_00006",
         index: 6,
         chapterNames: [
-            {chapterName: "理解孩子--教育成功的法宝", path: "article_100825.html"}
+            {chapterName: "chapter_00006", path: "chapter_00006.xhtml"}
         ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100825.html"
-    },
-    {
-        href: "article_100826.html",
-        id: "id100826",
-        index: 7,
-        chapterNames: [
-            {chapterName: "做智慧父母 建幸福家庭", path: "article_100826.html"}
-        ],
-        url: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/OEBPS/article_100826.html"
+        url: "/app/books/mayunshuo/ops/chapter_00006.xhtml"
     }
 ];
 var path = {
-    bookPath: "/app/books/f9d2f57d-9b38-47aa-8d56-0b0eb012309f-sd/",
-    basePath: "OEBPS/"
+    bookPath: "/app/books/mayunshuo/",
+    basePath: "ops/"
 };
 
 var spine2 = [
@@ -332,6 +331,245 @@ var path3 = {
     bookPath: "/app/books/中文在手：交通篇去音频201504211819/",
     basePath: "OEBPS/"
 };
+
+var spine4 = [
+    {"chapterNames": [
+        {"chapterName": "titlepage.xhtml", "path": "/app/books/xiaowangzi/titlepage.xhtml"}
+    ], "href": "/app/books/xiaowangzi/titlepage.xhtml", "id": "titlepage", "index": 0, "url": "/app/books/xiaowangzi/titlepage.xhtml"},
+    {"chapterNames": [
+        {"chapterName": "index_split_000.html", "path": "/app/books/xiaowangzi/index_split_000.html"}
+    ], "href": "/app/books/xiaowangzi/index_split_000.html", "id": "id114", "index": 1, "url": "/app/books/xiaowangzi/index_split_000.html"},
+    {"chapterNames": [
+        {"chapterName": "index_split_001.html", "path": "/app/books/xiaowangzi/index_split_001.html"}
+    ], "href": "/app/books/xiaowangzi/index_split_001.html", "id": "id113", "index": 2, "url": "/app/books/xiaowangzi/index_split_001.html"},
+    {"chapterNames": [
+        {"chapterName": "index_split_002.html", "path": "/app/books/xiaowangzi/index_split_002.html"}
+    ], "href": "/app/books/xiaowangzi/index_split_002.html", "id": "id112", "index": 3, "url": "/app/books/xiaowangzi/index_split_002.html"},
+    {"chapterNames": [
+        {"chapterName": "index_split_003.html", "path": "/app/books/xiaowangzi/index_split_003.html"}
+    ], "href": "/app/books/xiaowangzi/index_split_003.html", "id": "id111", "index": 4, "url": "/app/books/xiaowangzi/index_split_003.html"},
+    {"chapterNames": [
+        {"chapterName": "index_split_004.html", "path": "/app/books/xiaowangzi/index_split_004.html"}
+    ], "href": "/app/books/xiaowangzi/index_split_004.html", "id": "id110", "index": 5, "url": "/app/books/xiaowangzi/index_split_004.html"}
+];
+
+var path4 = {"basePath": "", "bookPath": "/app/books/xiaowangzi/"};
+
+var spine5 =
+        [
+            {href: 'title.xml', id: 'title', index: 0, url: '/app/books/shucangmeizhoushuping/OPS/title.xml', chapterNames: [
+                {chapterName: '封面', path: 'title.xml'}
+            ]},
+            {href: 'about.xml', id: 'about', index: 1, url: '/app/books/shucangmeizhoushuping/OPS/about.xml', chapterNames: [
+                {chapterName: '关于书仓每周书评汇编', path: 'about.xml'}
+            ]},
+            {href: 'right.xml', id: 'right', index: 2, url: '/app/books/shucangmeizhoushuping/OPS/right.xml', chapterNames: [
+                {chapterName: '声明', path: 'right.xml'}
+            ]},
+            {href: 'main1.xml', id: 'main1', index: 3, url: '/app/books/shucangmeizhoushuping/OPS/main1.xml', chapterNames: [
+                {chapterName: '东方早报上海书评', path: 'main1.xml'}
+            ]},
+            {href: 'node_31174.xml', id: 'node_31174', index: 4, url: '/app/books/shucangmeizhoushuping/OPS/node_31174.xml', chapterNames: [
+                {chapterName: '汪悦进谈当代艺术史研究的新动向', path: 'node_31174.xml'}
+            ]},
+            {href: 'node_28165.xml', id: 'node_28165', index: 5, url: '/app/books/shucangmeizhoushuping/OPS/node_28165.xml', chapterNames: [
+                {chapterName: '颓败荒废的现代日本精神', path: 'node_28165.xml'}
+            ]},
+            {href: 'node_28610.xml', id: 'node_28610', index: 6, url: '/app/books/shucangmeizhoushuping/OPS/node_28610.xml', chapterNames: [
+                {chapterName: '奥康纳为何如此“邪恶”？', path: 'node_28610.xml'}
+            ]},
+            {href: 'node_11404.xml', id: 'node_11404', index: 7, url: '/app/books/shucangmeizhoushuping/OPS/node_11404.xml', chapterNames: [
+                {chapterName: '口口相传，成就普利策奖黑马', path: 'node_11404.xml'}
+            ]},
+            {href: 'node_29421.xml', id: 'node_29421', index: 8, url: '/app/books/shucangmeizhoushuping/OPS/node_29421.xml', chapterNames: [
+                {chapterName: '阴性阅读，阳性写作', path: 'node_29421.xml'}
+            ]},
+            {href: 'node_13955.xml', id: 'node_13955', index: 9, url: '/app/books/shucangmeizhoushuping/OPS/node_13955.xml', chapterNames: [
+                {chapterName: '被隐去姓名的口述者', path: 'node_13955.xml'}
+            ]},
+            {href: 'node_9702.xml', id: 'node_9702', index: 10, url: '/app/books/shucangmeizhoushuping/OPS/node_9702.xml', chapterNames: [
+                {chapterName: '走出意识形态的基督教简史', path: 'node_9702.xml'}
+            ]},
+            {href: 'node_462.xml', id: 'node_462', index: 11, url: '/app/books/shucangmeizhoushuping/OPS/node_462.xml', chapterNames: [
+                {chapterName: '全球化才是唯一的王道', path: 'node_462.xml'}
+            ]},
+            {href: 'node_3245.xml', id: 'node_3245', index: 12, url: '/app/books/shucangmeizhoushuping/OPS/node_3245.xml', chapterNames: [
+                {chapterName: '英国“国宝”级剧作家的黄昏之作', path: 'node_3245.xml'}
+            ]},
+            {href: 'node_30248.xml', id: 'node_30248', index: 13, url: '/app/books/shucangmeizhoushuping/OPS/node_30248.xml', chapterNames: [
+                {chapterName: '并不寻常的精致与……恐怖主义', path: 'node_30248.xml'}
+            ]},
+            {href: 'node_14417.xml', id: 'node_14417', index: 14, url: '/app/books/shucangmeizhoushuping/OPS/node_14417.xml', chapterNames: [
+                {chapterName: '小说的未来', path: 'node_14417.xml'}
+            ]},
+            {href: 'node_20502.xml', id: 'node_20502', index: 15, url: '/app/books/shucangmeizhoushuping/OPS/node_20502.xml', chapterNames: [
+                {chapterName: '诗意地栖居在香港', path: 'node_20502.xml'}
+            ]},
+            {href: 'node_13192.xml', id: 'node_13192', index: 16, url: '/app/books/shucangmeizhoushuping/OPS/node_13192.xml', chapterNames: [
+                {chapterName: '为什么失了题？', path: 'node_13192.xml'}
+            ]},
+            {href: 'node_13636.xml', id: 'node_13636', index: 17, url: '/app/books/shucangmeizhoushuping/OPS/node_13636.xml', chapterNames: [
+                {chapterName: '莲花十五落（三）', path: 'node_13636.xml'}
+            ]},
+            {href: 'node_19708.xml', id: 'node_19708', index: 18, url: '/app/books/shucangmeizhoushuping/OPS/node_19708.xml', chapterNames: [
+                {chapterName: 'Gobbledigook是怎样炼成的', path: 'node_19708.xml'}
+            ]},
+            {href: 'node_901.xml', id: 'node_901', index: 19, url: '/app/books/shucangmeizhoushuping/OPS/node_901.xml', chapterNames: [
+                {chapterName: '黑道八卦 佛门咖啡', path: 'node_901.xml'}
+            ]},
+            {href: 'node_7365.xml', id: 'node_7365', index: 20, url: '/app/books/shucangmeizhoushuping/OPS/node_7365.xml', chapterNames: [
+                {chapterName: '闲话', path: 'node_7365.xml'}
+            ]},
+            {href: 'node_26841.xml', id: 'node_26841', index: 21, url: '/app/books/shucangmeizhoushuping/OPS/node_26841.xml', chapterNames: [
+                {chapterName: '畅销榜', path: 'node_26841.xml'}
+            ]},
+            {href: 'node_6135.xml', id: 'node_6135', index: 22, url: '/app/books/shucangmeizhoushuping/OPS/node_6135.xml', chapterNames: [
+                {chapterName: '古代中国没有修辞学？', path: 'node_6135.xml'}
+            ]},
+            {href: 'node_10042.xml', id: 'node_10042', index: 23, url: '/app/books/shucangmeizhoushuping/OPS/node_10042.xml', chapterNames: [
+                {chapterName: '“名家手稿书画签名本珍本”赈灾义拍', path: 'node_10042.xml'}
+            ]},
+            {href: 'main2.xml', id: 'main2', index: 24, url: '/app/books/shucangmeizhoushuping/OPS/main2.xml', chapterNames: [
+                {chapterName: '南方都市报阅读周刊', path: 'main2.xml'}
+            ]},
+            {href: 'node_8181.xml', id: 'node_8181', index: 25, url: '/app/books/shucangmeizhoushuping/OPS/node_8181.xml', chapterNames: [
+                {chapterName: '对人生，我没有绝望过（上）', path: 'node_8181.xml'}
+            ]},
+            {href: 'node_13924.xml', id: 'node_13924', index: 26, url: '/app/books/shucangmeizhoushuping/OPS/node_13924.xml', chapterNames: [
+                {chapterName: '加藤嘉一 现代版遣唐使', path: 'node_13924.xml'}
+            ]},
+            {href: 'node_22260.xml', id: 'node_22260', index: 27, url: '/app/books/shucangmeizhoushuping/OPS/node_22260.xml', chapterNames: [
+                {chapterName: '个人史里的香港', path: 'node_22260.xml'}
+            ]},
+            {href: 'node_15736.xml', id: 'node_15736', index: 28, url: '/app/books/shucangmeizhoushuping/OPS/node_15736.xml', chapterNames: [
+                {chapterName: '“停滞”的年代，仍有天使存在', path: 'node_15736.xml'}
+            ]},
+            {href: 'node_15687.xml', id: 'node_15687', index: 29, url: '/app/books/shucangmeizhoushuping/OPS/node_15687.xml', chapterNames: [
+                {chapterName: '“德先生”不是危险分子', path: 'node_15687.xml'}
+            ]},
+            {href: 'node_28669.xml', id: 'node_28669', index: 30, url: '/app/books/shucangmeizhoushuping/OPS/node_28669.xml', chapterNames: [
+                {chapterName: '“科学家养猪，大学生编书”的荒唐时代', path: 'node_28669.xml'}
+            ]},
+            {href: 'node_16332.xml', id: 'node_16332', index: 31, url: '/app/books/shucangmeizhoushuping/OPS/node_16332.xml', chapterNames: [
+                {chapterName: '个人经历与时代风貌的叠影', path: 'node_16332.xml'}
+            ]},
+            {href: 'node_17369.xml', id: 'node_17369', index: 32, url: '/app/books/shucangmeizhoushuping/OPS/node_17369.xml', chapterNames: [
+                {chapterName: '文学作品的非文学功用', path: 'node_17369.xml'}
+            ]},
+            {href: 'node_32286.xml', id: 'node_32286', index: 33, url: '/app/books/shucangmeizhoushuping/OPS/node_32286.xml', chapterNames: [
+                {chapterName: '当女人拿起笔', path: 'node_32286.xml'}
+            ]},
+            {href: 'node_12301.xml', id: 'node_12301', index: 34, url: '/app/books/shucangmeizhoushuping/OPS/node_12301.xml', chapterNames: [
+                {chapterName: '悲哀又好笑的媒体人', path: 'node_12301.xml'}
+            ]},
+            {href: 'node_20752.xml', id: 'node_20752', index: 35, url: '/app/books/shucangmeizhoushuping/OPS/node_20752.xml', chapterNames: [
+                {chapterName: '中国式职场', path: 'node_20752.xml'}
+            ]},
+            {href: 'node_5121.xml', id: 'node_5121', index: 36, url: '/app/books/shucangmeizhoushuping/OPS/node_5121.xml', chapterNames: [
+                {chapterName: '新书快睇', path: 'node_5121.xml'}
+            ]},
+            {href: 'node_28776.xml', id: 'node_28776', index: 37, url: '/app/books/shucangmeizhoushuping/OPS/node_28776.xml', chapterNames: [
+                {chapterName: '他者眼中的诸葛亮', path: 'node_28776.xml'}
+            ]},
+            {href: 'node_1741.xml', id: 'node_1741', index: 38, url: '/app/books/shucangmeizhoushuping/OPS/node_1741.xml', chapterNames: [
+                {chapterName: '女影星的文学转身', path: 'node_1741.xml'}
+            ]},
+            {href: 'node_26484.xml', id: 'node_26484', index: 39, url: '/app/books/shucangmeizhoushuping/OPS/node_26484.xml', chapterNames: [
+                {chapterName: '“鱼璇玑”是谁？', path: 'node_26484.xml'}
+            ]},
+            {href: 'node_21038.xml', id: 'node_21038', index: 40, url: '/app/books/shucangmeizhoushuping/OPS/node_21038.xml', chapterNames: [
+                {chapterName: '设计的民族性', path: 'node_21038.xml'}
+            ]},
+            {href: 'node_7287.xml', id: 'node_7287', index: 41, url: '/app/books/shucangmeizhoushuping/OPS/node_7287.xml', chapterNames: [
+                {chapterName: '仅仅是看房子', path: 'node_7287.xml'}
+            ]},
+            {href: 'node_24708.xml', id: 'node_24708', index: 42, url: '/app/books/shucangmeizhoushuping/OPS/node_24708.xml', chapterNames: [
+                {chapterName: '业余乐迷的“专业”耳朵', path: 'node_24708.xml'}
+            ]},
+            {href: 'node_11455.xml', id: 'node_11455', index: 43, url: '/app/books/shucangmeizhoushuping/OPS/node_11455.xml', chapterNames: [
+                {chapterName: '瑜伽也是一门科学', path: 'node_11455.xml'}
+            ]},
+            {href: 'node_19496.xml', id: 'node_19496', index: 44, url: '/app/books/shucangmeizhoushuping/OPS/node_19496.xml', chapterNames: [
+                {chapterName: '藏书为读书 读书为兴趣', path: 'node_19496.xml'}
+            ]},
+            {href: 'node_31082.xml', id: 'node_31082', index: 45, url: '/app/books/shucangmeizhoushuping/OPS/node_31082.xml', chapterNames: [
+                {chapterName: '新京报书评周刊', path: 'node_31082.xml'}
+            ]},
+            {href: 'node_4595.xml', id: 'node_4595', index: 46, url: '/app/books/shucangmeizhoushuping/OPS/node_4595.xml', chapterNames: [
+                {chapterName: '“梦游”喜马拉雅', path: 'node_4595.xml'}
+            ]},
+            {href: 'node_21181.xml', id: 'node_21181', index: 47, url: '/app/books/shucangmeizhoushuping/OPS/node_21181.xml', chapterNames: [
+                {chapterName: '布置一个舒服的家', path: 'node_21181.xml'}
+            ]},
+            {href: 'node_22382.xml', id: 'node_22382', index: 48, url: '/app/books/shucangmeizhoushuping/OPS/node_22382.xml', chapterNames: [
+                {chapterName: '曹锦清的民族关切', path: 'node_22382.xml'}
+            ]},
+            {href: 'node_16010.xml', id: 'node_16010', index: 49, url: '/app/books/shucangmeizhoushuping/OPS/node_16010.xml', chapterNames: [
+                {chapterName: '我和韩寒都是合格公民', path: 'node_16010.xml'}
+            ]},
+            {href: 'node_26317.xml', id: 'node_26317', index: 50, url: '/app/books/shucangmeizhoushuping/OPS/node_26317.xml', chapterNames: [
+                {chapterName: '《刀语》描绘“胜负”的世界', path: 'node_26317.xml'}
+            ]},
+            {href: 'node_3089.xml', id: 'node_3089', index: 51, url: '/app/books/shucangmeizhoushuping/OPS/node_3089.xml', chapterNames: [
+                {chapterName: '日本80后 “失落的一代”', path: 'node_3089.xml'}
+            ]},
+            {href: 'node_25299.xml', id: 'node_25299', index: 52, url: '/app/books/shucangmeizhoushuping/OPS/node_25299.xml', chapterNames: [
+                {chapterName: '“别轻易以为有明天”', path: 'node_25299.xml'}
+            ]},
+            {href: 'node_25610.xml', id: 'node_25610', index: 53, url: '/app/books/shucangmeizhoushuping/OPS/node_25610.xml', chapterNames: [
+                {chapterName: '日本80后代表作家和作品', path: 'node_25610.xml'}
+            ]},
+            {href: 'node_13675.xml', id: 'node_13675', index: 54, url: '/app/books/shucangmeizhoushuping/OPS/node_13675.xml', chapterNames: [
+                {chapterName: '《刀语》，洞悉青年的需求', path: 'node_13675.xml'}
+            ]},
+            {href: 'node_2006.xml', id: 'node_2006', index: 55, url: '/app/books/shucangmeizhoushuping/OPS/node_2006.xml', chapterNames: [
+                {chapterName: '白老虎的困境', path: 'node_2006.xml'}
+            ]},
+            {href: 'node_27774.xml', id: 'node_27774', index: 56, url: '/app/books/shucangmeizhoushuping/OPS/node_27774.xml', chapterNames: [
+                {chapterName: '与疾病相伴', path: 'node_27774.xml'}
+            ]},
+            {href: 'node_7213.xml', id: 'node_7213', index: 57, url: '/app/books/shucangmeizhoushuping/OPS/node_7213.xml', chapterNames: [
+                {chapterName: '蜗牛式随笔', path: 'node_7213.xml'}
+            ]},
+            {href: 'node_32496.xml', id: 'node_32496', index: 58, url: '/app/books/shucangmeizhoushuping/OPS/node_32496.xml', chapterNames: [
+                {chapterName: '爱情与西藏无关', path: 'node_32496.xml'}
+            ]},
+            {href: 'node_691.xml', id: 'node_691', index: 59, url: '/app/books/shucangmeizhoushuping/OPS/node_691.xml', chapterNames: [
+                {chapterName: '大师与工匠', path: 'node_691.xml'}
+            ]},
+            {href: 'node_13179.xml', id: 'node_13179', index: 60, url: '/app/books/shucangmeizhoushuping/OPS/node_13179.xml', chapterNames: [
+                {chapterName: '曹锦清的中国“四问”', path: 'node_13179.xml'}
+            ]},
+            {href: 'node_16302.xml', id: 'node_16302', index: 61, url: '/app/books/shucangmeizhoushuping/OPS/node_16302.xml', chapterNames: [
+                {chapterName: '艾尔曼 科举制的社会功能', path: 'node_16302.xml'}
+            ]},
+            {href: 'node_8608.xml', id: 'node_8608', index: 62, url: '/app/books/shucangmeizhoushuping/OPS/node_8608.xml', chapterNames: [
+                {chapterName: '“回忆艰难岁月”', path: 'node_8608.xml'}
+            ]},
+            {href: 'node_16595.xml', id: 'node_16595', index: 63, url: '/app/books/shucangmeizhoushuping/OPS/node_16595.xml', chapterNames: [
+                {chapterName: '美国“小说已死”？', path: 'node_16595.xml'}
+            ]},
+            {href: 'node_9554.xml', id: 'node_9554', index: 64, url: '/app/books/shucangmeizhoushuping/OPS/node_9554.xml', chapterNames: [
+                {chapterName: '中国茶：史上最大商业盗窃', path: 'node_9554.xml'}
+            ]},
+            {href: 'node_12098.xml', id: 'node_12098', index: 65, url: '/app/books/shucangmeizhoushuping/OPS/node_12098.xml', chapterNames: [
+                {chapterName: '把书变成应用程序', path: 'node_12098.xml'}
+            ]},
+            {href: 'node_9042.xml', id: 'node_9042', index: 66, url: '/app/books/shucangmeizhoushuping/OPS/node_9042.xml', chapterNames: [
+                {chapterName: '私人视角下的海上传奇', path: 'node_9042.xml'}
+            ]},
+            {href: 'node_13630.xml', id: 'node_13630', index: 67, url: '/app/books/shucangmeizhoushuping/OPS/node_13630.xml', chapterNames: [
+                {chapterName: '微博书情', path: 'node_13630.xml'}
+            ]},
+            {href: 'node_15054.xml', id: 'node_15054', index: 68, url: '/app/books/shucangmeizhoushuping/OPS/node_15054.xml', chapterNames: [
+                {chapterName: '新京报图书排行榜', path: 'node_15054.xml'}
+            ]},
+            {href: 'shucang.xml', id: 'shucang', index: 69, url: '/app/books/shucangmeizhoushuping/OPS/shucang.xml', chapterNames: [
+                {chapterName: '书仓介绍', path: 'shucang.xml'}
+            ]}
+        ];
+
+var path5 = {bookPath: "/app/books/shucangmeizhoushuping/", basePath: "OPS/"};
 </script>
 </head>
 <body>
@@ -344,10 +582,10 @@ var path3 = {
 <script type="text/javascript" src="../hooks/smartmedias.js"></script>
 <script type="text/javascript" src="../js/domUtil.js"></script>
 
-<script type="text/javascript"  src="../hooks/pixi.min.js"></script>
-<!-- gren.js 依赖 pixi.min.js 来兼容不支持 WebGL 的浏览器-->
-<script type="text/javascript"  src="../hooks/gren.js"></script>
+<script type="text/javascript" src="../hooks/pixi.min.js"></script>
+<!--gren.js 依赖 pixi.min.js 来兼容不支持 WebGL 的浏览器-->
+<script type="text/javascript" src="../hooks/gren.js"></script>
 <script>
-    var book = initReader({spine: spine2, padding: {top: 30, right: 10, bottom: 30, left: 10}, path: path2, chaptersNum: {}, fontSize: 18, fontFamily: "", headTags: {link: {href: "", type: "text/css", rel: "stylesheet"}}});
+    var book = initReader({spine: spine5, padding: {top: 30, right: 10, bottom: 30, left: 10}, path: path5, chaptersNum: {}, fontSize: 18, fontFamily: "", headTags: [], nightMode: false});
 </script>
 </html>
