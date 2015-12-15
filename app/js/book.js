@@ -104,6 +104,8 @@ EPUBJS.Book.prototype.renderTo = function (eleId) {
       this.chaptersNum = chaptersNum;
       this.showBookNum();
     }.bind(this));
+  }else{
+    EPUBJS.core.postMessageToMobile("chaptersNum", this.chaptersNum);
   }
 };
 
@@ -226,7 +228,9 @@ EPUBJS.Book.prototype.gotoPage = function (spinePos, pageNum) {
         }
       }.bind(this))
     } else {
-      if (pageNum) {
+      if(pageNum > this.renderer.displayedPages){
+        this.renderer.lastPage();
+      }else if (pageNum >= 1 || pageNum <= this.renderer.displayedPages) {
         this.renderer.page(pageNum);
       } else {
         this.renderer.firstPage();
@@ -625,20 +629,15 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
 
   //创建iframe
   function createFrame() {
-    var iframe = document.createElement('iframe');
-    iframe.scrolling = "no";
-    iframe.style.border = "none";
-    iframe.seamless = "seamless";
-    iframe.style.height = "100%";
-    iframe.style.width = "100%";
-    iframe.style.visibility = "hidden";
+    var iframe = book.renderer.element.cloneNode(false);
     return iframe;
   }
 
   //获取每一章节的页码
-  function getChapterPageNum(document) {
+  function getChapterPageNum(docEl) {
     if (padding) {
-      var body = document.body || document.querySelector("body");
+      var body = docEl.body || docEl.querySelector("body");
+      body.style.margin = "0";
       body.style.paddingLeft = padding.left + "px";
       body.style.paddingRight = padding.right + "px";
     }
@@ -649,7 +648,7 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
     if (renderer.fontFamily) {
       body.style.fontFamily = renderer.fontFamily;
     }
-    layout.format(document, width, height);
+    layout.format(docEl, width, height);
     var pageNum = layout.calculatePages();
     return pageNum;
   }

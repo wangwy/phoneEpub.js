@@ -92,11 +92,11 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.updatePages();
     this.currentOffset = this.pageMap[0].start;
     this.triggerHooks("beforeChapterDisplay", this);
+    this.visible(true);
+    this.chapterName.textContent = this.getChapterNameBypg(1) || "";
     if(this.currentChapter.spinePos != 0){
       EPUBJS.core.postMessageToMobile("chapterDisplay",{chapterDisplay: "end"});
     }
-    this.visible(true);
-    this.chapterName.textContent = this.getChapterNameBypg(1) || "";
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
@@ -216,7 +216,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   };
 
   var checkNode = function (node) {
-    if (node.nodeType == Node.TEXT_NODE && node.textContent.trim().length && node.textContent.indexOf("http://") === -1) {//当一个英文字母过长或者一个英文链接的话column不分栏
+    if (node.nodeType == Node.TEXT_NODE && node.textContent.trim().length) {
       return true;
     }
     var elRange = document.createRange();
@@ -227,16 +227,22 @@ EPUBJS.Renderer.prototype.mapPage = function () {
       return false
     }
 
+    //判断图片
     if (node.nodeType == Node.ELEMENT_NODE && node.childNodes.length === 0) {
       return true;
     }
   };
 
   var checkChild = function (node) {
+    var lineHeight =parseInt(getComputedStyle(node.parentElement)["line-height"].slice(0,-2));
     var ranges = [];
     var range = document.createRange();
     range.selectNodeContents(node);
     var elPos = range.getBoundingClientRect();
+    //过滤掉分栏不生效的节点
+    if(elPos.right > elPos.left + width && elPos.height < lineHeight){
+      return;
+    }
     if (node.nodeType == Node.ELEMENT_NODE || (elPos.right < elPos.left + width)) {
       ranges.push(range);
     } else {
@@ -249,7 +255,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
       if (!pos || (pos.width === 0 && pos.height === 0)) {
         return;
       }
-      if (pos.left + pos.width < limit) {
+      if (pos.left + pos.width <= limit) {
         if (!map[page - 1]) {
           map.push({
             start: 0,
@@ -306,38 +312,6 @@ EPUBJS.Renderer.prototype.mapPage = function () {
  * @param limit
  * @returns {*}
  */
-/*EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
-  var ranges = [];
-  var text = node.textContent;
-  var doc = node.ownerDocument;
-  var rangeLeft = doc.createRange(), rangeRight = doc.createRange();
-
-  var startIndex = 0,
-      stopIndex = text.length,
-      middle = Math.floor((startIndex + stopIndex) / 2);
-  while (startIndex < stopIndex) {
-    rangeLeft.collapse(true);
-    rangeLeft.setStart(node, startIndex);
-    rangeLeft.setEnd(node, middle);
-
-    rangeRight.collapse(true);
-    rangeRight.setStart(node, middle);
-    rangeRight.setEnd(node, stopIndex);
-
-    if (rangeLeft.getBoundingClientRect().right <= limit && rangeRight.getBoundingClientRect().left >= limit) {
-      ranges.push(rangeLeft, rangeRight);
-      break;
-    } else if (rangeLeft.getBoundingClientRect().right < limit) {
-      startIndex = middle;
-    } else if (rangeLeft.getBoundingClientRect().right > limit) {
-      stopIndex = middle;
-    }
-    middle = Math.floor((startIndex + stopIndex) / 2);
-  }
-
-  return ranges;
-};*/
-
 EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
   var ranges = [], limitPos = limit, pageWidth = this.pageWidth;
   var rangeLeft = node.ownerDocument.createRange(), rangeRight = node.ownerDocument.createRange();
