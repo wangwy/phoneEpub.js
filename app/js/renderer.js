@@ -67,8 +67,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
   var deferred = new RSVP.defer();
   this.layout = new EPUBJS.Layout["Reflowable"]();
   this.visible(false);
-  if(this.currentChapter.spinePos != 0){
-    EPUBJS.core.postMessageToMobile("chapterDisplay",{chapterDisplay: "start"});
+  if (this.currentChapter.spinePos != 0) {
+    EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "start"});
   }
   var render = this.render.load(url);
   render.then(function () {
@@ -94,8 +94,8 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.triggerHooks("beforeChapterDisplay", this);
     this.visible(true);
     this.chapterName.textContent = this.getChapterNameBypg(1) || "";
-    if(this.currentChapter.spinePos != 0){
-      EPUBJS.core.postMessageToMobile("chapterDisplay",{chapterDisplay: "end"});
+    if (this.currentChapter.spinePos != 0) {
+      EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "end"});
     }
     deferred.resolve(this);
   }.bind(this));
@@ -109,7 +109,7 @@ EPUBJS.Renderer.prototype.reformat = function () {
   this.formated = this.layout(this.docEl, this.render.width, this.render.height);
   this.render.setPageDimensions(this.formated.pageWidth, this.formated.pageHeight);
   this.updatePages();
-  if(this.currentOffset){
+  if (this.currentOffset) {
     this.gotoOffset(this.currentOffset);
   }
 };
@@ -234,13 +234,13 @@ EPUBJS.Renderer.prototype.mapPage = function () {
   };
 
   var checkChild = function (node) {
-    var lineHeight =parseInt(getComputedStyle(node.parentElement)["line-height"].slice(0,-2));
+    var lineHeight = parseInt(getComputedStyle(node.parentElement)["line-height"].slice(0, -2));
     var ranges = [];
     var range = document.createRange();
     range.selectNodeContents(node);
     var elPos = range.getBoundingClientRect();
     //过滤掉分栏不生效的节点
-    if(elPos.right > elPos.left + width && elPos.height < lineHeight){
+    if (elPos.right > elPos.left + width && elPos.height < lineHeight) {
       return;
     }
     if (node.nodeType == Node.ELEMENT_NODE || (elPos.right < elPos.left + width)) {
@@ -287,7 +287,6 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     })
   };
 
-
   this.sprint(root, check);
 
   if (prevRange) {
@@ -315,15 +314,16 @@ EPUBJS.Renderer.prototype.mapPage = function () {
 EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) {
   var ranges = [], limitPos = limit, pageWidth = this.pageWidth;
   var rangeLeft = node.ownerDocument.createRange(), rangeRight = node.ownerDocument.createRange();
-  var startIndex,stopIndex,middle;
+  var startIndex, stopIndex, middle;
   var range = this.doc.createRange();
   range.selectNode(node);
   var rightPos = range.getBoundingClientRect().right;
-  function splitWord(index, split){
+
+  function splitWord(index, split) {
     startIndex = index;
     stopIndex = node.textContent.length;
     middle = Math.floor((startIndex + stopIndex) / 2);
-    while(startIndex < stopIndex && limitPos < rightPos){
+    while (startIndex < stopIndex && limitPos < rightPos) {
       rangeLeft.collapse(true);
       rangeLeft.setStart(node, startIndex);
       rangeLeft.setEnd(node, middle);
@@ -332,12 +332,13 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
       rangeRight.setStart(node, middle);
       rangeRight.setEnd(node, stopIndex);
 
-      if (rangeLeft.getBoundingClientRect().right <= split && rangeRight.getBoundingClientRect().left >= split) {
+      //(rangeLeft.toString().length < 2) 兼容锤子手机
+      if ((rangeLeft.getBoundingClientRect().right <= split && rangeRight.getBoundingClientRect().left >= split) || (rangeLeft.toString().length < 2)) {
         ranges.push(rangeLeft.cloneRange(), rangeRight.cloneRange());
         limitPos = limitPos + pageWidth;
-        if(limitPos < rightPos){
+        if (limitPos < rightPos) {
           splitWord(middle, limitPos)
-        }else{
+        } else {
           break;
         }
       } else if (rangeLeft.getBoundingClientRect().right < split) {
@@ -348,6 +349,7 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
       middle = Math.floor((startIndex + stopIndex) / 2);
     }
   }
+
   splitWord(0, limitPos);
   return ranges;
 };
@@ -484,14 +486,32 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   var time = durTime || 1;
   var defer = new RSVP.defer();
+  var renderer = this;
+
+  function whichTransitionEvent() {
+    var transitions = {
+      'transition' : 'transitionend',
+      'MozTransition' : 'transitionend',
+      'WebkitTransition' : 'webkitTransitionEnd'
+    };
+
+    for(var t in transitions){
+      if(renderer.docEl.style[t] !== undefined){
+        return transitions[t];
+      }
+    }
+  }
+
+  var transitionEvent = whichTransitionEvent();
+
   var translationEnd = function () {
-    this.docEl.removeEventListener('transitionend', translationEnd, false);
+    this.docEl.removeEventListener(transitionEvent, translationEnd, false);
     var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
     defer.resolve(result);
   }.bind(this);
   if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
-    this.render.docEl.addEventListener('transitionend', translationEnd, false);
+    this.render.docEl.addEventListener(transitionEvent, translationEnd, false);
     this.render.page(pg, time);
     this.trigger("renderer:locationChanged", {spinePos: this.currentChapter.spinePos, page: this.chapterPos});
     var chapterName = this.getChapterNameBypg(pg);
@@ -502,11 +522,11 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {
     this.render.page(pg, time);
-    this.docEl.addEventListener('transitionend', translationEnd, false);
+    this.docEl.addEventListener(transitionEvent, translationEnd, false);
     return defer.promise;
   } else if (pg == 0) {
     this.render.page(0, time);
-    this.docEl.addEventListener('transitionend', translationEnd, false);
+    this.docEl.addEventListener(transitionEvent, translationEnd, false);
     return defer.promise;
   }
 };
@@ -611,22 +631,26 @@ EPUBJS.Renderer.prototype.getElementByXPath = function (xpath) {
  * @returns {Array}
  */
 EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos, chapterName) {
-  var treeWalker = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, {
-    acceptNode: function (node) {
-      if (node.textContent.trim().length > 0) {
-        return NodeFilter.FILTER_ACCEPT;
-      } else {
-        return NodeFilter.FILTER_REJECT;
+  try {
+    var treeWalker = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (node.textContent.trim().length > 0) {
+          return NodeFilter.FILTER_ACCEPT;
+        } else {
+          return NodeFilter.FILTER_REJECT;
+        }
+      }
+    }, false);
+    var node, results = [], offset = -1, xPath;
+    while (node = treeWalker.nextNode()) {
+      offset = node.textContent.indexOf(text);
+      if (offset != -1) {
+        xPath = this.getXPathByElement(node);
+        results.push({nodeText: node.textContent, search: text, spinePos: spinePos, chapterName: chapterName, xPath: xPath, offset: offset});
       }
     }
-  }, false);
-  var node, results = [], offset = -1, xPath;
-  while (node = treeWalker.nextNode()) {
-    offset = node.textContent.indexOf(text);
-    if (offset != -1) {
-      xPath = this.getXPathByElement(node);
-      results.push({nodeText: node.textContent, search: text, spinePos: spinePos, chapterName: chapterName, xPath: xPath, offset: offset});
-    }
+  } catch (e) {
+    EPUBJS.core.postMessageToMobile("searchText",{flag:"0"})
   }
   return results;
 };
