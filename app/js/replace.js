@@ -25,10 +25,17 @@ EPUBJS.replace.hrefs = function (renderer) {
       } else {
         relative = href;
       }
+      var touchStartX, touchEndX;
+      link.addEventListener("touchstart", function (event) {
+        touchStartX = event.touches[0].clientX;
+      }, false);
       link.addEventListener("touchend", function (event) {
-        event.stopPropagation();
-        book.gotoHref(relative);
-        return false;
+        touchEndX = event.changedTouches[0].clientX;
+        if (touchEndX == touchStartX) {
+          event.stopPropagation();
+          book.gotoHref(relative);
+          return false;
+        }
       }, false);
     }
 

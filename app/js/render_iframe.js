@@ -127,10 +127,12 @@ EPUBJS.Render.Iframe.prototype.setWidthAndHeight = function (width, height) {
  * @returns {number}
  */
 EPUBJS.Render.Iframe.prototype.getPageNumberByElement = function (el) {
-  var left, pg;
-  left = this.leftPos + el.getBoundingClientRect().left;
-  pg = Math.floor(left/this.pageWidth) + 1;
-  return pg;
+  if(el){
+    var left, pg;
+    left = this.leftPos + el.getBoundingClientRect().left;
+    pg = Math.floor(left/this.pageWidth) + 1;
+    return pg;
+  }
 };
 
 /**

@@ -154,10 +154,12 @@ EPUBJS.Renderer.prototype.parseChapterNames = function (chapterNames) {
     } else {
       var section = paths[1];
       var el = this.doc.getElementById(section);
-      var pg = this.render.getPageNumberByElement(el);
-      chapterNamePage.push({chapterName: chapterName, startPg: pg, endPg: null});
-      if (index != 0) {
-        chapterNamePage[index - 1].endPg = pg - 1;
+      if(el){
+        var pg = this.render.getPageNumberByElement(el);
+        chapterNamePage.push({chapterName: chapterName, startPg: pg, endPg: null});
+        if (index != 0) {
+          chapterNamePage[index - 1].endPg = pg - 1;
+        }
       }
     }
   }, this);
