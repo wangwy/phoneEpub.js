@@ -132,6 +132,9 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
 
   chapter = new EPUBJS.Chapter(this.spine[pos]);
   this.spinePos = pos;
+  if(this.spinePos != 0){
+    EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "start"});
+  }
   render = this.renderer.displayChapter(chapter);
 
   render.then(function () {
@@ -146,6 +149,9 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
 
     this.currentChapter = chapter;
     this.addEventListeners();
+    if(this.spinePos != 0){
+      EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "end"});
+    }
   }.bind(this));
 
   return defer.promise;

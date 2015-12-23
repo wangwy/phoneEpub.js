@@ -67,9 +67,6 @@ EPUBJS.Renderer.prototype.load = function (url) {
   var deferred = new RSVP.defer();
   this.layout = new EPUBJS.Layout["Reflowable"]();
   this.visible(false);
-  if (this.currentChapter.spinePos != 0) {
-    EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "start"});
-  }
   var render = this.render.load(url);
   render.then(function () {
     this.doc = this.render.document;
@@ -97,9 +94,6 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.triggerHooks("beforeChapterDisplay", this);
     this.visible(true);
     this.chapterName.textContent = this.getChapterNameBypg(1) || "";
-    if (this.currentChapter.spinePos != 0) {
-      EPUBJS.core.postMessageToMobile("chapterDisplay", {chapterDisplay: "end"});
-    }
     deferred.resolve(this);
   }.bind(this));
   return deferred.promise;
