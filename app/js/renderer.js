@@ -9,7 +9,7 @@ EPUBJS.Renderer = function () {
   this.fontFamily = "";
   this.nightMode = 0;
   EPUBJS.Hooks.mixin(this);
-  this.getHooks("beforeChapterDisplay");
+  this.getHooks("beforeFormat","beforeChapterDisplay");
   this.q = new EPUBJS.Queue(this);
   this.chapterName = document.getElementById("chapterName");
 };
@@ -89,6 +89,7 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.pageWidth = this.formated.pageWidth;
     this.pageHeight = this.formated.pageHeight;
     this.viewDimensions = this.render.getViewDimensions();
+    this.triggerHooks("beforeFormat",this.doc, this.viewDimensions.viewWidth, this.viewDimensions.pageHeight);
     this.updatePages();
     this.currentOffset = this.pageMap[0].start;
     this.triggerHooks("beforeChapterDisplay", this);
@@ -245,7 +246,7 @@ EPUBJS.Renderer.prototype.mapPage = function () {
     if (elPos.right > elPos.left + width && elPos.height < lineHeight) {
       return;
     }
-    if (node.nodeType == Node.ELEMENT_NODE || (elPos.right < elPos.left + width)) {
+    if (node.nodeType == Node.ELEMENT_NODE || (elPos.right <= elPos.left + width)) {
       ranges.push(range);
     } else {
       var textRanges = renderer.splitTextNodeIntoWordsRanges(node, limit);
@@ -320,6 +321,11 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
   var range = this.doc.createRange();
   range.selectNode(node);
   var rightPos = range.getBoundingClientRect().right;
+
+  if(node.textContent == "2009年12月5日～6日，由《中国企业家》杂志社、中国企业家俱乐部联合主办的“2009年（第八届）中国企业领袖年会”在北京中国大饭店举行，主题为“新商业文明的中国路径”。阿里巴巴集团董事局主席兼首席执行官马云作了演讲。该演讲稿从与此年会同时进行的中央经济工作会议和哥本哈根会议带给大家的信号讲起，指出“金融危机也是一种信号，对于这个信号我比较遗憾，人类感受得不够痛”。马云呼吁大家应该从危机中悟出些什么，为这个社会环境做点什么。"){
+    debugger;
+  }
+
 
   function splitWord(index, split) {
     startIndex = index;

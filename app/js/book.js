@@ -21,7 +21,7 @@ EPUBJS.Book = function (options) {
     this.renderer.resetFontFamily(options.fontFamily);
   }
   if (options.nightMode) {
-    EPUBJS.BookInterface.configBackgroundColor("#252525");
+    EPUBJS.BookInterface.configBackgroundColor("#252525", false);
     this.renderer.nightMode = 1;
   }
   this.spinePos = 0;
@@ -130,7 +130,6 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
   }
 
   chapter = new EPUBJS.Chapter(this.spine[pos]);
-
   this.spinePos = pos;
   render = this.renderer.displayChapter(chapter);
 
@@ -191,6 +190,10 @@ EPUBJS.Book.prototype._gotoHref = function (url) {
   relativeURL = chapter.replace((this.path.bookPath + this.path.basePath), "");
 
   spinePos = this.spineIndexByURL[relativeURL];
+
+  if(!spinePos){
+    spinePos = this.spinePos;
+  }
 
   if (!chapter) {
     spinePos = this.spinePos;
@@ -421,15 +424,18 @@ EPUBJS.Book.prototype.reset = function () {
  * @returns {*}
  */
 EPUBJS.Book.prototype.nextPage = function (durTime) {
-  this.paginationQ.clear();
-  return  this.paginationQ.enqueue(function () {
-    this.renderer.nextPage(durTime)
-        .then(function (result) {
-          if (!result) {
-            return this.nextChapter();
-          }
-        }.bind(this));
-  }.bind(this));
+  if(this.renderer.chapterPos !== this.renderer.displayedPages ||
+      this.spinePos !== this.spine.length - 1){
+    this.paginationQ.clear();
+    return  this.paginationQ.enqueue(function () {
+      this.renderer.nextPage(durTime)
+          .then(function (result) {
+            if (!result) {
+              return this.nextChapter();
+            }
+          }.bind(this));
+    }.bind(this));
+  }
 };
 
 /**
@@ -437,15 +443,18 @@ EPUBJS.Book.prototype.nextPage = function (durTime) {
  * @returns {*}
  */
 EPUBJS.Book.prototype.prevPage = function (durTime) {
-  this.paginationQ.clear();
-  return this.paginationQ.enqueue(function () {
-    this.renderer.prevPage(durTime)
-        .then(function (result) {
-          if (!result) {
-            return this.prevChapter();
-          }
-        }.bind(this));
-  }.bind(this));
+  if(this.renderer.chapterPos !== 1 ||
+      this.spinePos !== 0){
+    this.paginationQ.clear();
+    return this.paginationQ.enqueue(function () {
+      this.renderer.prevPage(durTime)
+          .then(function (result) {
+            if (!result) {
+              return this.prevChapter();
+            }
+          }.bind(this));
+    }.bind(this));
+  }
 };
 
 /**
@@ -626,12 +635,6 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
   var height = this.renderer.pageHeight;
   var padding = this.padding, renderer = this.renderer;
 
-  //创建iframe
-  function createFrame() {
-    var iframe = book.renderer.element.cloneNode(false);
-    return iframe;
-  }
-
   //获取每一章节的页码
   function getChapterPageNum(docEl) {
     if (padding) {
@@ -648,13 +651,14 @@ EPUBJS.Book.prototype._getAllChapterNum = function () {
       body.style.fontFamily = renderer.fontFamily;
     }
     layout.format(docEl, width, height);
+    book.renderer.triggerHooks("beforeFormat",docEl, width-padding.left-padding.right, height);
     var pageNum = layout.calculatePages();
     return pageNum;
   }
 
   //获取所有章节的页码
   function getChapter(i) {
-    var iframe = createFrame();
+    var iframe = book.renderer.element.cloneNode(false);
     book.container.appendChild(iframe);
     iframe.contentWindow.location.replace(book.spine[i].url);
     iframe.onload = function () {

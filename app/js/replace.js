@@ -18,6 +18,7 @@ EPUBJS.replace.hrefs = function (renderer) {
     if (isRelative != -1) {
       link.setAttribute("target", "_blank");
     } else {
+      link.setAttribute("href","javascript:void(0)");
       var uri = EPUBJS.core.uri(renderer.render.window.location.href);
       directory = uri.directory;
       if (directory) {

@@ -11,16 +11,13 @@ EPUBJS.Hooks = (function () {
    */
   hooks.prototype.getHooks = function () {
     var plugs = [];
-    this.hooks = {};
+     this.hooks = {};
     Array.prototype.slice.call(arguments).forEach(function (arg) {
       this.hooks[arg] = [];
     }, this);
 
     for (var plugType in this.hooks) {
-      for (var key in EPUBJS.hooks[plugType]) {
-        plugs.push(EPUBJS.hooks[plugType][key])
-      }
-
+      plugs = EPUBJS.core.values(EPUBJS.hooks[plugType]);
       plugs.forEach(function (hook) {
         this.registerHook(plugType, hook, false);
       }, this)
@@ -57,9 +54,6 @@ EPUBJS.Hooks = (function () {
 
   /**
    * 触发注册完的函数
-   * @param type
-   * @param callback
-   * @param passed
    * @returns {boolean}
    */
   hooks.prototype.triggerHooks = function () {

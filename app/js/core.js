@@ -241,3 +241,23 @@ EPUBJS.core.indexOfTextNode = function (textNode) {
   }
   return index;
 };
+
+/**
+ * 获取对象里的值
+ * @param object
+ * @returns {*}
+ */
+EPUBJS.core.values = function (object) {
+  var index = -1;
+  var props, length, result;
+  if(!object) return [];
+  props = Object.keys(object);
+  length = props.length;
+  result = Array(length);
+
+  while(++index < length){
+    result[index] = object[props[index]];
+  }
+
+  return result;
+};
