@@ -100,6 +100,7 @@ EPUBJS.Book.prototype.initialize = function () {
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
   this.q.enqueue(this.displayChapter, this.spinePos);
+  this.q.enqueue(EPUBJS.core.postMessageToMobile("initReader", {initReader: "finished"}));
   if (!Object.keys(this.chaptersNum).length) {
     this.getAllChapterNum().then(function (chaptersNum) {
       this.chaptersNum = chaptersNum;
