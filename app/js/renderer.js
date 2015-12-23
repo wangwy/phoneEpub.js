@@ -89,9 +89,11 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.pageWidth = this.formated.pageWidth;
     this.pageHeight = this.formated.pageHeight;
     this.viewDimensions = this.render.getViewDimensions();
-    this.triggerHooks("beforeFormat",this.doc, this.viewDimensions.viewWidth, this.viewDimensions.pageHeight);
+    this.triggerHooks("beforeFormat",this.doc, this.viewDimensions.viewWidth, this.viewDimensions.viewHeight);
     this.updatePages();
-    this.currentOffset = this.pageMap[0].start;
+    if(this.currentOffset){
+      this.gotoOffset(this.currentOffset);
+    }
     this.triggerHooks("beforeChapterDisplay", this);
     this.visible(true);
     this.chapterName.textContent = this.getChapterNameBypg(1) || "";
@@ -515,6 +517,9 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   var translationEnd = function () {
     this.docEl.removeEventListener(transitionEvent, translationEnd, false);
     var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
+    if(!result){
+      this.currentOffset = 0;
+    }
     defer.resolve(result);
   }.bind(this);
   if (pg >= 1 && pg <= this.displayedPages) {

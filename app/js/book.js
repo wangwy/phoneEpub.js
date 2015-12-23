@@ -24,7 +24,8 @@ EPUBJS.Book = function (options) {
     EPUBJS.BookInterface.configBackgroundColor("#252525", false);
     this.renderer.nightMode = 1;
   }
-  this.spinePos = 0;
+  this.spinePos = options.offsetObj.spinePos || 0;
+  this.renderer.currentOffset = options.offsetObj.offset || 0;
   this.q = new EPUBJS.Queue(this);
   //翻页队列
   this.paginationQ = new EPUBJS.Queue(this);
@@ -98,7 +99,7 @@ EPUBJS.Book.prototype.initialize = function () {
  */
 EPUBJS.Book.prototype.renderTo = function (eleId) {
   this.attachTo(eleId);
-  this.q.enqueue(this.displayChapter);
+  this.q.enqueue(this.displayChapter, this.spinePos);
   if (!Object.keys(this.chaptersNum).length) {
     this.getAllChapterNum().then(function (chaptersNum) {
       this.chaptersNum = chaptersNum;
@@ -521,6 +522,10 @@ EPUBJS.Book.prototype.addEventListeners = function () {
     //长按
     if(deltaX > -window.innerWidth / 100 && deltaX < window.innerWidth && endTime - startTime > 500){
       longTouch = true;
+    }
+    if((deltaX > 0 && this.renderer.chapterPos === 1 && this.spinePos === 0)||
+        (deltaX < 0 && this.renderer.chapterPos === this.renderer.displayedPages && this.spinePos === this.spine.length-1)){
+      return;
     }
     if (!longTouch) {
       event.preventDefault();
