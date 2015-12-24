@@ -141,6 +141,8 @@ EPUBJS.Book.prototype.displayChapter = function (chap, end, goto) {
   render.then(function () {
     if (!goto) {
       this.trigger("book:chapterDisplayed");
+    }else{
+      EPUBJS.core.postMessageToMobile("initReader", {initReader: "finished"});
     }
     if (end) { //上一章的最后一页
       this.renderer.lastPage();
