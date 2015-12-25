@@ -501,8 +501,10 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   }
 
   var transitionEvent = whichTransitionEvent();
-
+  console.log('paging start');
   var translationEnd = function () {
+    console.log('paging end');
+
     this.docEl.removeEventListener(transitionEvent, translationEnd, false);
     var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
     if(!result){
