@@ -318,11 +318,6 @@ EPUBJS.Renderer.prototype.splitTextNodeIntoWordsRanges = function (node, limit) 
   range.selectNode(node);
   var rightPos = range.getBoundingClientRect().right;
 
-  if(node.textContent == "2009年12月5日～6日，由《中国企业家》杂志社、中国企业家俱乐部联合主办的“2009年（第八届）中国企业领袖年会”在北京中国大饭店举行，主题为“新商业文明的中国路径”。阿里巴巴集团董事局主席兼首席执行官马云作了演讲。该演讲稿从与此年会同时进行的中央经济工作会议和哥本哈根会议带给大家的信号讲起，指出“金融危机也是一种信号，对于这个信号我比较遗憾，人类感受得不够痛”。马云呼吁大家应该从危机中悟出些什么，为这个社会环境做点什么。"){
-    debugger;
-  }
-
-
   function splitWord(index, split) {
     startIndex = index;
     stopIndex = node.textContent.length;
@@ -478,7 +473,9 @@ EPUBJS.Renderer.prototype.getLeft = function () {
  * @returns {*}
  */
 EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
-  return this.render.setLeft(leftPos, 0);
+  return this.q.enqueue(function () {
+    this.render.setLeft(leftPos, 0);
+  }.bind(this));
 };
 
 /**
@@ -488,7 +485,7 @@ EPUBJS.Renderer.prototype.setLeft = function (leftPos) {
  * @returns {boolean}
  */
 EPUBJS.Renderer.prototype.page = function (pg, durTime) {
-  var time = durTime || 1;
+  var time = durTime || 0;
   var defer = new RSVP.defer();
   var renderer = this;
 
@@ -519,7 +516,9 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
   if (pg >= 1 && pg <= this.displayedPages) {
     this.chapterPos = pg;
     this.render.docEl.addEventListener(transitionEvent, translationEnd, false);
-    this.render.page(pg, time);
+    this.q.enqueue(function () {
+      this.render.page(pg, time);
+    }.bind(this));
     this.trigger("renderer:locationChanged", {spinePos: this.currentChapter.spinePos, page: this.chapterPos});
     var chapterName = this.getChapterNameBypg(pg);
     if (chapterName != this.chapterName.textContent) {
@@ -528,11 +527,15 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
     this.currentOffset = this.pageMap[pg - 1].start;
     return defer.promise;
   } else if (pg == (this.displayedPages + 1)) {
-    this.render.page(pg, time);
+    this.q.enqueue(function () {
+      this.render.page(pg, time);
+    }.bind(this));
     this.docEl.addEventListener(transitionEvent, translationEnd, false);
     return defer.promise;
   } else if (pg == 0) {
-    this.render.page(0, time);
+    this.q.enqueue(function () {
+      this.render.page(0, time);
+    }.bind(this));
     this.docEl.addEventListener(transitionEvent, translationEnd, false);
     return defer.promise;
   }
