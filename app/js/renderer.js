@@ -9,7 +9,7 @@ EPUBJS.Renderer = function () {
   this.fontFamily = "";
   this.nightMode = 0;
   EPUBJS.Hooks.mixin(this);
-  this.getHooks("beforeFormat","beforeChapterDisplay");
+  this.getHooks("beforeFormat", "beforeChapterDisplay");
   this.chapterName = document.getElementById("chapterName");
 };
 
@@ -85,9 +85,9 @@ EPUBJS.Renderer.prototype.load = function (url) {
     this.pageWidth = this.formated.pageWidth;
     this.pageHeight = this.formated.pageHeight;
     this.viewDimensions = this.render.getViewDimensions();
-    this.triggerHooks("beforeFormat",this.doc, this.viewDimensions.viewWidth, this.viewDimensions.viewHeight);
+    this.triggerHooks("beforeFormat", this.doc, this.viewDimensions.viewWidth, this.viewDimensions.viewHeight);
     this.updatePages();
-    if(this.currentOffset){
+    if (this.currentOffset) {
       this.gotoOffset(this.currentOffset);
     }
     this.triggerHooks("beforeChapterDisplay", this);
@@ -150,7 +150,7 @@ EPUBJS.Renderer.prototype.parseChapterNames = function (chapterNames) {
     } else {
       var section = paths[1];
       var el = this.doc.getElementById(section);
-      if(el){
+      if (el) {
         var pg = this.render.getPageNumberByElement(el);
         chapterNamePage.push({chapterName: chapterName, startPg: pg, endPg: null});
         if (index != 0) {
@@ -488,26 +488,23 @@ EPUBJS.Renderer.prototype.page = function (pg, durTime) {
 
   function whichTransitionEvent() {
     var transitions = {
-      'transition' : 'transitionend',
-      'MozTransition' : 'transitionend',
-      'WebkitTransition' : 'webkitTransitionEnd'
+      'transition': 'transitionend',
+      'MozTransition': 'transitionend',
+      'WebkitTransition': 'webkitTransitionEnd'
     };
 
-    for(var t in transitions){
-      if(renderer.docEl.style[t] !== undefined){
+    for (var t in transitions) {
+      if (renderer.docEl.style[t] !== undefined) {
         return transitions[t];
       }
     }
   }
 
   var transitionEvent = whichTransitionEvent();
-  console.log('paging start');
   var translationEnd = function () {
-    console.log('paging end');
-
     this.docEl.removeEventListener(transitionEvent, translationEnd, false);
     var result = (pg >= 1 && pg <= this.displayedPages) ? true : false;
-    if(!result){
+    if (!result) {
       this.currentOffset = 0;
     }
     defer.resolve(result);
@@ -653,7 +650,7 @@ EPUBJS.Renderer.prototype.searchText = function (text, doc, spinePos, chapterNam
       }
     }
   } catch (e) {
-    EPUBJS.core.postMessageToMobile("searchText",{flag:"0"})
+    EPUBJS.core.postMessageToMobile("searchText", {flag: "0"})
   }
   return results;
 };
