@@ -262,8 +262,8 @@ EPUBJS.Book.prototype.gotoNote = function (spinePos, parentPosition, startContai
   return this.q.enqueue(function () {
     if (spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
-        var parent = EPUBJS.DomUtil.findNode(this.renderer.doc.body, parentPosition);
-        var element = EPUBJS.DomUtil.findNode(parent, startContainerPosition);
+        var parent = EPUBJS.DomUtil.findNode(this.renderer.doc.body, JSON.parse(parentPosition));
+        var element = EPUBJS.DomUtil.findNode(parent, JSON.parse(startContainerPosition));
         var range = document.createRange();
         if (offset) {
           range.setStart(element, offset);
