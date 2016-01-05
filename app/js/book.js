@@ -314,21 +314,23 @@ EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) 
     if (spinePos != this.spinePos && spinePos >= 0 && spinePos < this.spine.length) {
       this.displayChapter(spinePos, false, true).then(function () {
         var ele = this.renderer.getElementByXPath(xPath);
-        this.renderer.highlight(ele, offset, text.length);
         var range = document.createRange();
         range.setStart(ele, offset);
         range.setEnd(ele, offset + text.length);
-        this.renderer.gotoRange(range);
+        this.renderer.gotoRange(range).then(function () {
+          this.renderer.highlight(ele, offset, text.length);
+        }.bind(this));
       }.bind(this));
     } else {
       var ele = this.renderer.getElementByXPath(xPath);
-      this.renderer.highlight(ele, offset, text.length);
       var range = document.createRange();
       range.setStart(ele, offset);
       range.setEnd(ele, offset + text.length);
-      this.renderer.gotoRange(range);
+      this.renderer.gotoRange(range).then(function () {
+        this.renderer.highlight(ele, offset, text.length);
+      }.bind(this));
     }
-  }.bind(this))
+  }.bind(this));
 };
 
 /**
@@ -354,6 +356,7 @@ EPUBJS.Book.prototype.searchText = function (text) {
         }
       });
     } else {
+      console.log(textsMap);
       EPUBJS.core.postMessageToMobile("searchText", {searchText: textsMap, flag: "1"});
       defer.resolve(textsMap);
     }

@@ -420,7 +420,7 @@ EPUBJS.Renderer.prototype.section = function (fragment) {
  */
 EPUBJS.Renderer.prototype.gotoRange = function (range) {
   var pg = this.render.getPageNumberByRect(range.getBoundingClientRect());
-  this.page(pg, 0);
+  return this.page(pg, 1);
 };
 
 /**
@@ -714,10 +714,11 @@ EPUBJS.Renderer.prototype.createHighlightDiv = function (width, height, left, to
  * @param length
  */
 EPUBJS.Renderer.prototype.highlight = function (node, offset, length) {
+  var offsetLeft = (this.chapterPos-1)*this.pageWidth;
   var rectMap = this.getHighlightRects(node, offset, length);
   var divFrag = document.createDocumentFragment();
   rectMap.forEach(function (rects) {
-    divFrag.appendChild(this.createHighlightDiv(rects.end.right - rects.start.left, rects.start.height, rects.start.left, rects.start.top));
+    divFrag.appendChild(this.createHighlightDiv(rects.end.right - rects.start.left, rects.start.height, rects.start.left + offsetLeft, rects.start.top));
   }, this);
   this.doc.body.appendChild(divFrag);
 };
