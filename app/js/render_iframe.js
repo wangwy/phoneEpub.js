@@ -107,7 +107,10 @@ EPUBJS.Render.Iframe.prototype.getLeft = function (pg) {
  * @param time
  */
 EPUBJS.Render.Iframe.prototype.setLeft = function (lefPos, time) {
-  this.docEl.style.webkitTransition = '-webkit-transform ' + time +'ms cubic-bezier(0.33, 0.66, 0.66, 1)';
+  this.docEl.style.webkitTransition = '';
+  if(time){
+    this.docEl.style.webkitTransition = '-webkit-transform ' + time +'ms cubic-bezier(0.33, 0.66, 0.66, 1)';
+  }
   this.docEl.style.webkitTransform = 'translate3d('+(-lefPos)+'px, 0, 0)';
 };
 

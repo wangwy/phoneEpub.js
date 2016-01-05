@@ -317,18 +317,16 @@ EPUBJS.Book.prototype.gotoSearchText = function (spinePos, xPath, offset, text) 
         var range = document.createRange();
         range.setStart(ele, offset);
         range.setEnd(ele, offset + text.length);
-        this.renderer.gotoRange(range).then(function () {
-          this.renderer.highlight(ele, offset, text.length);
-        }.bind(this));
+        this.renderer.gotoRange(range);
+        this.renderer.highlight(ele, offset, text.length);
       }.bind(this));
     } else {
       var ele = this.renderer.getElementByXPath(xPath);
       var range = document.createRange();
       range.setStart(ele, offset);
       range.setEnd(ele, offset + text.length);
-      this.renderer.gotoRange(range).then(function () {
-        this.renderer.highlight(ele, offset, text.length);
-      }.bind(this));
+      this.renderer.gotoRange(range);
+      this.renderer.highlight(ele, offset, text.length);
     }
   }.bind(this));
 };

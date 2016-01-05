@@ -420,7 +420,7 @@ EPUBJS.Renderer.prototype.section = function (fragment) {
  */
 EPUBJS.Renderer.prototype.gotoRange = function (range) {
   var pg = this.render.getPageNumberByRect(range.getBoundingClientRect());
-  return this.page(pg, 1);
+  this.page(pg, 0);
 };
 
 /**
