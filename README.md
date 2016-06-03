@@ -11,4 +11,4 @@ Examples
 - node server.js
 + 第五步：访问页面
 + [单页翻页](http://localhost:8080/app/html/phone.html) 利用columns css属性为页面分栏
-
++ [在线预览]http://wangwy.github.io/phoneEpub.js/app/html/phone.html
