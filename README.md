@@ -1,5 +1,6 @@
-Examples
+phoneEpub.js
 -------------------------
+![phoneEpub.js views](./img/GIFEncoder.gif)
 
 + 第一步：安装node
 - sudo npm install
