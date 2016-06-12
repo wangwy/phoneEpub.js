@@ -1,6 +1,6 @@
 phoneEpub.js
 -------------------------
-![phoneEpub.js views](./img/GIFEncoder.gif)
+![phoneEpub.js views](http://wangwy.github.io/phoneEpub.js/app/img/GIFEncoder.gif)
 
 + 第一步：安装node
 - sudo npm install
