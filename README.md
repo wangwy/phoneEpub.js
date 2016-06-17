@@ -2,7 +2,7 @@ phoneEpub.js
 -------------------------
 ![phoneEpub.js views](http://wangwy.github.io/phoneEpub.js/app/img/GIFEncoder.gif)
 
-本项目模仿自https://github.com/futurepress/epub.js。
+本项目模仿自https://github.com/futurepress/epub.js
 本项目只是展示EPUB格式的电子书，解析电子书需自己写。
 展示电子书所需格式
 ```javascript
